@@ -6,32 +6,45 @@ class MockFactory {
     /**
      * @var array|Mock[] Instances which should always be used when mocking indexing class
      */
-    private static $singletons = array();
+    private $singletons = array();
+
+    /**
+     * @var Generator
+     */
+    private $generator;
+
+    public function __construct() {
+        $this->generator = new Generator($this);
+    }
 
     /**
      * @param string $classname
      * @param null|Mock $instance
      */
     public function makeSingleton($classname, $instance = null) {
-        $classname = $this->normalizeClassname($classname);
+        $classname = $this->generator->normalizeClassname($classname);
 
         if (!$instance) {
             $instance = $this->createMock($classname);
         }
-        self::$singletons[$classname] = $instance;
+        $this->singletons[$classname] = $instance;
     }
 
     /**
      * @param string $classname Fully qualified name of the class or interface to mock.
      * @param null|array $constructorArgs Arguments for the constructor (as list or map). If null, the constructor is not invoked.
      * @param boolean $mockDependencies
+     * @throws \InvalidArgumentException
      * @return \mockster\Mock
      */
     public function createMock($classname, $constructorArgs = array(), $mockDependencies = true) {
-        $classname = $this->normalizeClassname($classname);
+        if (!is_string($classname)) {
+            throw new \InvalidArgumentException('Classname must be a string.');
+        }
+        $classname = $this->generator->normalizeClassname($classname);
 
-        if (array_key_exists($classname, self::$singletons)) {
-            return self::$singletons[$classname];
+        if (array_key_exists($classname, $this->singletons)) {
+            return $this->singletons[$classname];
         }
 
         $implements = '';
@@ -59,16 +72,13 @@ class MockFactory {
         $code = '
 class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
-    private $__mockster;
+    private $__mock;
     public static $__mockInstance;
 
     ' . $propertiesDefs . '
 
     public function __mock() {
-        if ($this->__mockster === null) {
-            $this->__mockster = new ' . __NAMESPACE__ . '\\Mockster(\'' . $classname . '\', $this);
-        }
-        return $this->__mockster;
+        return $this->__mock;
     }
 
     ' . $constuctorDef . '
@@ -83,25 +93,7 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
         $constructor = $classReflection->getConstructor();
         if ($constructorArgs !== null && $constructor !== null) {
-
-            foreach ($constructor->getParameters() as $param) {
-                if (array_key_exists($param->getPosition(), $constructorArgs)
-                        || array_key_exists($param->getName(), $constructorArgs)) {
-                    continue;
-                }
-
-                if ($param->isArray()) {
-                    $arg = array();
-                } else if ($param->getClass()) {
-                    $arg = $this->createMock($param->getClass()->getName(), null, false);
-                } elseif ($param->isOptional()) {
-                    $arg = $param->getDefaultValue();
-                } else  {
-                    $arg = null;
-                }
-                $constructorArgs[$param->getName()] = $arg;
-            }
-
+            $constructorArgs = $this->generator->getMethodParameters($constructor, $constructorArgs);
             $instance = $mockClassRefl->newInstanceArgs(array_values($constructorArgs));
         } else {
             $instance = $mockClassRefl->newInstanceArgs();
@@ -109,32 +101,20 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
         $mockClassRefl->setStaticPropertyValue('__mockInstance', $instance);
 
-        /** @var $mockster Mockster */
-        /** @var $instance Mock */
-        $mockster = $instance->__mock();
-
-        $mockster->setConstructorArguments($constructorArgs);
-        $mockster->setCode($code);
+        $mockProperty = $mockClassRefl->getProperty('__mock');
+        $mockProperty->setAccessible(true);
+        $mockProperty->setValue($instance, new Mockster($this, $classname, $instance, $constructorArgs, $code));
 
         if ($mockDependencies) {
             foreach ($classReflection->getProperties() as $property) {
 
                 $matches = array();
-                if (preg_match('/@var (\S*)/', $property->getDocComment(), $matches) == 0) {
+                if (preg_match('/@var (\S+)/', $property->getDocComment(), $matches) == 0) {
                     continue;
                 }
-                $classHint = $matches[1];
-                if (strpos($classHint, '|') !== false) {
-                    $alternatives = explode('|', $classHint);
-                    $classHint = $alternatives[0];
-                }
-
-                if (!class_exists($classHint)) {
-                    continue;
-                }
-
                 $property->setAccessible(true);
-                $property->setValue($instance, $this->createMock($classHint, null, false));
+                $dependencyMock = $this->generator->getInstanceFromHint($matches[1]);
+                $property->setValue($instance, $dependencyMock);
 
             }
         }
@@ -243,19 +223,6 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
         }
 
         return $methods;
-    }
-
-    /**
-     * Removes a leading backslash from the classname
-     *
-     * @param string $classname
-     * @return string Classname without leading backslash
-     */
-    private function normalizeClassname($classname) {
-        if (substr($classname, 0, 1) == '\\') {
-            return substr($classname, 1);
-        }
-        return $classname;
     }
 
 }

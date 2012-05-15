@@ -29,13 +29,27 @@ class Mockster {
     private $mock;
 
     /**
+     * @var MockFactory
+     */
+    private $factory;
+
+    /**
+     * @var Generator
+     */
+    private $generator;
+
+    /**
      * @var array|array[] Arguments of the constructor indexed by parameter name
      */
     private $constructorArguments = array();
 
-    public function __construct($classname, $mock) {
+    public function __construct(MockFactory $factory, $classname, $mock, $constructorArguments, $code = null) {
+        $this->factory = $factory;
         $this->classname = $classname;
         $this->mock = $mock;
+        $this->constructorArguments = $constructorArguments;
+        $this->code = $code;
+        $this->generator = new Generator($factory);
 
         $refl = new \ReflectionClass($classname);
         $this->methods = $refl->getMethods();
@@ -94,7 +108,7 @@ class Mockster {
             if ($method->getName() == $methodName) {
 
                 if (!array_key_exists($methodName, $this->stubs)) {
-                    $this->stubs[$methodName] = new Method($method);
+                    $this->stubs[$methodName] = new Method($this->factory, $method);
                 }
 
                 return $this->stubs[$methodName];
@@ -103,6 +117,21 @@ class Mockster {
 
         throw new \InvalidArgumentException(sprintf("Can't mock method '%s'. Does not exist in class '%s'",
                         $methodName, $this->classname));
+    }
+
+    /**
+     * Calls the given method with the given arguments.
+     *
+     * All missing arguments will be replaced by mocks if possible or null.
+     *
+     * @param string $methodName
+     * @param array $arguments Indexed by positions or parameter names
+     * @return mixed The return value of the method
+     */
+    public function invoke($methodName, $arguments = array()) {
+        $method = new \ReflectionMethod($this->classname, $methodName);
+        $arguments = $this->generator->getMethodParameters($method, $arguments);
+        return call_user_func_array(array($this->mock, $methodName), array_values($arguments));
     }
 
     /**
@@ -117,13 +146,6 @@ class Mockster {
         }
 
         return $this->constructorArguments[$parameterName];
-    }
-
-    /**
-     * @param array|array $arguments
-     */
-    public function setConstructorArguments($arguments) {
-        $this->constructorArguments = $arguments;
     }
 
     /**
@@ -155,13 +177,6 @@ class Mockster {
         }
 
         return $mock->__mock()->method($lastMethod);
-    }
-
-    /**
-     * @param string $code
-     */
-    public function setCode($code) {
-        $this->code = $code;
     }
 
     /**

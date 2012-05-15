@@ -34,10 +34,17 @@ class Method {
     private $mocked = true;
 
     /**
+     * @var Generator
+     */
+    private $generator;
+
+    /**
+     * @param \mockster\MockFactory $factory
      * @param \ReflectionMethod $reflection
      */
-    public function __construct(\ReflectionMethod $reflection) {
+    public function __construct(MockFactory $factory, \ReflectionMethod $reflection) {
         $this->reflection = $reflection;
+        $this->generator = new Generator($factory);
     }
 
     /**
@@ -88,34 +95,8 @@ class Method {
      */
     public function getReturnTypeHintMock() {
         $matches = array();
-        $value = null;
-
         if (preg_match('/@return (\S*)/', $this->reflection->getDocComment(), $matches)) {
-            $typeHint = $matches[1];
-            if (strpos($typeHint, '|') !== false) {
-                $typeHints = explode('|', $typeHint);
-            } else {
-                $typeHints = array($typeHint);
-            }
-
-            foreach ($typeHints as $typeHint) {
-                if (class_exists($typeHint) || interface_exists($typeHint)) {
-                    $factory = new MockFactory();
-                    return $factory->createMock($typeHint, null, false);
-                } else if ($typeHint == 'array') {
-                    return array();
-                } else if ($typeHint == 'null') {
-                    return null;
-                } else if ($typeHint == 'int' || $typeHint == 'integer') {
-                    return 0;
-                } else if ($typeHint == 'float') {
-                    return 0.0;
-                } else if ($typeHint == 'bool' || $typeHint == 'boolean') {
-                    return false;
-                } else if ($typeHint == 'string') {
-                    return '';
-                }
-            }
+            return $this->generator->getInstanceFromHint($matches[1]);
         }
 
         return null;
