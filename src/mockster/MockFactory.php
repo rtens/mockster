@@ -50,7 +50,7 @@ class MockFactory {
      * Convenience method to create a mock of a class to be testeed.
      *
      * @param string $classname
-     * @param array $constructorArgs
+     * @param array|null $constructorArgs If null, parent constructor is not invoked
      * @return Mock
      */
     public function createTestUnit($classname, $constructorArgs = array()) {
