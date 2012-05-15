@@ -13,8 +13,24 @@ class MockFactory {
      */
     private $generator;
 
+    /**
+     * @var string
+     */
+    private $propertyAnnotation;
+
     public function __construct() {
         $this->generator = new Generator($this);
+    }
+
+    /**
+     * If set, only properties having the given annotation will be mocked.
+     *
+     * e.g. 'inject' only mocks properties with an '@inject' annotation
+     *
+     * @param string|null $annotation
+     */
+    public function onlyMockAnnotatedProperties($annotation) {
+        $this->propertyAnnotation = $annotation;
     }
 
     /**
@@ -107,15 +123,19 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
         if ($mockDependencies) {
             foreach ($classReflection->getProperties() as $property) {
+                if ($this->propertyAnnotation &&
+                        preg_match('/@' . $this->propertyAnnotation . '/', $property->getDocComment(), $matches) == 0) {
+                    continue;
+                }
 
                 $matches = array();
                 if (preg_match('/@var (\S+)/', $property->getDocComment(), $matches) == 0) {
                     continue;
                 }
                 $property->setAccessible(true);
+
                 $dependencyMock = $this->generator->getInstanceFromHint($matches[1]);
                 $property->setValue($instance, $dependencyMock);
-
             }
         }
 

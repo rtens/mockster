@@ -22,7 +22,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testMockPublicAndProtectedMethods() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
         $this->assertNotNull($mock);
 
         $mock->myPublicMethod();
@@ -34,7 +34,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testNoStubsForNotMockedMethods() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
         $this->assertNotNull($mock);
 
         $mock->__mock()->method('myPublicMethod')->dontMock();
@@ -48,7 +48,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testMethodStubRecordsCalls() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->myPublicMethod();
         $mock->myPublicMethod(1, 'x');
@@ -65,7 +65,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testMethodStubReturnValue() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->method('myPublicMethod')->willReturn('something');
 
@@ -74,7 +74,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testReturnForCertainArguments() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->method('myPublicMethod')->willReturn('something')
                 ->withArguments('myArg', 1);
@@ -85,7 +85,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testMultipleSingleReturns() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->method('myPublicMethod')->willReturn('else')->once();
         $mock->__mock()->method('myPublicMethod')->willReturn('something')->once();
@@ -96,7 +96,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testMultipleSingleReturnsWithArguments() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->method('myPublicMethod')->willReturn('else')
                 ->withArguments(1)->once();
@@ -117,7 +117,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testMethodStubCallback() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->method('myPublicMethod')->willCall(function ($arg1 = null, $arg2 = null) {
                     MocksterTest::$callbackInvoked = array($arg1, $arg2);
@@ -131,12 +131,12 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testInjectInConstructor() {
         /** @var $mock Uut2 */
-        $mock = $this->factory->createMock(\mockster\TestMock2::CLASSNAME, null);
+        $mock = $this->factory->createMock(TestMock2::CLASSNAME, null);
         $mock->invokeInjected();
 
         $this->assertNull($mock->injected);
 
-        $mock = $this->factory->createMock(\mockster\TestMock2::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock2::CLASSNAME);
         $mock->__mock()->method('invokeInjected')->dontMock();
         $mock->invokeInjected();
 
@@ -153,7 +153,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testNotMockMethodOfInjectedMock() {
         /** @var $mock Uut2 */
-        $mock = $this->factory->createMock(\mockster\TestMock2::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock2::CLASSNAME);
 
         $mock->__mock()->method('invokeInjected')->dontMock();
         $mock->injected->__mock()->method('myPublicMethod')->dontMock();
@@ -166,11 +166,11 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
     public function testInjectProperties() {
         /** @var $mock Uut3 */
         /** @var $mock TestMock3 */
-        $mock = $this->factory->createMock(\mockster\TestMock3::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
 
         $mock->__mock()->method('invokeIt')->dontMock();
 
-        $mock->injected = $this->factory->createMock(\mockster\TestMock2::CLASSNAME);
+        $mock->injected = $this->factory->createMock(TestMock2::CLASSNAME);
         $mock->injected->__mock()->method('invokeInjected')->dontMock();
         $mock->injected->injected->__mock()->method('myPublicMethod')->dontMock();
 
@@ -183,7 +183,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testInjectPropertiesWithMultipleTypehints() {
         /** @var $mock TestMock3|Uut3 */
-        $mock = $this->factory->createMock(\mockster\TestMock3::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
 
         $this->assertNotNull($mock->maybeInjected);
         $this->assertEquals(\mockster\TestMock1::CLASSNAME, get_parent_class($mock->maybeInjected));
@@ -193,7 +193,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testAccessPropertiesInjectedOverConstructor() {
         /** @var $mock Uut4 */
-        $mock = $this->factory->createMock(\mockster\TestMock4::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock4::CLASSNAME);
         $this->assertNotNull($mock);
 
         $mock->__mock()->method('invokeInjected')->dontMock();
@@ -204,7 +204,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testReturnMockOfReturnTypeHint() {
         /** @var $mock Uut4 */
-        $mock = $this->factory->createMock(\mockster\TestMock4::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock4::CLASSNAME);
 
         $testMock = $mock->getTestMock();
 
@@ -223,7 +223,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testReturnValueForMethodChain() {
         /** @var $mock Uut4 */
-        $mock = $this->factory->createMock(\mockster\TestMock4::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock4::CLASSNAME);
 
         $this->assertNull($mock->getTestMock3()->getTestMock2()->invokeInjected());
 
@@ -236,7 +236,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testThrowException() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->method('myPublicMethod')->willThrow(new \Exception());
 
@@ -254,7 +254,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testComplainWhenMethodDoesNotExist() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         try {
             $mock->__mock()->method('nonExistingMethod');
@@ -266,7 +266,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testWasCalledWith() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->myPublicMethod(1, 2);
 
@@ -278,7 +278,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testStaticMethodIsMocked() {
         /** @var $mock StaticMock */
-        $mock = $this->factory->createMock(\mockster\StaticMock::CLASSNAME);
+        $mock = $this->factory->createMock(StaticMock::CLASSNAME);
 
         $mock->myStaticMethod();
 
@@ -287,7 +287,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testConstructorArguments() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $this->assertEquals(array(), $mock->array);
         $this->assertEquals(array(), $mock->__mock()->getConstructorArgument('array'));
@@ -300,13 +300,13 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($mock->inDoc instanceof TestMock1);
         $this->assertTrue($mock->__mock()->getConstructorArgument('inDoc') instanceof TestMock1);
 
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME, array('array' => array('one')));
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME, array('array' => array('one')));
 
         $this->assertEquals(array('one'), $mock->array);
         $this->assertEquals(null, $mock->mixed);
         $this->assertEquals(true, $mock->optional);
 
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME, array(array('one'), 'two', null, false));
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME, array(array('one'), 'two', null, false));
 
         $this->assertEquals(array('one'), $mock->array);
         $this->assertEquals('two', $mock->mixed);
@@ -315,7 +315,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testLogNotMockedMethodCalls() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->method('myPublicMethod')->dontMock();
 
@@ -327,7 +327,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testMockNoMethods() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->dontMockAllMethods();
 
@@ -340,7 +340,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testDontMockPublicMethods() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->dontMockPublicMethods();
 
@@ -353,7 +353,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testDontMockProtectedMethods() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->__mock()->dontMockProtectedMethods();
 
@@ -366,23 +366,23 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testSingletons() {
         /** @var $mock1 Uut1 */
-        $mock1 = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock1 = $this->factory->createMock(TestMock1::CLASSNAME);
         $this->factory->makeSingleton(\mockster\TestMock1::CLASSNAME, $mock1);
 
         /** @var $mock4 Uut4 */
-        $mock4 = $this->factory->createMock(\mockster\TestMock4::CLASSNAME);
+        $mock4 = $this->factory->createMock(TestMock4::CLASSNAME);
         /** @var $mock2 Uut2 */
-        $mock2 = $this->factory->createMock(\mockster\TestMock2::CLASSNAME);
+        $mock2 = $this->factory->createMock(TestMock2::CLASSNAME);
 
         $this->assertEquals($mock4->getTestMock(), $mock1);
-        $this->assertEquals($mock4->getTestMock(), $this->factory->createMock(\mockster\TestMock1::CLASSNAME));
+        $this->assertEquals($mock4->getTestMock(), $this->factory->createMock(TestMock1::CLASSNAME));
         $this->assertEquals($mock4->getTestMock(), $mock2->injected);
 
     }
 
     public function testInheritedMethods() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(\mockster\TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
         $mock->myPublicMethod();
         $mock->myProtectedMethod();
@@ -392,7 +392,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testMockMethodArguments() {
-        $mock = $this->factory->createMock(\mockster\TestMock4::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock4::CLASSNAME);
         $mock->__mock()->method('methodWithDependencies')->dontMock();
         list($mock1, $mock2, $mock3, $array, $int) = $mock->__mock()->invoke('methodWithDependencies', array('int' => 42));
 
@@ -401,6 +401,16 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         $this->assertNull($mock3);
         $this->assertEquals(array(), $array);
         $this->assertEquals(42, $int);
+    }
+
+    public function testOnlyInjectAnnotatedProperties() {
+        $this->factory->onlyMockAnnotatedProperties('inject');
+
+        /** @var $mock Uut3 */
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
+
+        $this->assertNotNull($mock->injected);
+        $this->assertNull($mock->maybeInjected);
     }
 
 }
@@ -501,6 +511,7 @@ class TestMock3 {
     const CLASSNAME = __CLASS__;
 
     /**
+     * @inject
      * @var \mockster\TestMock2
      */
     protected $injected;
