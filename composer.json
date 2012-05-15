@@ -1,0 +1,21 @@
+{
+    "name": "rtens/mockster",
+    "description": "PHP Mocking framework",
+    "keywords": ["mocking", "mock", "unit testing", "bdd"],
+    "homepage": "http://github.com/rtens/mockster",
+    "type": "library",
+    "license": "Apache 2.0",
+    "authors": [
+        {
+            "name": "Nikolas Martens",
+            "email": "Nikolas.M@rtens.org",
+            "homepage": "http://rtens.org"
+        }
+    ],
+    "require": {
+        "php":">=5.3.2"
+    },
+    "autoload": {
+        "psr-0": { "mockster": "src/" }
+    }
+}
