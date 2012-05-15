@@ -135,17 +135,20 @@ class Mockster {
     }
 
     /**
-     * @param $parameterName
+     * @param string|int $parameterNameOrIndex
      * @throws \InvalidArgumentException If the parameter does not exist
-     * @param string $parameterName
      * @return array
      */
-    public function getConstructorArgument($parameterName) {
-        if (!array_key_exists($parameterName, $this->constructorArguments)) {
-            throw new \InvalidArgumentException('The constructor does not have an parameter [' . $parameterName . ']');
+    public function getConstructorArgument($parameterNameOrIndex) {
+        $arguments = $this->constructorArguments;
+        if (is_integer($parameterNameOrIndex)) {
+            $arguments = array_values($arguments);
+        }
+        if (!array_key_exists($parameterNameOrIndex, $arguments)) {
+            throw new \InvalidArgumentException('The constructor does not have an parameter [' . $parameterNameOrIndex . ']');
         }
 
-        return $this->constructorArguments[$parameterName];
+        return $arguments[$parameterNameOrIndex];
     }
 
     /**
@@ -180,12 +183,15 @@ class Mockster {
     }
 
     /**
-     * Prints the code of the mock class with line numbers
+     * returns the code of the mock class with line numbers
+     * @return string
      */
-    public function printCode() {
+    public function getCode() {
+        $code = '';
         foreach (explode("\n", $this->code) as $i => $line) {
-            echo ($i+1) . ': ' . $line . "\n";
+            $code .= ($i+1) . ': ' . $line . "\n";
         }
+        return $code;
     }
 
 }

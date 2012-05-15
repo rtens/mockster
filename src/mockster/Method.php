@@ -164,7 +164,7 @@ class Method {
     }
 
     /**
-     * @param int $index The arguments of the first invokation will be at index 0
+     * @param int $index The arguments of the first invokation will be at index 0. If negative, counts from end.
      * @return array Of one set of arguments indexed by their parameter names.
      */
     public function getCalledArgumentsAt($index) {
@@ -177,16 +177,15 @@ class Method {
 
     /**
      * @param int $index Index of the invokation (see getCalledArgumentsAt)
-     * @param int|string $paramIndex Number for position or parameter name
+     * @param int|string $paramNameOrIndex Number for position or parameter name
      * @return mixed Argument at position or with name $paramIndex of the $index'th call
      */
-    public function getCalledArgumentAt($index, $paramIndex) {
+    public function getCalledArgumentAt($index, $paramNameOrIndex) {
         $args = $this->getCalledArgumentsAt($index);
-        if (is_numeric($paramIndex)) {
-            $values = array_values($args);
-            return $values[$paramIndex];
+        if (is_numeric($paramNameOrIndex)) {
+            $args = array_values($args);
         }
-        return $args[$paramIndex];
+        return $args[$paramNameOrIndex];
     }
 
     /**

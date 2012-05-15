@@ -141,7 +141,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         $mock->invokeInjected();
 
         $this->assertNotNull($mock->__mock()->getConstructorArgument('privateInjected'));
-        $this->assertEquals(\mockster\TestMock1::CLASSNAME, get_parent_class($mock->__mock()->getConstructorArgument('privateInjected')));
+        $this->assertEquals(\mockster\TestMock1::CLASSNAME, get_parent_class($mock->__mock()->getConstructorArgument(0)));
 
         $this->assertNotNull($mock->injected);
         $this->assertFalse($mock->injected->publicInvoked);
