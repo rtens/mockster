@@ -47,13 +47,26 @@ class MockFactory {
     }
 
     /**
+     * Convenience method to create a mock of a class to be testeed.
+     *
+     * @param string $classname
+     * @param array $constructorArgs
+     * @return Mock
+     */
+    public function createTestUnit($classname, $constructorArgs = array()) {
+        $mock = $this->createMock($classname, $constructorArgs, true);
+        $mock->__mock()->dontMockPublicMethods();
+        return $mock;
+    }
+
+    /**
      * @param string $classname Fully qualified name of the class or interface to mock.
      * @param null|array $constructorArgs Arguments for the constructor (as list or map). If null, the constructor is not invoked.
      * @param boolean $mockDependencies
      * @throws \InvalidArgumentException
      * @return \mockster\Mock
      */
-    public function createMock($classname, $constructorArgs = array(), $mockDependencies = true) {
+    public function createMock($classname, $constructorArgs = null, $mockDependencies = false) {
         if (!is_string($classname)) {
             throw new \InvalidArgumentException('Classname must be a string.');
         }

@@ -131,12 +131,12 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testInjectInConstructor() {
         /** @var $mock Uut2 */
-        $mock = $this->factory->createMock(TestMock2::CLASSNAME, null);
+        $mock = $this->factory->createMock(TestMock2::CLASSNAME, null, true);
         $mock->invokeInjected();
 
         $this->assertNull($mock->injected);
 
-        $mock = $this->factory->createMock(TestMock2::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock2::CLASSNAME, array(), true);
         $mock->__mock()->method('invokeInjected')->dontMock();
         $mock->invokeInjected();
 
@@ -153,7 +153,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testNotMockMethodOfInjectedMock() {
         /** @var $mock Uut2 */
-        $mock = $this->factory->createMock(TestMock2::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock2::CLASSNAME, array(), true);
 
         $mock->__mock()->method('invokeInjected')->dontMock();
         $mock->injected->__mock()->method('myPublicMethod')->dontMock();
@@ -166,11 +166,11 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
     public function testInjectProperties() {
         /** @var $mock Uut3 */
         /** @var $mock TestMock3 */
-        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME, null, true);
 
         $mock->__mock()->method('invokeIt')->dontMock();
 
-        $mock->injected = $this->factory->createMock(TestMock2::CLASSNAME);
+        $mock->injected = $this->factory->createMock(TestMock2::CLASSNAME, array(), true);
         $mock->injected->__mock()->method('invokeInjected')->dontMock();
         $mock->injected->injected->__mock()->method('myPublicMethod')->dontMock();
 
@@ -183,7 +183,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testInjectPropertiesWithMultipleTypehints() {
         /** @var $mock TestMock3|Uut3 */
-        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME, null, true);
 
         $this->assertNotNull($mock->maybeInjected);
         $this->assertEquals(\mockster\TestMock1::CLASSNAME, get_parent_class($mock->maybeInjected));
@@ -193,7 +193,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testAccessPropertiesInjectedOverConstructor() {
         /** @var $mock Uut4 */
-        $mock = $this->factory->createMock(TestMock4::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock4::CLASSNAME, array());
         $this->assertNotNull($mock);
 
         $mock->__mock()->method('invokeInjected')->dontMock();
@@ -287,7 +287,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testConstructorArguments() {
         /** @var $mock Uut1 */
-        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME, array());
 
         $this->assertEquals(array(), $mock->array);
         $this->assertEquals(array(), $mock->__mock()->getConstructorArgument('array'));
@@ -372,7 +372,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         /** @var $mock4 Uut4 */
         $mock4 = $this->factory->createMock(TestMock4::CLASSNAME);
         /** @var $mock2 Uut2 */
-        $mock2 = $this->factory->createMock(TestMock2::CLASSNAME);
+        $mock2 = $this->factory->createMock(TestMock2::CLASSNAME, array());
 
         $this->assertEquals($mock4->getTestMock(), $mock1);
         $this->assertEquals($mock4->getTestMock(), $this->factory->createMock(TestMock1::CLASSNAME));
@@ -407,7 +407,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         $this->factory->onlyMockAnnotatedProperties('inject');
 
         /** @var $mock Uut3 */
-        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME, null, true);
 
         $this->assertNotNull($mock->injected);
         $this->assertNull($mock->maybeInjected);
