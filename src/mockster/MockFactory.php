@@ -237,6 +237,7 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
             $paramsString = implode(', ', $params);
             $argsString = implode(', ', $args);
 
+            $isAbstract = $method->isAbstract() ? 'true' : 'false';
             $static = $method->isStatic() ? 'static' : '';
 
             $object = $method->isStatic() ? 'self::$__mockInstance' : '$this';
@@ -246,7 +247,7 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
     public $static function $methodName ( $paramsString ) {
         \$method = {$object}->__mock()->method('$methodName');
 
-        if (\$method->isMocked()) {
+        if ($isAbstract || \$method->isMocked()) {
             return \$method->invoke(func_get_args());
         } else {
             \$method->log(func_get_args());

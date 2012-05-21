@@ -413,6 +413,25 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         $this->assertNull($mock->maybeInjected);
     }
 
+    public function testInterfaceMock() {
+        /** @var $mock InterfaceMock */
+        /** @var $mock Mock */
+        $mock = $this->factory->createTestUnit(InterfaceMock::CLASSNAME);
+
+        $mock->someMethod();
+    }
+
+    public function testAbstractMock() {
+        /** @var $mock AbstractMock */
+        /** @var $mock Mock */
+        $mock = $this->factory->createTestUnit(AbstractMock::CLASSNAME);
+
+        $mock->abstractMethod();
+        $mock->implementedMethod();
+
+        $this->assertTrue($mock->invoked);
+    }
+
 }
 
 /**
@@ -628,6 +647,27 @@ class StaticMock {
 
     public  static function myStaticMethod() {
         self::$called = true;
+    }
+}
+
+interface InterfaceMock {
+
+    const CLASSNAME = __CLASS__;
+
+    public function someMethod();
+
+}
+
+abstract class AbstractMock {
+
+    const CLASSNAME = __CLASS__;
+
+    public $invoked = false;
+
+    public abstract function abstractMethod();
+
+    public function implementedMethod() {
+        $this->invoked = true;
     }
 }
 
