@@ -55,7 +55,7 @@ class MockFactory {
      */
     public function createTestUnit($classname, $constructorArgs = array()) {
         $mock = $this->createMock($classname, $constructorArgs, true);
-        $mock->__mock()->dontMockPublicMethods();
+        $mock->__mock()->dontMockAllMethods();
         return $mock;
     }
 
