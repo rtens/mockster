@@ -13,24 +13,8 @@ class MockFactory {
      */
     private $generator;
 
-    /**
-     * @var string
-     */
-    private $propertyAnnotation;
-
     public function __construct() {
         $this->generator = new Generator($this);
-    }
-
-    /**
-     * If set, only properties having the given annotation will be mocked.
-     *
-     * e.g. 'inject' only mocks properties with an '@inject' annotation
-     *
-     * @param string|null $annotation
-     */
-    public function onlyMockAnnotatedProperties($annotation) {
-        $this->propertyAnnotation = $annotation;
     }
 
     /**
@@ -47,14 +31,17 @@ class MockFactory {
     }
 
     /**
-     * Convenience method to create a mock of a class to be testeed.
+     * Convenience method to create a mock of a class to be tested.
+     *
+     * All protected properties but no methods are mocked.
      *
      * @param string $classname
      * @param array|null $constructorArgs If null, parent constructor is not invoked
      * @return Mock
      */
     public function createTestUnit($classname, $constructorArgs = array()) {
-        $mock = $this->createMock($classname, $constructorArgs, true);
+        $mock = $this->createMock($classname, $constructorArgs);
+        $mock->__mock()->mockProperties(Mockster::F_PROTECTED);
         $mock->__mock()->mockMethods(Mockster::F_NONE);
         return $mock;
     }
@@ -62,11 +49,10 @@ class MockFactory {
     /**
      * @param string $classname Fully qualified name of the class or interface to mock.
      * @param null|array $constructorArgs Arguments for the constructor (as list or map). If null, the constructor is not invoked.
-     * @param boolean $mockDependencies
      * @throws \InvalidArgumentException
      * @return \mockster\Mock
      */
-    public function createMock($classname, $constructorArgs = null, $mockDependencies = false) {
+    public function createMock($classname, $constructorArgs = null) {
         if (!is_string($classname)) {
             throw new \InvalidArgumentException('Classname must be a string.');
         }
@@ -85,7 +71,6 @@ class MockFactory {
         }
 
         $classReflection = new \ReflectionClass($classname);
-
 
         $constuctorDef = '';
         if ($constructorArgs === null) {
@@ -133,25 +118,6 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
         $mockProperty = $mockClassRefl->getProperty('__mock');
         $mockProperty->setAccessible(true);
         $mockProperty->setValue($instance, new Mockster($this, $classname, $instance, $constructorArgs, $code));
-
-        if ($mockDependencies) {
-            foreach ($classReflection->getProperties() as $property) {
-
-                if ($this->propertyAnnotation &&
-                        !$this->generator->hasAnnotation($property->getDocComment(), $this->propertyAnnotation)) {
-                    continue;
-                }
-
-                $matches = array();
-                if (preg_match('/@var (\S+)/', $property->getDocComment(), $matches) == 0) {
-                    continue;
-                }
-                $property->setAccessible(true);
-
-                $dependencyMock = $this->generator->getInstanceFromHint($matches[1]);
-                $property->setValue($instance, $dependencyMock);
-            }
-        }
 
         return $instance;
     }

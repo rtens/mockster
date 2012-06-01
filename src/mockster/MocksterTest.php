@@ -126,12 +126,14 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testInjectInConstructor() {
         /** @var $mock Uut2 */
-        $mock = $this->factory->createMock(TestMock2::CLASSNAME, null, true);
+        $mock = $this->factory->createMock(TestMock2::CLASSNAME);
+        $mock->__mock()->mockProperties();
         $mock->invokeInjected();
 
         $this->assertNull($mock->injected);
 
-        $mock = $this->factory->createMock(TestMock2::CLASSNAME, array(), true);
+        $mock = $this->factory->createMock(TestMock2::CLASSNAME, array());
+        $mock->__mock()->mockProperties();
         $mock->__mock()->method('invokeInjected')->dontMock();
         $mock->invokeInjected();
 
@@ -148,7 +150,8 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testNotMockMethodOfInjectedMock() {
         /** @var $mock Uut2 */
-        $mock = $this->factory->createMock(TestMock2::CLASSNAME, array(), true);
+        $mock = $this->factory->createMock(TestMock2::CLASSNAME, array());
+        $mock->__mock()->mockProperties();
 
         $mock->__mock()->method('invokeInjected')->dontMock();
         $mock->injected->__mock()->method('myPublicMethod')->dontMock();
@@ -161,7 +164,8 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
     public function testInjectProperties() {
         /** @var $mock Uut3 */
         /** @var $mock TestMock3 */
-        $mock = $this->factory->createMock(TestMock3::CLASSNAME, null, true);
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
+        $mock->__mock()->mockProperties();
 
         $mock->__mock()->method('invokeIt')->dontMock();
 
@@ -178,7 +182,8 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public function testInjectPropertiesWithMultipleTypehints() {
         /** @var $mock TestMock3|Uut3 */
-        $mock = $this->factory->createMock(TestMock3::CLASSNAME, null, true);
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
+        $mock->__mock()->mockProperties(Mockster::F_ALL);
 
         $this->assertNotNull($mock->maybeInjected);
         $this->assertEquals(\mockster\TestMock1::CLASSNAME, get_parent_class($mock->maybeInjected));
@@ -416,13 +421,14 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testOnlyInjectAnnotatedProperties() {
-        $this->factory->onlyMockAnnotatedProperties('inject');
-
         /** @var $mock Uut3 */
-        $mock = $this->factory->createMock(TestMock3::CLASSNAME, null, true);
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
+        $mock->__mock()->mockProperties(Mockster::F_PROTECTED, 'inject');
 
         $this->assertNotNull($mock->injected);
+        $this->assertNull($mock->protectedInjected);
         $this->assertNull($mock->maybeInjected);
+        $this->assertNull($mock->notInjected);
     }
 
     public function testInterfaceMock() {
@@ -549,6 +555,7 @@ class TestMock2 {
 
 /**
  * @property \mockster\Mock|Uut2 injected
+ * @property \mockster\Mock|Uut2 protectedInjected
  * @property \mockster\Mock|Uut1 maybeInjected
  * @property \mockster\Mock|Uut1 notInjected
  * @property array anArray
@@ -565,6 +572,11 @@ class TestMock3 {
      * @var \mockster\TestMock2
      */
     protected $injected;
+
+    /**
+     * @var \mockster\TestMock2
+     */
+    protected $protectedInjected;
 
     /**
      * @var \mockster\TestMock1|null

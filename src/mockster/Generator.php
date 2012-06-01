@@ -98,7 +98,7 @@ class Generator {
         $class = $this->normalizeClassname($class);
 
         if (class_exists($class) || interface_exists($class)) {
-            return $this->factory->createMock($class, null, false);
+            return $this->factory->createMock($class, null);
         }
 
         switch (strtolower($class)) {

@@ -11,6 +11,8 @@ class Mockster {
 
     const F_STATIC = 4;
 
+    const F_NON_STATIC = 3;
+
     const F_ALL = 7;
 
     /**
@@ -75,6 +77,33 @@ class Mockster {
         }
 
         return $history;
+    }
+
+    /**
+     * @param int $filter Using bit-combinations of Mockster::F_* (e.g. Mockster::F_PUBLIC | Mockster::F_PROTECTED)
+     * @param null|string $withAnnotation
+     */
+    public function mockProperties($filter = Mockster::F_PROTECTED, $withAnnotation = null) {
+        $classReflection = new \ReflectionClass($this->classname);
+        foreach ($classReflection->getProperties() as $property) {
+
+            if (!((!$property->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
+                    (!$property->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
+                    (!$property->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
+                    (!$withAnnotation || $this->generator->hasAnnotation($property->getDocComment(), $withAnnotation)))) {
+                continue;
+            }
+
+            $matches = array();
+            if (preg_match('/@var (\S+)/', $property->getDocComment(), $matches) == 0) {
+                continue;
+            }
+            $property->setAccessible(true);
+
+            $dependencyMock = $this->generator->getInstanceFromHint($matches[1]);
+            $mockProperty = new \ReflectionProperty($this->mock, $property->getName());
+            $mockProperty->setValue($this->mock, $dependencyMock);
+        }
     }
 
     /**
