@@ -55,7 +55,7 @@ class MockFactory {
      */
     public function createTestUnit($classname, $constructorArgs = array()) {
         $mock = $this->createMock($classname, $constructorArgs, true);
-        $mock->__mock()->dontMockAllMethods();
+        $mock->__mock()->mockMethods(Mockster::F_NONE);
         return $mock;
     }
 
@@ -136,8 +136,9 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
         if ($mockDependencies) {
             foreach ($classReflection->getProperties() as $property) {
+
                 if ($this->propertyAnnotation &&
-                        preg_match('/@' . $this->propertyAnnotation . '/', $property->getDocComment(), $matches) == 0) {
+                        !$this->generator->hasAnnotation($property->getDocComment(), $this->propertyAnnotation)) {
                     continue;
                 }
 

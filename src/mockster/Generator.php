@@ -138,4 +138,13 @@ class Generator {
         return $classname;
     }
 
+    /**
+     * @param string $docComment
+     * @param string $annotation
+     * @return bool True if the given string contains @<annotation>
+     */
+    public function hasAnnotation($docComment, $annotation) {
+        return preg_match('/@' . $annotation . '/', $docComment, $matches) != 0;
+    }
+
 }

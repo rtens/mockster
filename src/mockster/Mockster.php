@@ -3,6 +3,16 @@ namespace mockster;
 
 class Mockster {
 
+    const F_NONE = 0;
+
+    const F_PUBLIC = 1;
+
+    const F_PROTECTED = 2;
+
+    const F_STATIC = 4;
+
+    const F_ALL = 7;
+
     /**
      * @var string Code of the generated Mock class
      */
@@ -68,33 +78,19 @@ class Mockster {
     }
 
     /**
-     * Calls dontMock() on all methods
+     * Sets all methods matching the filter to being mocked, and all others to not being mocked.
+     *
+     * @param $filter int Constants from Mockster::F_
+     * @param null|string $withAnnotation Mock only methods that have this annotation
      */
-    public function dontMockAllMethods() {
+    public function mockMethods($filter = Mockster::F_ALL, $withAnnotation = null) {
         foreach ($this->methods as $method) {
-            $this->method($method->getName())->dontMock();
-        }
-    }
-
-    /**
-     * Calls dontMock() on all protected methods
-     */
-    public function dontMockProtectedMethods() {
-        foreach ($this->methods as $method) {
-            if ($method->isProtected()) {
-                $this->method($method->getName())->dontMock();
-            }
-        }
-    }
-
-    /**
-     * Calls dontMock() on all public methods
-     */
-    public function dontMockPublicMethods() {
-        foreach ($this->methods as $method) {
-            if ($method->isPublic()) {
-                $this->method($method->getName())->dontMock();
-            }
+            $this->method($method->getName())->setMocked(
+                (!$method->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
+                        (!$method->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
+                        (!$method->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
+                        (!$withAnnotation || $this->generator->hasAnnotation($method->getDocComment(), $withAnnotation))
+            );
         }
     }
 
@@ -116,7 +112,7 @@ class Mockster {
         }
 
         throw new \InvalidArgumentException(sprintf("Can't mock method '%s'. Does not exist in class '%s'",
-                        $methodName, $this->classname));
+            $methodName, $this->classname));
     }
 
     /**
@@ -184,15 +180,17 @@ class Mockster {
 
     /**
      * returns the code of the mock class with line numbers
+     *
      * @return string
      */
     public function getCode() {
         $code = '';
         foreach (explode("\n", $this->code) as $i => $line) {
-            $code .= ($i+1) . ': ' . $line . "\n";
+            $code .= ($i + 1) . ': ' . $line . "\n";
         }
         return $code;
     }
 
 }
+
 ?>

@@ -13,11 +13,6 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
     protected function setUp() {
         $this->factory = new MockFactory();
         self::$callbackInvoked = null;
-        $this->background();
-    }
-
-    private function background() {
-
     }
 
     public function testMockPublicAndProtectedMethods() {
@@ -329,7 +324,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         /** @var $mock Uut1 */
         $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
-        $mock->__mock()->dontMockAllMethods();
+        $mock->__mock()->mockMethods(Mockster::F_NONE);
 
         $mock->myPublicMethod();
         $mock->myProtectedMethod();
@@ -342,7 +337,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         /** @var $mock Uut1 */
         $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
-        $mock->__mock()->dontMockPublicMethods();
+        $mock->__mock()->mockMethods(~Mockster::F_PUBLIC);
 
         $mock->myPublicMethod();
         $mock->myProtectedMethod();
@@ -355,13 +350,30 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         /** @var $mock Uut1 */
         $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
-        $mock->__mock()->dontMockProtectedMethods();
+        $mock->__mock()->mockMethods(~Mockster::F_PROTECTED);
 
         $mock->myPublicMethod();
         $mock->myProtectedMethod();
 
         $this->assertEquals(false, $mock->publicInvoked);
         $this->assertEquals(true, $mock->protectedInvoked);
+    }
+
+    public function testMockOnlyCertainMethods() {
+        /** @var $mock Uut1 */
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
+
+        $mock->__mock()->mockMethods(Mockster::F_PUBLIC | Mockster::F_STATIC, 'mockIt');
+
+        $mock->myPublicMethod();
+        $mock->myProtectedMethod();
+        $mock->myStaticMethod();
+        $mock->myMockedMethod();
+
+        $this->assertEquals(true, $mock->publicInvoked);
+        $this->assertEquals(true, $mock->protectedInvoked);
+        $this->assertEquals(false, $mock->mockedInvoked);
+        $this->assertEquals(false, $mock->staticInvoked);
     }
 
     public function testSingletons() {
@@ -436,7 +448,10 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
 /**
  * @method myProtectedMethod()
+ * @method static myStaticMethod()
  * @method \mockster\Mockster __mock();
+ * @property boolean staticInvoked
+ * @property boolean staticInvoked
  */
 class Uut1 extends TestMock1 {}
 
@@ -446,6 +461,8 @@ class TestMock1 {
 
     public $publicInvoked = false;
     public $protectedInvoked = false;
+    public $mockedInvoked = false;
+    public static $staticInvoked = false;
 
     public $array;
     public $mixed;
@@ -484,6 +501,20 @@ class TestMock1 {
      */
     protected function myProtectedMethod() {
         $this->protectedInvoked = true;
+    }
+
+    /**
+     * @mockIt
+     */
+    protected static function myStaticMethod() {
+        self::$staticInvoked = true;
+    }
+
+    /**
+     * @mockIt
+     */
+    public function myMockedMethod() {
+        $this->mockedInvoked = true;
     }
 
 }
