@@ -25,22 +25,23 @@ To call the parent's constructor, pass an array with constructor arguments, at l
 
 	$mock = $factory->createMock('MyClass', array('name' => 'Foo'));
 	
-This will call the constructor of `MyClass` with `'Foo'` and a clean mock of `YourClass` as parameters. Because of the type hint, an empty string would be passed if the `name` parameter was not given. The type hint in the constructor's doc comment is redundant since the method signatur already contains the type. Constructor arguments are accessible with `$mock->mock()->getConstructorArgument('name')` or `$mock->mock()->getConstructorargument(0)`.
+This will call the constructor of `MyClass` with `'Foo'` and a clean mock of `YourClass` as parameters. Because of the type hint, an empty string would be passed if the `name` parameter was not given. The type hint in the constructor's doc comment is redundant since the method signatur already contains the type. Constructor arguments are accessible with `$mock->__mock()->getConstructorArgument('name')` or `$mock->__mock()->getConstructorargument(0)`.
 
-Most classes have dependencies to other classes which usually have to be carefully mocked away so only one class is tested. With mockster this can be done easily using
+Most classes have dependencies to other classes which usually have to be individually mocked away so only one class is tested. With mockster, mocks for properties can be generated automatically using
 
-	$mock = $factory->createMock('MyClass', array(), true);
+	$mock->__mock()->mockProperties();
 	
-The third parameter tells the factory to create mocks for all instance variables with a type hint. Although any method call on this mock still doesn't actually do anything besides logging the invokation and returning a value corresponding to the `@return` type hint (a mock if a class). To actually reach the mocked class, we have to tell the mock which method we want not to be mocked.
+Although any method call on this mock still doesn't actually do anything besides logging the invokation and returning a value corresponding to the `@return` type hint (mocked, if object). To actually invoke the methods of the mocked class, we have to tell the mock which methods we want not to be mocked.
 
-	$myMethod = $mock->mock()->method('myMethod');
+	$myMethod = $mock->__mock()->method('myMethod');
 	$myMethod->dontMock();
 	
 If we called `$mock->myMethod()`, the result would be `'Real'`. We can also tell the method to return anything else.
 
+	$myMethod->setMocked();
 	$myMethod->willReturn('Fake')->withArguments('Test')->once();
 	
-Usually, the entire public interface of a test unit should not be mocked. Such an instance can be created using the convenience method
+Usually, all properties but no methods of a test unit should not be mocked. Such an instance can be created using the convenience method
 	
 	$uut = $factory->createTestUnit('MyClass');
 	
@@ -54,7 +55,7 @@ To make assertions about how the tested object behaved, all method calls are log
 
 This is just a small part of the currently implemented features. For a more detailed (maximum detailled, actually) description check out `mockster\MocksterTest`.
 	
-At last the class defintitions these examples are based on.
+At last, the class defintitions these examples are based on.
 
 	class MyClass {
 		
