@@ -87,10 +87,12 @@ class Mockster {
         $classReflection = new \ReflectionClass($this->classname);
         foreach ($classReflection->getProperties() as $property) {
 
-            if (!((!$property->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
-                    (!$property->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
-                    (!$property->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
-                    (!$withAnnotation || $this->generator->hasAnnotation($property->getDocComment(), $withAnnotation)))) {
+            if ($property->isPrivate() ||
+                    !((!$property->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
+                            (!$property->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
+                            (!$property->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
+                            (!$withAnnotation || $this->generator->hasAnnotation($property->getDocComment(), $withAnnotation)))
+            ) {
                 continue;
             }
 

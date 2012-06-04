@@ -625,6 +625,10 @@ class TestMock2 {
     const CLASSNAME = __CLASS__;
 
     protected $injected;
+
+    /**
+     * @var \mockster\TestMock1
+     */
     private $dontTouch;
 
     public function __construct(TestMock1 $injected, TestMock1 $privateInjected) {
