@@ -91,12 +91,19 @@ class Method {
     }
 
     /**
+     * @throws \Exception
      * @return array|bool|float|int|Mock|null|string
      */
     public function getReturnTypeHintMock() {
         $matches = array();
         if (preg_match('/@return (\S*)/', $this->reflection->getDocComment(), $matches)) {
-            return $this->generator->getInstanceFromHint($matches[1]);
+            try {
+                return $this->generator->getInstanceFromHint($matches[1]);
+            } catch (\InvalidArgumentException $e) {
+                throw new \Exception("Error while creating mock from return type hint of " .
+                        $this->reflection->getDeclaringClass()->getShortName() . '::' . $this->reflection->getName() .
+                        ': ' . $e->getMessage());
+            }
         }
 
         return null;

@@ -118,6 +118,7 @@ class Generator {
             case 'mixed':
             case 'object':
             case 'callable':
+            case 'void':
             case 'closure':
                 return null;
         }
