@@ -209,8 +209,11 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
             $object = $method->isStatic() ? 'self::$__mockInstance' : '$this';
 
+            $docComment = $method->getDocComment();
+
             $methods .= "
 
+    $docComment
     public $static function $methodName ( $paramsString ) {
         \$method = {$object}->__mock()->method('$methodName');
 

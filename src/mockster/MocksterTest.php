@@ -15,6 +15,92 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
         self::$callbackInvoked = null;
     }
 
+    public function testMockProxyGeneration() {
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
+
+        $generated = <<<EOD
+1:
+2: class Mock_TestMock1_f83333f8  extends mockster\TestMock1  {
+3:
+4:     private \$__mock;
+5:     public static \$__mockInstance;
+6:
+7:
+8:
+9:     public function __mock() {
+10:         return \$this->__mock;
+11:     }
+12:
+13:     public function __construct() {}
+14:
+15:
+16:
+17:     /**
+18:      * @param null|mixed \$arg1
+19:      * @param null|mixed \$arg2
+20:      * @return mixed
+21:      */
+22:     public  function myPublicMethod ( \$arg1 = NULL, \$arg2 = NULL ) {
+23:         \$method = \$this->__mock()->method('myPublicMethod');
+24:
+25:         if (false || \$method->isMocked()) {
+26:             return \$method->invoke(func_get_args());
+27:         } else {
+28:             \$method->log(func_get_args());
+29:             return parent::myPublicMethod( \$arg1, \$arg2 );
+30:         }
+31:     }
+32:
+33:     /**
+34:      * @return mixed
+35:      */
+36:     public  function myProtectedMethod (  ) {
+37:         \$method = \$this->__mock()->method('myProtectedMethod');
+38:
+39:         if (false || \$method->isMocked()) {
+40:             return \$method->invoke(func_get_args());
+41:         } else {
+42:             \$method->log(func_get_args());
+43:             return parent::myProtectedMethod(  );
+44:         }
+45:     }
+46:
+47:     /**
+48:      * @mockIt
+49:      */
+50:     public static function myStaticMethod (  ) {
+51:         \$method = self::\$__mockInstance->__mock()->method('myStaticMethod');
+52:
+53:         if (false || \$method->isMocked()) {
+54:             return \$method->invoke(func_get_args());
+55:         } else {
+56:             \$method->log(func_get_args());
+57:             return parent::myStaticMethod(  );
+58:         }
+59:     }
+60:
+61:     /**
+62:      * @mockIt
+63:      */
+64:     public  function myMockedMethod (  ) {
+65:         \$method = \$this->__mock()->method('myMockedMethod');
+66:
+67:         if (false || \$method->isMocked()) {
+68:             return \$method->invoke(func_get_args());
+69:         } else {
+70:             \$method->log(func_get_args());
+71:             return parent::myMockedMethod(  );
+72:         }
+73:     }
+74:
+75: }
+
+EOD;
+
+        $this->assertEquals(preg_replace('/\s+\n/', "\n", substr($generated, 35)),
+            preg_replace('/\s+\n/', "\n", substr($mock->__mock()->getCode(), 36)));
+    }
+
     public function testMockPublicAndProtectedMethods() {
         /** @var $mock Uut1 */
         $mock = $this->factory->createMock(TestMock1::CLASSNAME);
@@ -456,7 +542,6 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
  * @method myProtectedMethod()
  * @method static myStaticMethod()
  * @method \mockster\Mockster __mock();
- * @property boolean staticInvoked
  * @property boolean staticInvoked
  */
 class Uut1 extends TestMock1 {}
