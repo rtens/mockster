@@ -4,7 +4,7 @@
     "keywords": ["mocking", "mock", "unit testing", "bdd"],
     "homepage": "http://github.com/rtens/mockster",
     "type": "library",
-    "license": "Apache 2.0",
+    "license": "MIT",
     "authors": [
         {
             "name": "Nikolas Martens",
