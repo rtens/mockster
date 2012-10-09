@@ -38,7 +38,6 @@ Although any method call on this mock still doesn't actually do anything besides
 	
 If we called `$mock->myMethod()`, the result would be `'Real'`. We can also tell the method to return anything else.
 
-	$myMethod->setMocked();
 	$myMethod->willReturn('Fake')->withArguments('Test')->once();
 	
 Usually, all properties but no methods of a test unit should not be mocked. Such an instance can be created using the convenience method
@@ -53,7 +52,7 @@ To make assertions about how the tested object behaved, all method calls are log
 	$myMethod->getCalledCount();
 	$myMethod->getHistory();
 
-This is just a small part of the currently implemented features. For a more detailed (maximum detailled, actually) description check out `mockster\MocksterTest`.
+This is just a small part of the currently implemented features. For a more detailed and up-to-date (maximum detailled and up-to-date, actually) description check out `mockster\MocksterTest`.
 	
 At last, the class defintitions these examples are based on.
 
