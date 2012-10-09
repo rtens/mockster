@@ -127,6 +127,19 @@ EOD;
         $this->assertFalse($mock->protectedInvoked);
     }
 
+    public function testImplicitlyMockMethodWhenBehaviourDefined() {
+        /** @var $mock Uut1 */
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
+        $mock->__mock()->mockMethods(Mockster::F_NONE);
+
+        $mock->__mock()->method('myPublicMethod')->willReturn('nothing');
+
+        $returned = $mock->myPublicMethod();
+
+        $this->assertEquals('nothing', $returned);
+        $this->assertFalse($mock->publicInvoked);
+    }
+
     public function testMethodStubRecordsCalls() {
         /** @var $mock Uut1 */
         $mock = $this->factory->createMock(TestMock1::CLASSNAME);
@@ -248,8 +261,7 @@ EOD;
     }
 
     public function testInjectProperties() {
-        /** @var $mock Uut3 */
-        /** @var $mock TestMock3 */
+        /** @var $mock TestMock3|Uut3 */
         $mock = $this->factory->createMock(TestMock3::CLASSNAME);
         $mock->__mock()->mockProperties();
 
@@ -468,7 +480,7 @@ EOD;
     }
 
     public function testSingletons() {
-        /** @var $mock1 Uut1 */
+        /** @var $mock1 Mock|Uut1 */
         $mock1 = $this->factory->createMock(TestMock1::CLASSNAME);
         $this->factory->makeSingleton(\mockster\TestMock1::CLASSNAME, $mock1);
 
@@ -518,16 +530,14 @@ EOD;
     }
 
     public function testInterfaceMock() {
-        /** @var $mock InterfaceMock */
-        /** @var $mock Mock */
+        /** @var $mock Mock|InterfaceMock */
         $mock = $this->factory->createTestUnit(InterfaceMock::CLASSNAME);
 
         $mock->someMethod();
     }
 
     public function testAbstractMock() {
-        /** @var $mock AbstractMock */
-        /** @var $mock Mock */
+        /** @var $mock AbstractMock|Mock */
         $mock = $this->factory->createTestUnit(AbstractMock::CLASSNAME);
 
         $mock->abstractMethod();

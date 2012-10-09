@@ -247,6 +247,7 @@ class Method {
      */
     public function willDo(Behaviour $doThis) {
         array_unshift($this->behaviours, $doThis);
+        $this->setMocked();
         return $doThis;
     }
 
@@ -267,7 +268,7 @@ class Method {
     }
 
     /**
-     * @param callback $callback
+     * @param \callable $callback
      * @return \mockster\behaviour\CallBackBehaviour
      */
     public function willCall($callback) {
