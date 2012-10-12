@@ -5,9 +5,9 @@
 ## Main Features ##
 
 - Automatic mocking of dependencies, return values, method and constructor arguements
-- Support of [BDD] -style testing by defining the context first and asserting expectations second
+- Support of [BDD]-style testing by defining the context first and asserting expectations second
 
-[BDD]: http://de.wikipedia.org/wiki/Behavior_Driven_Development	"Behaviour Driven Development"
+[BDD]: http://de.wikipedia.org/wiki/Behavior_Driven_Development
 
 ## Installation ##
 
