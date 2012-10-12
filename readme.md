@@ -5,9 +5,23 @@
 ## Main Features ##
 
 - Automatic mocking of dependencies, return values, method and constructor arguements
-- Support of [BDD][1]-style testing by defining the context first and asserting expectations second
+- Support of [BDD]-style testing by defining the context first and asserting expectations second
 
-[1]: http://de.wikipedia.org/wiki/Behavior_Driven_Development	"Behaviour Driven Development"
+[BDD]: http://de.wikipedia.org/wiki/Behavior_Driven_Development	"Behaviour Driven Development"
+
+## Installation ##
+
+You will need [Composer], [PHP] and [git] to download the project
+
+    php composer.phar create-project rtens\mockster
+
+or add it as a requirement to your projects `composer.json`
+
+    "rtens/mockster": "*"
+
+[Composer]: http://getcomposer.org/download/
+[PHP]: http://php.net/downloads.php
+[git]: http://git-scm.com/downloads
 
 ## Basic Usage ##
 

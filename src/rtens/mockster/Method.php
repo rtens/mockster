@@ -1,5 +1,8 @@
 <?php
-namespace mockster;
+namespace rtens\mockster;
+use rtens\mockster\behaviour\ReturnValueBehaviour;
+use rtens\mockster\behaviour\CallbackBehaviour;
+use rtens\mockster\behaviour\ThrowExceptionBehaviour;
 
 /**
  * A mocked method collects all its invokation all forwards them to a Behaviour if set.
@@ -39,7 +42,7 @@ class Method {
     private $generator;
 
     /**
-     * @param \mockster\MockFactory $factory
+     * @param \rtens\mockster\MockFactory $factory
      * @param \ReflectionMethod $reflection
      */
     public function __construct(MockFactory $factory, \ReflectionMethod $reflection) {
@@ -253,26 +256,26 @@ class Method {
 
     /**
      * @param mixed $value
-     * @return \mockster\behaviour\ReturnValueBehaviour
+     * @return \rtens\mockster\behaviour\ReturnValueBehaviour
      */
     public function willReturn($value) {
-        return $this->willDo(new behaviour\ReturnValueBehaviour($value));
+        return $this->willDo(new ReturnValueBehaviour($value));
     }
 
     /**
      * @param \Exception $exception
-     * @return \mockster\behaviour\ThrowExceptionBehaviour
+     * @return \rtens\mockster\behaviour\ThrowExceptionBehaviour
      */
     public function willThrow($exception) {
-        return $this->willDo(new behaviour\ThrowExceptionBehaviour($exception));
+        return $this->willDo(new ThrowExceptionBehaviour($exception));
     }
 
     /**
      * @param \callable $callback
-     * @return \mockster\behaviour\CallBackBehaviour
+     * @return \rtens\mockster\behaviour\CallBackBehaviour
      */
     public function willCall($callback) {
-        return $this->willDo(new behaviour\CallbackBehaviour($callback));
+        return $this->willDo(new CallbackBehaviour($callback));
     }
 
     /**

@@ -1,5 +1,5 @@
 <?php
-namespace mockster;
+namespace rtens\mockster;
 
 class Mockster {
 
@@ -36,7 +36,7 @@ class Mockster {
     private $methods;
 
     /**
-     * @var \mockster\Mock Back-reference to parent
+     * @var \rtens\mockster\Mock Back-reference to parent
      */
     private $mock;
 

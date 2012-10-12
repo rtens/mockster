@@ -16,6 +16,9 @@
         "php":">=5.3.2"
     },
     "autoload": {
-        "psr-0": { "mockster": "src/" }
+        "psr-0": {
+            "rtens\\mockster": "src/",
+            "spec\\rtens\\mockster": ""
+        }
     }
 }

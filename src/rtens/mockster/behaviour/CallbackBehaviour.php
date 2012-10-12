@@ -1,7 +1,7 @@
 <?php
-namespace mockster\behaviour;
+namespace rtens\mockster\behaviour;
 
-use mockster\Behaviour;
+use rtens\mockster\Behaviour;
 
 class CallbackBehaviour extends Behaviour {
 

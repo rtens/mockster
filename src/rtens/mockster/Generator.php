@@ -1,5 +1,5 @@
 <?php
-namespace mockster;
+namespace rtens\mockster;
 
 /**
  * A helper class generating mocking parameters and creating default instances.

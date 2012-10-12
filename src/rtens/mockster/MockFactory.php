@@ -1,5 +1,5 @@
 <?php
-namespace mockster;
+namespace rtens\mockster;
 
 class MockFactory {
 
@@ -50,7 +50,7 @@ class MockFactory {
      * @param string $classname Fully qualified name of the class or interface to mock.
      * @param null|array $constructorArgs Arguments for the constructor (as list or map). If null, the constructor is not invoked.
      * @throws \InvalidArgumentException
-     * @return \mockster\Mock
+     * @return \rtens\mockster\Mock
      */
     public function createMock($classname, $constructorArgs = null) {
         if (!is_string($classname)) {

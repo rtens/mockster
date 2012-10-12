@@ -1,5 +1,5 @@
 <?php
-namespace mockster;
+namespace rtens\mockster;
 
 abstract class Behaviour {
 

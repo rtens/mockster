@@ -1,12 +1,16 @@
 <?php
-namespace mockster;
+namespace spec\rtens\mockster;
+
+use rtens\mockster\MockFactory;
+use rtens\mockster\Mock;
+use rtens\mockster\Mockster;
 
 class MocksterTest extends \PHPUnit_Framework_TestCase {
 
     public static $callbackInvoked;
 
     /**
-     * @var MockFactory
+     * @var \rtens\mockster\MockFactory
      */
     private $factory;
 
@@ -20,7 +24,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
         $generated = <<<EOD
 1:
-2: class Mock_TestMock1_f83333f8  extends mockster\TestMock1  {
+2: class Mock_TestMock1_f83333f8  extends spec\\rtens\\mockster\\TestMock1  {
 3:
 4:     private \$__mock;
 5:     public static \$__mockInstance;
@@ -237,7 +241,7 @@ EOD;
         $mock->invokeInjected();
 
         $this->assertNotNull($mock->__mock()->getConstructorArgument('privateInjected'));
-        $this->assertEquals(\mockster\TestMock1::CLASSNAME, get_parent_class($mock->__mock()->getConstructorArgument(0)));
+        $this->assertEquals(TestMock1::CLASSNAME, get_parent_class($mock->__mock()->getConstructorArgument(0)));
 
         $this->assertNotNull($mock->injected);
         $this->assertFalse($mock->injected->publicInvoked);
@@ -284,7 +288,7 @@ EOD;
         $mock->__mock()->mockProperties(Mockster::F_ALL);
 
         $this->assertNotNull($mock->maybeInjected);
-        $this->assertEquals(\mockster\TestMock1::CLASSNAME, get_parent_class($mock->maybeInjected));
+        $this->assertEquals(TestMock1::CLASSNAME, get_parent_class($mock->maybeInjected));
 
         $this->assertNull($mock->notInjected);
     }
@@ -466,7 +470,7 @@ EOD;
         /** @var $mock Uut1 */
         $mock = $this->factory->createMock(TestMock1::CLASSNAME);
 
-        $mock->__mock()->mockMethods(Mockster::F_PUBLIC | Mockster::F_STATIC, 'mockIt');
+        $mock->__mock()->mockMethods(Mockster::F_ALL, 'mockIt');
 
         $mock->myPublicMethod();
         $mock->myProtectedMethod();
@@ -476,13 +480,13 @@ EOD;
         $this->assertEquals(true, $mock->publicInvoked);
         $this->assertEquals(true, $mock->protectedInvoked);
         $this->assertEquals(false, $mock->mockedInvoked);
-        $this->assertEquals(false, $mock->staticInvoked);
+        $this->assertEquals(false, TestMock1::$staticInvoked);
     }
 
     public function testSingletons() {
         /** @var $mock1 Mock|Uut1 */
         $mock1 = $this->factory->createMock(TestMock1::CLASSNAME);
-        $this->factory->makeSingleton(\mockster\TestMock1::CLASSNAME, $mock1);
+        $this->factory->makeSingleton(TestMock1::CLASSNAME, $mock1);
 
         /** @var $mock4 Uut4 */
         $mock4 = $this->factory->createMock(TestMock4::CLASSNAME);
@@ -551,7 +555,7 @@ EOD;
 /**
  * @method myProtectedMethod()
  * @method static myStaticMethod()
- * @method \mockster\Mockster __mock();
+ * @method \rtens\mockster\Mockster __mock();
  * @property boolean staticInvoked
  */
 class Uut1 extends TestMock1 {}
@@ -576,7 +580,7 @@ class TestMock1 {
     /**
      * @param array $array
      * @param mixed $mixed
-     * @param \mockster\TestMock1 $inDoc
+     * @param \spec\rtens\mockster\TestMock1 $inDoc
      * @param bool $optional
      */
     public function __construct(array $array, $mixed, $inDoc, $optional = true) {
@@ -584,6 +588,7 @@ class TestMock1 {
         $this->mixed = $mixed;
         $this->optional = $optional;
         $this->inDoc = $inDoc;
+        TestMock1::$staticInvoked = false;
     }
 
     /**
@@ -608,7 +613,7 @@ class TestMock1 {
      * @mockIt
      */
     protected static function myStaticMethod() {
-        self::$staticInvoked = true;
+        TestMock1::$staticInvoked = true;
     }
 
     /**
@@ -624,8 +629,8 @@ class TestMock11 extends TestMock1 {
 }
 
 /**
- * @property \mockster\Mock|TestMock1 injected
- * @method \mockster\Mockster __mock()
+ * @property \rtens\mockster\Mock|TestMock1 injected
+ * @method \rtens\mockster\Mockster __mock()
  * @method \object invokeInjected()
  */
 class Uut2 extends TestMock2 {}
@@ -637,7 +642,7 @@ class TestMock2 {
     protected $injected;
 
     /**
-     * @var \mockster\TestMock1
+     * @var \spec\rtens\mockster\TestMock1
      */
     private $dontTouch;
 
@@ -653,12 +658,12 @@ class TestMock2 {
 }
 
 /**
- * @property \mockster\Mock|Uut2 injected
- * @property \mockster\Mock|Uut2 protectedInjected
- * @property \mockster\Mock|Uut1 maybeInjected
- * @property \mockster\Mock|Uut1 notInjected
+ * @property \rtens\mockster\Mock|Uut2 injected
+ * @property \rtens\mockster\Mock|Uut2 protectedInjected
+ * @property \rtens\mockster\Mock|Uut1 maybeInjected
+ * @property \rtens\mockster\Mock|Uut1 notInjected
  * @property array anArray
- * @method \mockster\Mockster __mock()
+ * @method \rtens\mockster\Mockster __mock()
  */
 class Uut3 extends TestMock3 {}
 
@@ -668,22 +673,22 @@ class TestMock3 {
 
     /**
      * @inject
-     * @var \mockster\TestMock2
+     * @var \spec\rtens\mockster\TestMock2
      */
     protected $injected;
 
     /**
-     * @var \mockster\TestMock2
+     * @var \spec\rtens\mockster\TestMock2
      */
     protected $protectedInjected;
 
     /**
-     * @var \mockster\TestMock1|null
+     * @var \spec\rtens\mockster\TestMock1|null
      */
     public $maybeInjected;
 
     /**
-     * @var null|\mockster\TestMock1
+     * @var null|\spec\rtens\mockster\TestMock1
      */
     protected $notInjected;
 
@@ -697,15 +702,15 @@ class TestMock3 {
     }
 
     /**
-     * @return \mockster\TestMock2|Uut2
+     * @return \spec\rtens\mockster\TestMock2|Uut2
      */
     public function getTestMock2() { }
 
 }
 
 /**
- * @property \mockster\Mock|Uut1 injected
- * @method \mockster\Mockster __mock()
+ * @property \rtens\mockster\Mock|Uut1 injected
+ * @method \rtens\mockster\Mockster __mock()
  */
 class Uut4 extends TestMock4 {}
 
@@ -727,7 +732,7 @@ class TestMock4 {
      * @param array $array
      * @param $int
      * @param TestMock1 $mock1
-     * @param \mockster\TestMock2 $mock2
+     * @param \spec\rtens\mockster\TestMock2 $mock2
      * @param TestMock3|null $mock3
      * @return array
      */
@@ -736,12 +741,12 @@ class TestMock4 {
     }
 
     /**
-     * @return \mockster\TestMock1
+     * @return \spec\rtens\mockster\TestMock1
      */
     public function getTestMock() { }
 
     /**
-     * @return \mockster\TestMock3|Uut3
+     * @return \spec\rtens\mockster\TestMock3|Uut3
      */
     public function getTestMock3() { }
 
@@ -788,7 +793,7 @@ class StaticMock {
     public static $called = false;
 
     public  static function myStaticMethod() {
-        self::$called = true;
+        StaticMock::$called = true;
     }
 }
 

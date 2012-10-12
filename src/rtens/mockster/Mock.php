@@ -1,10 +1,10 @@
 <?php
-namespace mockster;
+namespace rtens\mockster;
 
 interface Mock {
 
     /**
-     * @return \mockster\Mockster
+     * @return \rtens\mockster\Mockster
      */
     public function __mock();
 }
