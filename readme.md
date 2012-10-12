@@ -13,7 +13,7 @@
 
 You will need [Composer], [PHP] and [git] to download the project
 
-    php composer.phar create-project rtens\mockster
+    php composer.phar create-project rtens/mockster
 
 or add it as a requirement to your projects `composer.json`
 
@@ -66,7 +66,7 @@ To make assertions about how the tested object behaved, all method calls are log
 	$myMethod->getCalledCount();
 	$myMethod->getHistory();
 
-This is just a small part of the currently implemented features. For a more detailed and up-to-date (maximum detailled and up-to-date, actually) description check out `mockster\MocksterTest`.
+This is just a small part of the currently implemented features. For a more detailed and up-to-date (maximum detailled and up-to-date, actually) description check out [MocksterTest.php].
 	
 At last, the class defintitions these examples are based on.
 
@@ -100,6 +100,8 @@ At last, the class defintitions these examples are based on.
 		  */
 		public function yourMethod() { }
 	}
+
+[MocksterTest.php]: https://github.com/rtens/mockster/tree/master/spec/rtens/mockster/MocksterTest.php
 
 ## Contribution ##
 
