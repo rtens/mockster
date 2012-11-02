@@ -102,9 +102,15 @@ class Mockster {
             }
             $property->setAccessible(true);
 
-            $dependencyMock = $this->generator->getInstanceFromHint($matches[1]);
-            $mockProperty = new \ReflectionProperty($this->mock, $property->getName());
-            $mockProperty->setValue($this->mock, $dependencyMock);
+
+            try {
+                $dependencyMock = $this->generator->getInstanceFromHint($matches[1]);
+                $mockProperty = new \ReflectionProperty($this->mock, $property->getName());
+                $mockProperty->setValue($this->mock, $dependencyMock);
+            } catch (\InvalidArgumentException $e) {
+                throw new \Exception("Error while mocking property [" . $property->getName() .
+                        "] of class [" . $classReflection->getShortName() . ']: ' . $e->getMessage());
+            }
         }
     }
 

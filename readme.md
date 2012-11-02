@@ -18,6 +18,8 @@ You will need [Composer], [PHP] and [git] to download the project
 or add it as a requirement to your projects `composer.json`
 
     "rtens/mockster": "*"
+	
+To run the test suite just execute `phpunit` in the base folder of mockster.
 
 [Composer]: http://getcomposer.org/download/
 [PHP]: http://php.net/downloads.php
