@@ -228,7 +228,7 @@ class Method {
             } else {
                 $allMatch = true;
                 foreach ($arguments as $name => $value) {
-                    if ($args[$name] != $value) {
+                    if (!isset($args[$name]) || $args[$name] != $value) {
                         $allMatch = false;
                         break;
                     }

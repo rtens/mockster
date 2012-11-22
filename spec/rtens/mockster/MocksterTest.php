@@ -376,6 +376,7 @@ EOD;
         $this->assertTrue($mock->__mock()->method('myPublicMethod')->wasCalledWith(array('arg1' => 1, 'arg2' => 2)));
         $this->assertTrue($mock->__mock()->method('myPublicMethod')->wasCalledWith(array('arg2' => 2)));
         $this->assertTrue($mock->__mock()->method('myPublicMethod')->wasCalledWith(array('arg1' => 1)));
+        $this->assertFalse($mock->__mock()->method('myPublicMethod')->wasCalledWith(array('arg3' => true)));
     }
 
     public function testStaticMethodIsMocked() {
