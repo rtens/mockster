@@ -293,6 +293,22 @@ EOD;
         $this->assertNull($mock->notInjected);
     }
 
+    public function testDontInjectPropertiesWithValues() {
+        /** @var $mock TestMock3|Uut3 */
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME, array());
+        $mock->__mock()->mockProperties();
+
+        $this->assertEquals('bar', $mock->isInitialized);
+    }
+
+    public function testInjectPropertiesWithDefaultValues() {
+        /** @var $mock TestMock3|Uut3 */
+        $mock = $this->factory->createMock(TestMock3::CLASSNAME);
+        $mock->__mock()->mockProperties();
+
+        $this->assertEquals('foo', $mock->hasDefaultValue);
+    }
+
     public function testAccessPropertiesInjectedOverConstructor() {
         /** @var $mock Uut4 */
         $mock = $this->factory->createMock(TestMock4::CLASSNAME, array());
@@ -664,6 +680,8 @@ class TestMock2 {
  * @property \rtens\mockster\Mock|Uut1 maybeInjected
  * @property \rtens\mockster\Mock|Uut1 notInjected
  * @property array anArray
+ * @property string hasDefaultValue
+ * @property string isInitialized
  * @method \rtens\mockster\Mockster __mock()
  */
 class Uut3 extends TestMock3 {}
@@ -697,6 +715,20 @@ class TestMock3 {
      * @var string[]|array
      */
     protected $anArray;
+
+    /**
+     * @var string
+     */
+    protected $hasDefaultValue = 'foo';
+
+    /**
+     * @var string
+     */
+    protected $isInitialized;
+
+    function __construct() {
+        $this->isInitialized = 'bar';
+    }
 
     public function invokeIt() {
         $this->injected->invokeInjected();
