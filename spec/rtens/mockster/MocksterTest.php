@@ -45,59 +45,75 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 20:      * @return mixed
 21:      */
 22:     public  function myPublicMethod ( \$arg1 = NULL, \$arg2 = NULL ) {
-23:         \$method = \$this->__mock()->method('myPublicMethod');
-24:
-25:         if (false || \$method->isMocked()) {
-26:             return \$method->invoke(func_get_args());
-27:         } else {
-28:             \$method->log(func_get_args());
-29:             return parent::myPublicMethod( \$arg1, \$arg2 );
-30:         }
-31:     }
-32:
-33:     /**
-34:      * @return mixed
-35:      */
-36:     public  function myProtectedMethod (  ) {
-37:         \$method = \$this->__mock()->method('myProtectedMethod');
-38:
-39:         if (false || \$method->isMocked()) {
-40:             return \$method->invoke(func_get_args());
-41:         } else {
-42:             \$method->log(func_get_args());
-43:             return parent::myProtectedMethod(  );
-44:         }
-45:     }
+23:         if (!\$this->__mock()) {
+24:             return parent::myPublicMethod( \$arg1, \$arg2 );
+25:         }
+26:
+27:         \$method = \$this->__mock()->method('myPublicMethod');
+28:
+29:         if (false || \$method->isMocked()) {
+30:             return \$method->invoke(func_get_args());
+31:         } else {
+32:             \$method->log(func_get_args());
+33:             return parent::myPublicMethod( \$arg1, \$arg2 );
+34:         }
+35:     }
+36:
+37:     /**
+38:      * @return mixed
+39:      */
+40:     public  function myProtectedMethod (  ) {
+41:         if (!\$this->__mock()) {
+42:             return parent::myProtectedMethod(  );
+43:         }
+44:
+45:         \$method = \$this->__mock()->method('myProtectedMethod');
 46:
-47:     /**
-48:      * @mockIt
-49:      */
-50:     public static function myStaticMethod (  ) {
-51:         \$method = self::\$__mockInstance->__mock()->method('myStaticMethod');
-52:
-53:         if (false || \$method->isMocked()) {
-54:             return \$method->invoke(func_get_args());
-55:         } else {
-56:             \$method->log(func_get_args());
-57:             return parent::myStaticMethod(  );
-58:         }
-59:     }
-60:
-61:     /**
-62:      * @mockIt
-63:      */
-64:     public  function myMockedMethod (  ) {
-65:         \$method = \$this->__mock()->method('myMockedMethod');
-66:
-67:         if (false || \$method->isMocked()) {
-68:             return \$method->invoke(func_get_args());
-69:         } else {
-70:             \$method->log(func_get_args());
-71:             return parent::myMockedMethod(  );
-72:         }
-73:     }
-74:
-75: }
+47:         if (false || \$method->isMocked()) {
+48:             return \$method->invoke(func_get_args());
+49:         } else {
+50:             \$method->log(func_get_args());
+51:             return parent::myProtectedMethod(  );
+52:         }
+53:     }
+54:
+55:     /**
+56:      * @mockIt
+57:      */
+58:     public static function myStaticMethod (  ) {
+59:         if (!self::\$__mockInstance->__mock()) {
+60:             return parent::myStaticMethod(  );
+61:         }
+62:
+63:         \$method = self::\$__mockInstance->__mock()->method('myStaticMethod');
+64:
+65:         if (false || \$method->isMocked()) {
+66:             return \$method->invoke(func_get_args());
+67:         } else {
+68:             \$method->log(func_get_args());
+69:             return parent::myStaticMethod(  );
+70:         }
+71:     }
+72:
+73:     /**
+74:      * @mockIt
+75:      */
+76:     public  function myMockedMethod (  ) {
+77:         if (!\$this->__mock()) {
+78:             return parent::myMockedMethod(  );
+79:         }
+80:
+81:         \$method = \$this->__mock()->method('myMockedMethod');
+82:
+83:         if (false || \$method->isMocked()) {
+84:             return \$method->invoke(func_get_args());
+85:         } else {
+86:             \$method->log(func_get_args());
+87:             return parent::myMockedMethod(  );
+88:         }
+89:     }
+90:
+91: }
 
 EOD;
 
@@ -567,6 +583,12 @@ EOD;
         $this->assertTrue($mock->invoked);
     }
 
+    public function testDontTryToMockMethodsCalledInConstructor() {
+        /** @var $mock TestMock5 */
+        $mock = $this->factory->createMock(TestMock5::CLASSNAME, array());
+        $this->assertTrue($mock->wasCalled);
+    }
+
 }
 
 /**
@@ -817,6 +839,22 @@ class TestMock4 {
      * @return boolean
      */
     public function getBoolean() { }
+}
+
+class TestMock5 {
+
+    const CLASSNAME = __CLASS__;
+
+    public $wasCalled = false;
+
+    public function __construct() {
+        $this->earlyMethod();
+    }
+
+    public function earlyMethod() {
+        $this->wasCalled = true;
+    }
+
 }
 
 class StaticMock {
