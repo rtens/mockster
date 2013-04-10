@@ -100,13 +100,20 @@ class Mockster {
             if (preg_match('/@var (\S+)/', $property->getDocComment(), $matches) == 0) {
                 continue;
             }
-            $property->setAccessible(true);
-
 
             try {
-                $dependencyMock = $this->generator->getInstanceFromHint($matches[1]);
+                $property->setAccessible(true);
                 $mockProperty = new \ReflectionProperty($this->mock, $property->getName());
-                $mockProperty->setValue($this->mock, $dependencyMock);
+
+                if (is_null($mockProperty->getValue($this->mock))) {
+                    $defaultValues = $classReflection->getDefaultProperties();
+                    if (isset($defaultValues[$property->getName()])) {
+                        $value = $defaultValues[$property->getName()];
+                    } else {
+                        $value = $this->generator->getInstanceFromHint($matches[1]);
+                    }
+                    $mockProperty->setValue($this->mock, $value);
+                }
             } catch (\InvalidArgumentException $e) {
                 throw new \Exception("Error while mocking property [" . $property->getName() .
                         "] of class [" . $classReflection->getShortName() . ']: ' . $e->getMessage());

@@ -215,6 +215,10 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
     $docComment
     public $static function $methodName ( $paramsString ) {
+        if (!{$object}->__mock()) {
+            return parent::$methodName( $argsString );
+        }
+
         \$method = {$object}->__mock()->method('$methodName');
 
         if ($isAbstract || \$method->isMocked()) {
