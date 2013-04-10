@@ -24,7 +24,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
         $generated = <<<EOD
 1:
-2: class Mock_TestMock1_f83333f8  extends spec\\rtens\\mockster\\TestMock1  {
+2: class Mock_TestMock1_f83333f8  extends spec\\rtens\\mockster\\TestMock1 implements \\rtens\\mockster\\Mock {
 3:
 4:     private \$__mock;
 5:     public static \$__mockInstance;
@@ -549,6 +549,11 @@ EOD;
         $mock->implementedMethod();
 
         $this->assertTrue($mock->invoked);
+    }
+
+    public function testMocksImplementMock() {
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
+        $this->assertInstanceOf('\rtens\mockster\Mock', $mock);
     }
 
 }

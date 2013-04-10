@@ -62,10 +62,10 @@ class MockFactory {
             return $this->singletons[$classname];
         }
 
-        $implements = '';
+        $implements = 'implements \rtens\mockster\Mock';
         $extends = '';
         if (interface_exists($classname)) {
-            $implements = ' implements ' . $classname;
+            $implements = 'implements ' . $classname . ', \rtens\mockster\Mock';
         } else if (class_exists($classname)) {
             $extends = ' extends ' . $classname;
         }
