@@ -80,12 +80,8 @@ class Method {
     public function log($arguments) {
         $parameters = array();
         foreach ($this->reflection->getParameters() as $i => $param) {
-            $value = null;
             if (array_key_exists($i, $arguments)) {
-                $value = $arguments[$i];
-            }
-            if ($value) {
-                $parameters[$param->getName()] = $value;
+                $parameters[$param->getName()] = $arguments[$i];
             }
         }
 

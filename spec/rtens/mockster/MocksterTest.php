@@ -177,6 +177,17 @@ EOD;
         $this->assertEquals('x', $stub->getCalledArgumentAt(1, 'arg2'));
     }
 
+    public function testFalseAndNullArgumentsAreRecorded() {
+        /** @var $mock Uut1 */
+        $mock = $this->factory->createMock(TestMock1::CLASSNAME);
+
+        $mock->myPublicMethod(null, false);
+
+        $stub = $mock->__mock()->method('myPublicMethod');
+        $this->assertEquals(1, $stub->getCalledCount());
+        $this->assertTrue($stub->wasCalledWith(array(null, false)));
+    }
+
     public function testMethodStubReturnValue() {
         /** @var $mock Uut1 */
         $mock = $this->factory->createMock(TestMock1::CLASSNAME);
