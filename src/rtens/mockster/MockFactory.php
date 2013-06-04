@@ -13,6 +13,8 @@ class MockFactory {
      */
     private $generator;
 
+    private static $mockCodes = array();
+
     public function __construct() {
         $this->generator = new Generator($this);
     }
@@ -62,46 +64,22 @@ class MockFactory {
             return $this->singletons[$classname];
         }
 
-        $implements = 'implements \rtens\mockster\Mock';
-        $extends = '';
-        if (interface_exists($classname)) {
-            $implements = 'implements ' . $classname . ', \rtens\mockster\Mock';
-        } else if (class_exists($classname)) {
-            $extends = ' extends ' . $classname;
-        }
-
         $classReflection = new \ReflectionClass($classname);
 
-        $constuctorDef = '';
+        $mockClassName = 'Mock_' . str_replace('\\', '_', $classname);
+
         if ($constructorArgs === null) {
-            $constuctorDef = 'public function __construct() {}';
+            $mockClassName .= '_NoConstructor';
         }
 
-        $methodDefs = $this->getMethodDefinitions($classReflection);
+        if (!class_exists($mockClassName)) {
+            $code = $this->generateMockCode($classname, $classReflection, $mockClassName, $constructorArgs);
+            eval($code);
 
-        $propertiesDefs = $this->getPropertyDefinitions($classReflection);
-
-        $mockClassName = 'Mock_' . $classReflection->getShortName() . '_' . substr(md5(microtime()), 0, 8);
-
-        $code = '
-class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
-
-    private $__mock;
-    public static $__mockInstance;
-
-    ' . $propertiesDefs . '
-
-    public function __mock() {
-        return $this->__mock;
-    }
-
-    ' . $constuctorDef . '
-
-    ' . $methodDefs . '
-
-}';
-
-        eval($code);
+            self::$mockCodes[$mockClassName] = $code;
+        } else {
+            $code = self::$mockCodes[$mockClassName];
+        }
 
         $mockClassRefl = new \ReflectionClass($mockClassName);
 
@@ -231,6 +209,45 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
         }
 
         return $methods;
+    }
+
+    private function generateMockCode($classname, $classReflection, $mockClassName, $constructorArgs) {
+
+        $implements = 'implements \rtens\mockster\Mock';
+        $extends = '';
+
+        if (interface_exists($classname)) {
+            $implements = 'implements ' . $classname . ', \rtens\mockster\Mock';
+        } else if (class_exists($classname)) {
+            $extends = ' extends ' . $classname;
+        }
+
+        $methodDefs = $this->getMethodDefinitions($classReflection);
+
+        $propertiesDefs = $this->getPropertyDefinitions($classReflection);
+
+        $constuctorDef = '';
+        if ($constructorArgs === null) {
+            $constuctorDef = 'public function __construct() {}';
+        }
+
+        return '
+class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
+
+    private $__mock;
+    public static $__mockInstance;
+
+    ' . $propertiesDefs . '
+
+    public function __mock() {
+        return $this->__mock;
+    }
+
+    ' . $constuctorDef . '
+
+    ' . $methodDefs . '
+
+}';
     }
 
 }

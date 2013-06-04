@@ -24,7 +24,7 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
         $generated = <<<EOD
 1:
-2: class Mock_TestMock1_f83333f8  extends spec\\rtens\\mockster\\TestMock1 implements \\rtens\\mockster\\Mock {
+2: class Mock_spec_rtens_mockster_TestMock1_NoConstructor  extends spec\\rtens\\mockster\\TestMock1 implements \\rtens\\mockster\\Mock {
 3:
 4:     private \$__mock;
 5:     public static \$__mockInstance;
@@ -117,8 +117,8 @@ class MocksterTest extends \PHPUnit_Framework_TestCase {
 
 EOD;
 
-        $this->assertEquals(preg_replace('/\s+\n/', "\n", substr($generated, 35)),
-            preg_replace('/\s+\n/', "\n", substr($mock->__mock()->getCode(), 36)));
+        $this->assertEquals(preg_replace('/\s+\n/', "\n", $generated),
+            preg_replace('/\s+\n/', "\n", $mock->__mock()->getCode()));
     }
 
     public function testMockPublicAndProtectedMethods() {
@@ -354,8 +354,7 @@ EOD;
         $testMock = $mock->getTestMock();
 
         $this->assertNotNull($testMock);
-        $name = 'Mock_TestMock1_';
-        $this->assertEquals($name, substr(get_class($testMock), 0, strlen($name)));
+        $this->assertEquals('Mock_spec_rtens_mockster_TestMock1_NoConstructor', get_class($testMock));
 
         $this->assertEquals(array(), $mock->getArray());
         $this->assertEquals(array(), $mock->getArrayOrNull());
