@@ -94,18 +94,16 @@ class Method {
      * @return array|bool|float|int|Mock|null|string
      */
     public function getReturnTypeHintMock() {
-        $matches = array();
-        if (preg_match('/@return (\S*)/', $this->reflection->getDocComment(), $matches)) {
-            try {
-                return $this->generator->getInstanceFromHint($matches[1]);
-            } catch (\InvalidArgumentException $e) {
-                throw new \Exception("Error while creating mock from return type hint of " .
-                        $this->reflection->getDeclaringClass()->getShortName() . '::' . $this->reflection->getName() .
-                        ': ' . $e->getMessage());
-            }
-        }
+        $parser = new AnnotationParser($this->reflection->getDocComment());
+        $hint = $parser->find('return');
 
-        return null;
+        try {
+            return $this->generator->getInstanceFromHint($hint, $this->reflection->getDeclaringClass());
+        } catch (\InvalidArgumentException $e) {
+            throw new \Exception("Error while creating mock from return type hint of " .
+            $this->reflection->getDeclaringClass()->getShortName() . '::' . $this->reflection->getName() .
+            ': ' . $e->getMessage());
+        }
     }
 
     /**
@@ -282,4 +280,5 @@ class Method {
     }
 
 }
+
 ?>

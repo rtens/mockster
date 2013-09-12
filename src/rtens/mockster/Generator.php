@@ -36,22 +36,40 @@ class Generator {
             } else if (array_key_exists($param->getPosition(), $arguments)) {
                 $arg = $arguments[$param->getPosition()];
             } else if ($param->isArray()) {
-                $arg = $this->getInstance('array');
+                $arg = array();
             } elseif ($param->isOptional()) {
                 $arg = $param->getDefaultValue();
             } else if ($param->getClass()) {
-                $arg = $this->getInstance($param->getClass()->getName());
+                $arg = $this->factory->createMock($param->getClass()->getName());
             } else {
-                $matches = array();
-                if (preg_match('/@param (\S+) \$' . $param->getName() . '/', $method->getDocComment(), $matches)) {
-                    $arg = $this->getInstanceFromHint($matches[1]);
-                } else {
-                    $arg = null;
-                }
+                $arg = $this->getInstanceFromDocCommentParam($method, $param);
             }
             $argsInOrder[$param->getName()] = $arg;
         }
         return $argsInOrder;
+    }
+
+    /**
+     * @param \ReflectionMethod $method
+     * @param \ReflectionParameter $param
+     * @return array|bool|float|int|null|Mock|string
+     */
+    private function getInstanceFromDocCommentParam(\ReflectionMethod $method, \ReflectionParameter $param) {
+        $arg = null;
+        $parser = new AnnotationParser($method->getDocComment());
+        foreach ($parser->findAll('param') as $annotation) {
+            if (strpos($annotation, ' $') === false) {
+                continue;
+            }
+
+            list($hint, $variable) = explode(' $', $annotation);
+            if ($variable != $param->getName()) {
+                continue;
+            }
+
+            $arg = $this->getInstanceFromHint($hint, $method->getDeclaringClass());
+        }
+        return $arg;
     }
 
     /**
@@ -63,23 +81,24 @@ class Generator {
      * string|null => ''
      *
      * @param string $hint
-     * @return array|bool|float|int|Mock|null|string
+     * @param \ReflectionClass $class
      * @throws \InvalidArgumentException
+     * @return Mock|null|array|bool|float|int|string
      */
-    public function getInstanceFromHint($hint) {
-        if (strpos($hint, '|') !== false) {
-            $typeHints = explode('|', $hint);
-        } else {
-            $typeHints = array($hint);
+    public function getInstanceFromHint($hint, \ReflectionClass $class) {
+        if (!$hint) {
+            return null;
         }
 
-        foreach ($typeHints as $typeHint) {
-            if ($typeHint == null) {
-                return null;
+        foreach ($this->explodeMultipleHints($hint) as $typeHint) {
+            $resolver = new ClassResolver($class);
+            $className = $resolver->resolve($typeHint);
+            if ($className) {
+                return $this->factory->createMock($className);
             }
 
             try {
-                return $this->getInstance($typeHint);
+                return $this->getPrimitiveFromHint($typeHint);
             } catch (\InvalidArgumentException $e) {
             }
         }
@@ -90,18 +109,12 @@ class Generator {
     /**
      * Creates a mocked object or default value for given class or primitive.
      *
-     * @param string $class
+     * @param string $type
      * @return array|bool|float|int|Mock|null|string
      * @throws \InvalidArgumentException
      */
-    public function getInstance($class) {
-        $class = $this->normalizeClassname($class);
-
-        if (class_exists($class) || interface_exists($class)) {
-            return $this->factory->createMock($class, null);
-        }
-
-        switch (strtolower($class)) {
+    private function getPrimitiveFromHint($type) {
+        switch (strtolower($type)) {
             case 'array':
                 return array();
             case 'int':
@@ -123,7 +136,7 @@ class Generator {
                 return null;
         }
 
-        throw new \InvalidArgumentException('Could not create mock. Class does not exist [' . $class . ']');
+        throw new \InvalidArgumentException("Not a primitive type [$type].");
     }
 
     /**
@@ -139,13 +152,12 @@ class Generator {
         return $classname;
     }
 
-    /**
-     * @param string $docComment
-     * @param string $annotation
-     * @return bool True if the given string contains @<annotation>
-     */
-    public function hasAnnotation($docComment, $annotation) {
-        return preg_match('/@' . $annotation . '/', $docComment, $matches) != 0;
+    private function explodeMultipleHints($hint) {
+        if (strpos($hint, '|') !== false) {
+            return explode('|', $hint);
+        } else {
+            return array($hint);
+        }
     }
 
 }

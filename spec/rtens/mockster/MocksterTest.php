@@ -4,6 +4,7 @@ namespace spec\rtens\mockster;
 use rtens\mockster\MockFactory;
 use rtens\mockster\Mock;
 use rtens\mockster\Mockster;
+use spec\rtens\mockster\inside\AnotherClass;
 
 class MocksterTest extends \PHPUnit_Framework_TestCase {
 
@@ -318,6 +319,22 @@ EOD;
         $this->assertEquals(TestMock1::CLASSNAME, get_parent_class($mock->maybeInjected));
 
         $this->assertNull($mock->notInjected);
+    }
+
+    public function testInjectPropertyWithRelativeTypeHint() {
+        /** @var $mock TestMock4|Uut4 */
+        $mock = $this->factory->createMock(TestMock4::CLASSNAME);
+        $mock->__mock()->mockProperties(Mockster::F_ALL, 'relative');
+
+        $this->assertInstanceOf('spec\rtens\mockster\inside\SomeClass', $mock->relative);
+    }
+
+    public function testInjectPropertyWithAliasedTypeHinter() {
+        /** @var $mock TestMock4|Uut4 */
+        $mock = $this->factory->createMock(TestMock4::CLASSNAME);
+        $mock->__mock()->mockProperties(Mockster::F_ALL, 'aliased');
+
+        $this->assertInstanceOf('spec\rtens\mockster\inside\AnotherClass', $mock->aliased);
     }
 
     public function testDontInjectPropertiesWithValues() {
@@ -780,6 +797,8 @@ class TestMock3 {
 
 /**
  * @property \rtens\mockster\Mock|Uut1 injected
+ * @property \rtens\mockster\Mock|Uut1 relative
+ * @property \rtens\mockster\Mock|Uut1 aliased
  * @method \rtens\mockster\Mockster __mock()
  */
 class Uut4 extends TestMock4 {}
@@ -789,6 +808,18 @@ class TestMock4 {
     const CLASSNAME = __CLASS__;
 
     protected $injected;
+
+    /**
+     * @var inside\SomeClass
+     * @relative
+     */
+    protected $relative;
+
+    /**
+     * @var AnotherClass
+     * @aliased
+     */
+    protected $aliased;
 
     public function __construct(TestMock1 $injected) {
         $this->injected = $injected;

@@ -82,22 +82,19 @@ class Mockster {
     /**
      * @param int $filter Using bit-combinations of Mockster::F_* (e.g. Mockster::F_PUBLIC | Mockster::F_PROTECTED)
      * @param null|string $withAnnotation
+     * @throws \Exception If a property cannot be mocked because the class of the type hint cannot be found
      */
     public function mockProperties($filter = Mockster::F_PROTECTED, $withAnnotation = null) {
         $classReflection = new \ReflectionClass($this->classname);
         foreach ($classReflection->getProperties() as $property) {
+            $parser = new AnnotationParser($property->getDocComment());
 
             if ($property->isPrivate() ||
                     !((!$property->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
                             (!$property->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
                             (!$property->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
-                            (!$withAnnotation || $this->generator->hasAnnotation($property->getDocComment(), $withAnnotation)))
+                            (!$withAnnotation || $parser->hasAnnotation($withAnnotation)))
             ) {
-                continue;
-            }
-
-            $matches = array();
-            if (preg_match('/@var (\S+)/', $property->getDocComment(), $matches) == 0) {
                 continue;
             }
 
@@ -110,7 +107,8 @@ class Mockster {
                     if (isset($defaultValues[$property->getName()])) {
                         $value = $defaultValues[$property->getName()];
                     } else {
-                        $value = $this->generator->getInstanceFromHint($matches[1]);
+                        $parser = new AnnotationParser($property->getDocComment());
+                        $value = $this->generator->getInstanceFromHint($parser->find('var'), $classReflection);
                     }
                     $mockProperty->setValue($this->mock, $value);
                 }
@@ -129,11 +127,13 @@ class Mockster {
      */
     public function mockMethods($filter = Mockster::F_ALL, $withAnnotation = null) {
         foreach ($this->methods as $method) {
+            $parser = new AnnotationParser($method->getDocComment());
+
             $this->method($method->getName())->setMocked(
                 (!$method->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
                         (!$method->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
                         (!$method->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
-                        (!$withAnnotation || $this->generator->hasAnnotation($method->getDocComment(), $withAnnotation))
+                        (!$withAnnotation || $parser->hasAnnotation($withAnnotation))
             );
         }
     }
