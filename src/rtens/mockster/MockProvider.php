@@ -35,17 +35,23 @@ class MockProvider implements Provider {
         }
 
         $mockClassReflection = new \ReflectionClass($mockClassName);
-
         if ($callConstructor && $mockClassReflection->getConstructor()) {
             $constructorArgs = $this->injector->injectMethodArguments($mockClassReflection->getConstructor(), $constructorArgs);
         }
-        $instance = $this->injector->injectConstructor($mockClassName, $constructorArgs ?: array());
+        $instance = $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array());
 
-        $mockProperty = $mockClassReflection->getProperty('__mock');
-        $mockProperty->setAccessible(true);
-        $mockProperty->setValue($instance, new Mockster($this->factory, $classname, $instance, $constructorArgs, $code));
+        $mockster = new Mockster($this->factory, $classname, $instance, $constructorArgs, $code);
+        $this->setMockster($instance, $mockster);
 
         return $instance;
+    }
+
+    private function makeMockClassName($classname, $callConstructor) {
+        $mockClassName = 'Mock_' . str_replace('\\', '_', $classname);
+        if (!$callConstructor) {
+            $mockClassName .= '_NoConstructor';
+        }
+        return $mockClassName;
     }
 
     private function getMockCode($classname, $mockClassName, $callConstructor) {
@@ -54,6 +60,13 @@ class MockProvider implements Provider {
         }
 
         return self::$mockCodes[$mockClassName];
+    }
+
+    private function setMockster($instance, Mockster $mockster) {
+        $reflection = new \ReflectionClass($instance);
+        $mockProperty = $reflection->getProperty('__mock');
+        $mockProperty->setAccessible(true);
+        $mockProperty->setValue($instance, $mockster);
     }
 
     /**
@@ -198,14 +211,6 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
     ' . $methodDefs . '
 
 }';
-    }
-
-    private function makeMockClassName($classname, $callConstructor) {
-        $mockClassName = 'Mock_' . str_replace('\\', '_', $classname);
-        if (!$callConstructor) {
-            $mockClassName .= '_NoConstructor';
-        }
-        return $mockClassName;
     }
 
     private function isMockable(\ReflectionMethod $method) {
