@@ -202,8 +202,9 @@ class MockFactory {
         if ($isAbstract || \$method->isMocked()) {
             return \$method->invoke(func_get_args());
         } else {
-            \$method->log(func_get_args());
-            return parent::$methodName( $argsString );
+            \$value = parent::$methodName( $argsString );
+            \$method->log(func_get_args(), \$value);
+            return \$value;
         }
     }";
         }

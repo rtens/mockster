@@ -57,27 +57,25 @@ class Method {
      * @return mixed The return value
      */
     public function invoke($arguments) {
-
-        $this->log($arguments);
-
         foreach ($this->behaviours as $behaviour) {
             if ($behaviour->appliesTo($arguments)) {
                 $value = $behaviour->getReturnValue($arguments);
-                $this->returnedValues[] = $value;
+                $this->log($arguments, $value);
                 return $value;
             }
         }
 
         $value = $this->getReturnTypeHintMock();
-        $this->returnedValues[] = $value;
+        $this->log($arguments, $value);
         return $value;
     }
 
     /**
      * @param array $arguments
+     * @param mixed $returnValue
      * @return void
      */
-    public function log($arguments) {
+    public function log($arguments, $returnValue) {
         $parameters = array();
         foreach ($this->reflection->getParameters() as $i => $param) {
             if (array_key_exists($i, $arguments)) {
@@ -86,7 +84,7 @@ class Method {
         }
 
         $this->calledArguments[] = $parameters;
-        $this->returnedValues[] = 'NOT MOCKED';
+        $this->returnedValues[] = $returnValue;
     }
 
     /**
