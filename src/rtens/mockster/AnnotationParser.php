@@ -19,7 +19,7 @@ class AnnotationParser {
 
     public function findAll($annotation) {
         $matches = array();
-        if (preg_match_all('/@' . $annotation . '\s*([^\n]+)/', $this->docComment, $matches) == 0) {
+        if (preg_match_all('/@' . $annotation . '\s*([^\r\n]+)/', $this->docComment, $matches) == 0) {
             return array();
         }
 

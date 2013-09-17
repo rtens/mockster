@@ -72,9 +72,12 @@ class MockFactory {
             $mockClassName .= '_NoConstructor';
         }
 
-        if (!class_exists($mockClassName)) {
+        if (!array_key_exists($mockClassName, self::$mockCodes)) {
             $code = $this->generateMockCode($classname, $classReflection, $mockClassName, $constructorArgs);
-            eval($code);
+
+            if (!class_exists($mockClassName)) {
+                eval($code);
+            }
 
             self::$mockCodes[$mockClassName] = $code;
         } else {

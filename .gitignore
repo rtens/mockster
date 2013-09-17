@@ -1,3 +1,5 @@
 /.idea*
 /*.bat
 /vendor
+/composer.lock
+/#notes
