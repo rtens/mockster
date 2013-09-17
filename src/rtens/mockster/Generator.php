@@ -40,7 +40,7 @@ class Generator {
             } elseif ($param->isOptional()) {
                 $arg = $param->getDefaultValue();
             } else if ($param->getClass()) {
-                $arg = $this->factory->createMock($param->getClass()->getName());
+                $arg = $this->factory->getInstance($param->getClass()->getName());
             } else {
                 $arg = $this->getInstanceFromDocCommentParam($method, $param);
             }
@@ -94,7 +94,7 @@ class Generator {
             $resolver = new ClassResolver($class);
             $className = $resolver->resolve($typeHint);
             if ($className) {
-                return $this->factory->createMock($className);
+                return $this->factory->getInstance($className);
             }
 
             try {

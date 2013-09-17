@@ -34,12 +34,12 @@ class MockFactoryFixture extends Fixture {
 
     public function whenICreateTheMockOf($class) {
         $factory = new MockFactory();
-        $this->mock = $factory->createMock($class);
+        $this->mock = $factory->getInstance($class);
     }
 
     public function whenICreateTheMockOf_WithTheConstructorArguments($class, $args) {
         $factory = new MockFactory();
-        $this->mock = $factory->createMock($class, $args);
+        $this->mock = $factory->getInstance($class, $args);
     }
 
     public function whenITryToInvoke($method) {

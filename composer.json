@@ -14,11 +14,11 @@
     ],
     "require": {
         "nikic/php-parser": "0.9.4",
-        "watoki/factory":"*",
-        "php":">=5.3.2"
+        "watoki/factory": "*",
+        "php": ">=5.3.2"
     },
     "require-dev": {
-        "watoki/scrut":"*"
+        "watoki/scrut": "*"
     },
     "autoload": {
         "psr-0": {
@@ -26,5 +26,11 @@
             "spec\\rtens\\mockster": ""
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "http://localhost/watoki/factory/.git"
+        }
+    ]
 }

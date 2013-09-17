@@ -8,31 +8,16 @@ use watoki\scrut\Specification;
  */
 class CreateMockTest extends Specification {
 
-    public function testStaticMethodIsMocked() {
+    public function testMockWithoutConstructor() {
         $this->fixture->givenTheClassDefinition('
-            class StaticMethod {
-                public static $called = false;
-                public static function myMethod() {
-                    self::$called = true;
-                }
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('StaticMethod');
-        $this->fixture->whenIInvoke('myMethod');
-
-        $this->fixture->thenItsProperty_ShouldBe('called', false);
-    }
-
-    public function testDontCallConstructor() {
-        $this->fixture->givenTheClassDefinition('
-            class DontCallConstructor {
+            class SkipThisConstructor {
                 public $called = false;
                 public function __construct() {
                     $this->called = true;
                 }
             }
         ');
-        $this->fixture->whenICreateTheMockOf('DontCallConstructor');
+        $this->fixture->whenICreateTheMockOf('SkipThisConstructor');
 
         $this->fixture->thenItsProperty_ShouldBe('called', false);
         $this->fixture->thenTheMockShouldBeAnInstanceOf('rtens\mockster\Mock');
@@ -117,6 +102,21 @@ class CreateMockTest extends Specification {
         ');
         $this->fixture->whenICreateTheMockOf_WithTheConstructorArguments('CallMethodInConstructor', array());
         $this->fixture->thenItsProperty_ShouldBe('called', true);
+    }
+
+    public function testStaticMethodIsMocked() {
+        $this->fixture->givenTheClassDefinition('
+            class StaticMethod {
+                public static $called = false;
+                public static function myMethod() {
+                    self::$called = true;
+                }
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('StaticMethod');
+        $this->fixture->whenIInvoke('myMethod');
+
+        $this->fixture->thenItsProperty_ShouldBe('called', false);
     }
 
 }
