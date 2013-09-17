@@ -139,6 +139,14 @@ class Generator {
         throw new \InvalidArgumentException("Not a primitive type [$type].");
     }
 
+    private function explodeMultipleHints($hint) {
+        if (strpos($hint, '|') !== false) {
+            return explode('|', $hint);
+        } else {
+            return array($hint);
+        }
+    }
+
     /**
      * Removes a leading backslash from the classname
      *
@@ -150,14 +158,6 @@ class Generator {
             return substr($classname, 1);
         }
         return $classname;
-    }
-
-    private function explodeMultipleHints($hint) {
-        if (strpos($hint, '|') !== false) {
-            return explode('|', $hint);
-        } else {
-            return array($hint);
-        }
     }
 
 }

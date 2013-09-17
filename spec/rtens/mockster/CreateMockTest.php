@@ -104,7 +104,7 @@ class CreateMockTest extends Specification {
         $this->fixture->thenItsProperty_ShouldBe('called', true);
     }
 
-    public function testStaticMethodIsMocked() {
+    public function testStaticMethodIsNotMocked() {
         $this->fixture->givenTheClassDefinition('
             class StaticMethod {
                 public static $called = false;
@@ -116,7 +116,7 @@ class CreateMockTest extends Specification {
         $this->fixture->whenICreateTheMockOf('StaticMethod');
         $this->fixture->whenIInvoke('myMethod');
 
-        $this->fixture->thenItsProperty_ShouldBe('called', false);
+        $this->fixture->thenItsStaticProperty_ShouldBe('called', true);
     }
 
 }

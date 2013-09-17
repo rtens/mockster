@@ -212,4 +212,9 @@ class MockFactoryFixture extends Fixture {
         $this->mock->__mock()->getChain($chain)->willReturn($return);
     }
 
+    public function thenItsStaticProperty_ShouldBe($property, $value) {
+        $mockClass = get_class($this->mock);
+        $this->spec->assertEquals($value, $mockClass::${$property});
+    }
+
 }

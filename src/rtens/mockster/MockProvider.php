@@ -6,20 +6,16 @@ use watoki\factory\Provider;
 
 class MockProvider implements Provider {
 
-//    /**
-//     * @var Generator
-//     */
-//    private $generator;
-
     private static $mockCodes = array();
 
     /** @var Injector */
     protected $injector;
 
+    private $factory;
+
     public function __construct(MockFactory $factory) {
         $this->injector = new Injector($factory);
         $this->factory = $factory;
-//        $this->generator = new Generator($this);
     }
 
     /**
@@ -29,12 +25,8 @@ class MockProvider implements Provider {
      * @return \rtens\mockster\Mock
      */
     public function provide($classname, array $constructorArgs = null) {
-        $mockClassName = 'Mock_' . str_replace('\\', '_', $classname);
         $callConstructor = $constructorArgs !== null;
-
-        if (!$callConstructor) {
-            $mockClassName .= '_NoConstructor';
-        }
+        $mockClassName = $this->makeMockClassName($classname, $callConstructor);
 
         $code = $this->getMockCode($classname, $mockClassName, $callConstructor);
 
@@ -48,8 +40,6 @@ class MockProvider implements Provider {
             $constructorArgs = $this->injector->injectMethodArguments($mockClassReflection->getConstructor(), $constructorArgs);
         }
         $instance = $this->injector->injectConstructor($mockClassName, $constructorArgs ?: array());
-
-        $mockClassReflection->setStaticPropertyValue('__mockInstance', $instance);
 
         $mockProperty = $mockClassReflection->getProperty('__mock');
         $mockProperty->setAccessible(true);
@@ -98,8 +88,7 @@ class MockProvider implements Provider {
         $methods = '';
 
         foreach ($classReflection->getMethods() as $method) {
-            /** @var \ReflectionMethod $method */
-            if ($method->isPrivate() || $method->isFinal() || $method->isConstructor()) {
+            if (!$this->isMockable($method)) {
                 continue;
             }
 
@@ -109,8 +98,6 @@ class MockProvider implements Provider {
             $args = array();
 
             foreach ($method->getParameters() as $param) {
-                /** @var $param \ReflectionParameter */
-
                 $typeHint = '';
                 $default = '';
                 $reference = '';
@@ -119,7 +106,6 @@ class MockProvider implements Provider {
                     $typeHint = 'array ';
                 } else {
                     try {
-                        /** @var $class \ReflectionClass */
                         $class = $param->getClass();
                     } catch (\ReflectionException $e) {
                         $class = FALSE;
@@ -149,21 +135,18 @@ class MockProvider implements Provider {
             $argsString = implode(', ', $args);
 
             $isAbstract = $method->isAbstract() ? 'true' : 'false';
-            $static = $method->isStatic() ? 'static' : '';
-
-            $object = $method->isStatic() ? 'self::$__mockInstance' : '$this';
 
             $docComment = $method->getDocComment();
 
             $methods .= "
 
     $docComment
-    public $static function $methodName ( $paramsString ) {
-        if (!{$object}->__mock()) {
+    public function $methodName ( $paramsString ) {
+        if (!\$this->__mock()) {
             return parent::$methodName( $argsString );
         }
 
-        \$method = {$object}->__mock()->method('$methodName');
+        \$method = \$this->__mock()->method('$methodName');
 
         if ($isAbstract || \$method->isMocked()) {
             return \$method->invoke(func_get_args());
@@ -203,7 +186,6 @@ class MockProvider implements Provider {
 class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
     private $__mock;
-    public static $__mockInstance;
 
     ' . $propertiesDefs . '
 
@@ -216,5 +198,17 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
     ' . $methodDefs . '
 
 }';
+    }
+
+    private function makeMockClassName($classname, $callConstructor) {
+        $mockClassName = 'Mock_' . str_replace('\\', '_', $classname);
+        if (!$callConstructor) {
+            $mockClassName .= '_NoConstructor';
+        }
+        return $mockClassName;
+    }
+
+    private function isMockable(\ReflectionMethod $method) {
+        return !($method->isStatic() || $method->isPrivate() || $method->isFinal() || $method->isConstructor());
     }
 }
