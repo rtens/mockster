@@ -4,7 +4,9 @@ namespace spec\rtens\mockster;
 use rtens\mockster\Mock;
 use rtens\mockster\MockFactory;
 use rtens\mockster\Mockster;
+use watoki\factory\Factory;
 use watoki\scrut\Fixture;
+use watoki\scrut\Specification;
 
 class MockFactoryFixture extends Fixture {
 
@@ -19,6 +21,10 @@ class MockFactoryFixture extends Fixture {
     private $returnValue;
 
     private $counter = 0;
+
+    public function __construct(Specification $spec, Factory $factory) {
+        parent::__construct($spec, $factory);
+    }
 
     public function givenTheClassDefinition($string) {
         $file = __DIR__ . '/tmp/class' . $this->counter++ . '.php';
@@ -112,7 +118,9 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function whenIMockAllMethodsMatching_WithAnnotation($filter, $annotation) {
-        $this->mock->__mock()->mockMethods($filter, $annotation);
+        $this->mock->__mock()->mockMethods($filter, function (\ReflectionMethod $method) use ($annotation) {
+            return strpos($method->getDocComment(), $annotation) !== false;
+        });
     }
 
     public function whenIConfigureTheMethod_ToReturn($method, $return) {
@@ -184,16 +192,20 @@ class MockFactoryFixture extends Fixture {
         $this->spec->assertInstanceOf($class, $this->mock->__mock()->getConstructorArgument($arg));
     }
 
-    public function whenIMockAllOfItsProperties() {
-        $this->mock->__mock()->mockProperties(Mockster::F_ALL);
+    public function whenIMockAllMarkedProperties() {
+        $this->mock->__mock()->mockProperties(Mockster::F_ALL, function (\ReflectionProperty $prop) {
+            return strpos($prop->getDocComment(), '<-') !== false;
+        });
     }
 
     public function whenIMockAllOfItsPropertiesAnnotatedWith($string) {
-        $this->mock->__mock()->mockProperties(Mockster::F_ALL, $string);
+        $this->mock->__mock()->mockProperties(Mockster::F_ALL, function (\ReflectionProperty $property) use ($string) {
+            return strpos($property->getDocComment(), $string) !== false;
+        });
     }
 
     public function whenIMockItsProtectedProperties() {
-        $this->mock->__mock()->mockProperties();
+        $this->mock->__mock()->mockProperties(Mockster::F_PROTECTED);
     }
 
     public function whenIInvoke_OnTheMockWithTheArguments($method, $args) {
@@ -215,6 +227,14 @@ class MockFactoryFixture extends Fixture {
     public function thenItsStaticProperty_ShouldBe($property, $value) {
         $mockClass = get_class($this->mock);
         $this->spec->assertEquals($value, $mockClass::${$property});
+    }
+
+    public function whenITryToMockAllOfItsProperties() {
+        try {
+            $this->whenIMockAllMarkedProperties();
+        } catch (\Exception $e) {
+            $this->caught = $e;
+        }
     }
 
 }

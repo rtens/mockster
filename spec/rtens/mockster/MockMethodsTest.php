@@ -142,7 +142,7 @@ class MockMethodsTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('MockOnlyAnnotatedMethods');
-        $this->fixture->whenIMockAllMethodsMatching_WithAnnotation(Mockster::F_ALL, 'mockThis');
+        $this->fixture->whenIMockAllMethodsMatching_WithAnnotation(Mockster::F_ALL, '@mockThis');
 
         $this->fixture->whenIInvoke('functionOne');
         $this->fixture->thenItsProperty_ShouldBe('called', 0);

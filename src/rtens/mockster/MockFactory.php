@@ -10,6 +10,11 @@ class MockFactory extends Factory {
         $this->setProvider('StdClass', new MockProvider($this));
     }
 
+    /**
+     * @param string $class
+     * @param null|array $args
+     * @return Mock
+     */
     public function getInstance($class, $args = null) {
         return parent::getInstance($class, $args);
     }

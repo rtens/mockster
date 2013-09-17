@@ -19,60 +19,6 @@ class Generator {
     }
 
     /**
-     * Creates values for arguments (if not passed) of a method.
-     *
-     * Creates mocks of classes and default values for primitives.
-     *
-     * @param \ReflectionMethod $method
-     * @param array $arguments Passed arguments, indexed either by name or index (name has priority)
-     * @return array
-     */
-    public function getMethodParameters(\ReflectionMethod $method, array $arguments) {
-        $argsInOrder = array();
-
-        foreach ($method->getParameters() as $param) {
-            if (array_key_exists($param->getName(), $arguments)) {
-                $arg = $arguments[$param->getName()];
-            } else if (array_key_exists($param->getPosition(), $arguments)) {
-                $arg = $arguments[$param->getPosition()];
-            } else if ($param->isArray()) {
-                $arg = array();
-            } elseif ($param->isOptional()) {
-                $arg = $param->getDefaultValue();
-            } else if ($param->getClass()) {
-                $arg = $this->factory->getInstance($param->getClass()->getName());
-            } else {
-                $arg = $this->getInstanceFromDocCommentParam($method, $param);
-            }
-            $argsInOrder[$param->getName()] = $arg;
-        }
-        return $argsInOrder;
-    }
-
-    /**
-     * @param \ReflectionMethod $method
-     * @param \ReflectionParameter $param
-     * @return array|bool|float|int|null|Mock|string
-     */
-    private function getInstanceFromDocCommentParam(\ReflectionMethod $method, \ReflectionParameter $param) {
-        $arg = null;
-        $parser = new AnnotationParser($method->getDocComment());
-        foreach ($parser->findAll('param') as $annotation) {
-            if (strpos($annotation, ' $') === false) {
-                continue;
-            }
-
-            list($hint, $variable) = explode(' $', $annotation);
-            if ($variable != $param->getName()) {
-                continue;
-            }
-
-            $arg = $this->getInstanceFromHint($hint, $method->getDeclaringClass());
-        }
-        return $arg;
-    }
-
-    /**
      * Returns a mock or default value based on a type hint which may contain several classes spearated by |
      *
      * e.g.
@@ -145,19 +91,6 @@ class Generator {
         } else {
             return array($hint);
         }
-    }
-
-    /**
-     * Removes a leading backslash from the classname
-     *
-     * @param string $classname
-     * @return string Classname without leading backslash
-     */
-    public function normalizeClassname($classname) {
-        if (substr($classname, 0, 1) == '\\') {
-            return substr($classname, 1);
-        }
-        return $classname;
     }
 
 }

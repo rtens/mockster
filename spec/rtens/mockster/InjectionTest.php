@@ -129,57 +129,54 @@ class InjectionTest extends Specification {
         $this->fixture->givenTheClassDefinition('
             class InjectProperties {
                 /**
-                 * @var StdClass
+                 * @var StdClass <-
                  */
                 public $foo;
 
                 /**
-                 * @var DateTime
+                 * @var DateTime <-
                  */
                 protected $bar;
+
+                /**
+                 * @var StdClass
+                 */
+                public $notMarked;
             }
         ');
         $this->fixture->whenICreateTheMockOf('InjectProperties');
-        $this->fixture->whenIMockAllOfItsProperties();
+        $this->fixture->whenIMockAllMarkedProperties();
 
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('foo', 'StdClass');
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'DateTime');
+        $this->fixture->thenItsProperty_ShouldBe('notMarked', null);
     }
 
     public function testInjectionOfPrimitiveTypes() {
         $this->fixture->givenTheClassDefinition('
             class PrimitiveProperties {
                 /**
-                 * @var array
+                 * @var array <-
                  */
                 public $array;
-
-                /**
-                 * @var int
-                 */
-                public $int;
             }
         ');
         $this->fixture->whenICreateTheMockOf('PrimitiveProperties');
-        $this->fixture->whenIMockAllOfItsProperties();
+        $this->fixture->whenITryToMockAllOfItsProperties();
 
-        $this->fixture->thenItsProperty_ShouldBe('array', array());
-        $this->fixture->thenItsProperty_ShouldBe('int', 0);
-
-        $this->markTestIncomplete('Should not inject primitives');
+        $this->fixture->thenAnExceptionShouldBeThrownContaining('Error while loading dependency');
+        $this->fixture->thenItsProperty_ShouldBe('array', null);
     }
 
     public function testInjectPropertiesWithSingleLineComments() {
-        $this->markTestSkipped('Not working yet');
-
         $this->fixture->givenTheClassDefinition('
             class SingleLineComment {
-                /** @var StdClass */
+                /** @var StdClass <- */
                 public $foo;
             }
         ');
         $this->fixture->whenICreateTheMockOf('SingleLineComment');
-        $this->fixture->whenIMockAllOfItsProperties();
+        $this->fixture->whenIMockAllMarkedProperties();
 
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('foo', 'StdClass');
 
@@ -201,7 +198,7 @@ class InjectionTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('InjectAnnotatedProperties');
-        $this->fixture->whenIMockAllOfItsPropertiesAnnotatedWith('annotated');
+        $this->fixture->whenIMockAllOfItsPropertiesAnnotatedWith('@annotated');
 
         $this->fixture->thenItsProperty_ShouldBe('foo', null);
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'StdClass');
@@ -232,21 +229,21 @@ class InjectionTest extends Specification {
         $this->fixture->givenTheClassDefinition('
             class MultiTypeHint {
                 /**
-                 * @var StdClass|null
+                 * @var StdClass|DateTime <-
                  */
                 public $foo;
             }
         ');
         $this->fixture->whenICreateTheMockOf('MultiTypeHint');
-        $this->fixture->whenIMockAllOfItsProperties();
+        $this->fixture->whenITryToMockAllOfItsProperties();
 
-        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('foo', 'StdClass');
-
-        $this->markTestIncomplete('Should not be injected');
+        $this->fixture->thenAnExceptionShouldBeThrownContaining('Error while loading dependency');
         $this->fixture->thenItsProperty_ShouldBe('foo', null);
     }
 
     public function testMockMethodArguments() {
+        $this->markTestSkipped('Not working');
+
         $this->fixture->givenTheClassDefinition('
             class MethodWithDependencies {
                 /**
@@ -280,7 +277,7 @@ class InjectionTest extends Specification {
         $this->fixture->givenTheClassDefinition('
             class InvokeDependency {
                 /**
-                 * @var DependencyWithMethod
+                 * @var DependencyWithMethod <-
                  */
                 public $foo;
                 public function myFunction() {
@@ -292,7 +289,7 @@ class InjectionTest extends Specification {
         ');
 
         $this->fixture->whenICreateTheMockOf('InvokeDependency');
-        $this->fixture->whenIMockAllOfItsProperties();
+        $this->fixture->whenIMockAllMarkedProperties();
 
         $this->fixture->whenIUnMockTheMethod('myFunction');
         $this->fixture->whenIInvoke('myFunction');

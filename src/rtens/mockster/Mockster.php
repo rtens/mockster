@@ -1,6 +1,8 @@
 <?php
 namespace rtens\mockster;
 
+use watoki\factory\Injector;
+
 class Mockster {
 
     const F_NONE = 0;
@@ -15,56 +17,40 @@ class Mockster {
 
     const F_ALL = 7;
 
-    /**
-     * @var string Code of the generated Mock class
-     */
+    /** @var string Code of the generated Mock class */
     private $code;
 
-    /**
-     * @var array|Method[]
-     */
+    /** @var array|Method[] */
     private $stubs = array();
 
-    /**
-     * @var string Name of this class
-     */
+    /** @var string Name of this class */
     private $classname;
 
-    /**
-     * @var array|\ReflectionMethod[]
-     */
+    /** @var array|\ReflectionMethod[] */
     private $methods;
 
-    /**
-     * @var \rtens\mockster\Mock Back-reference to parent
-     */
+    /** @var \rtens\mockster\Mock Back-reference to parent */
     private $mock;
 
-    /**
-     * @var MockFactory
-     */
+    /** @var MockFactory */
     private $factory;
 
-    /**
-     * @var Generator
-     */
-    private $generator;
+    /** @var Injector */
+    private $injector;
 
-    /**
-     * @var array|array[] Arguments of the constructor indexed by parameter name
-     */
+    /** @var array|array[] Arguments of the constructor indexed by parameter name */
     private $constructorArguments = array();
 
-    public function __construct(MockFactory $factory, $classname, $mock, $constructorArguments, $code = null) {
+    public function __construct(MockFactory $factory, $classname, $mock, $constructorArguments, $code) {
         $this->factory = $factory;
         $this->classname = $classname;
         $this->mock = $mock;
         $this->constructorArguments = $constructorArguments;
         $this->code = $code;
-        $this->generator = new Generator($factory);
+        $this->injector = new Injector($factory);
 
-        $refl = new \ReflectionClass($classname);
-        $this->methods = $refl->getMethods();
+        $reflection = new \ReflectionClass($classname);
+        $this->methods = $reflection->getMethods();
     }
 
     /**
@@ -81,61 +67,40 @@ class Mockster {
 
     /**
      * @param int $filter Using bit-combinations of Mockster::F_* (e.g. Mockster::F_PUBLIC | Mockster::F_PROTECTED)
-     * @param null|string $withAnnotation
+     * @param null|callable $customFilter
      * @throws \Exception If a property cannot be mocked because the class of the type hint cannot be found
      */
-    public function mockProperties($filter = Mockster::F_PROTECTED, $withAnnotation = null) {
-        $classReflection = new \ReflectionClass($this->classname);
-        foreach ($classReflection->getProperties() as $property) {
-            $parser = new AnnotationParser($property->getDocComment());
-
-            if ($property->isPrivate() ||
-                    !((!$property->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
-                            (!$property->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
-                            (!$property->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
-                            (!$withAnnotation || $parser->hasAnnotation($withAnnotation)))
-            ) {
-                continue;
-            }
-
-            try {
-                $property->setAccessible(true);
-                $mockProperty = new \ReflectionProperty($this->mock, $property->getName());
-
-                if (is_null($mockProperty->getValue($this->mock))) {
-                    $defaultValues = $classReflection->getDefaultProperties();
-                    if (isset($defaultValues[$property->getName()])) {
-                        $value = $defaultValues[$property->getName()];
-                    } else {
-                        $parser = new AnnotationParser($property->getDocComment());
-                        $value = $this->generator->getInstanceFromHint($parser->find('var'), $classReflection);
-                    }
-                    $mockProperty->setValue($this->mock, $value);
-                }
-            } catch (\InvalidArgumentException $e) {
-                throw new \Exception("Error while mocking property [" . $property->getName() .
-                        "] of class [" . $classReflection->getShortName() . ']: ' . $e->getMessage());
-            }
-        }
+    public function mockProperties($filter = Mockster::F_PROTECTED, $customFilter = null) {
+        $callback = $this->getFilterCallback($filter, $customFilter);
+        $this->injector->injectProperties($this->mock,
+            function (\ReflectionProperty $property) use ($callback) {
+                return !$property->isPrivate() && $callback($property);
+            },
+            new \ReflectionClass($this->classname));
     }
 
     /**
      * Sets all methods matching the filter to being mocked, and all others to not being mocked.
      *
      * @param $filter int Constants from Mockster::F_
-     * @param null|string $withAnnotation Mock only methods that have this annotation
+     * @param null|callable $customFilter
      */
-    public function mockMethods($filter = Mockster::F_ALL, $withAnnotation = null) {
+    public function mockMethods($filter = Mockster::F_ALL, $customFilter = null) {
+        $filter = $this->getFilterCallback($filter, $customFilter);
         foreach ($this->methods as $method) {
-            $parser = new AnnotationParser($method->getDocComment());
-
-            $this->method($method->getName())->setMocked(
-                (!$method->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
-                        (!$method->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
-                        (!$method->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
-                        (!$withAnnotation || $parser->hasAnnotation($withAnnotation))
-            );
+            $this->method($method->getName())->setMocked($filter($method));
         }
+    }
+
+    private function getFilterCallback($filter, $customFilter) {
+        return function ($member) use ($filter, $customFilter) {
+            /** @var \ReflectionProperty $member */
+            return
+                (!$member->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
+                (!$member->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
+                (!$member->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
+                (!$customFilter || $customFilter($member));
+        };
     }
 
     /**
@@ -170,7 +135,7 @@ class Mockster {
      */
     public function invoke($methodName, $arguments = array()) {
         $method = new \ReflectionMethod($this->classname, $methodName);
-        $arguments = $this->generator->getMethodParameters($method, $arguments);
+        $arguments = $this->injector->injectMethodArguments($method, $arguments);
         return call_user_func_array(array($this->mock, $methodName), array_values($arguments));
     }
 
