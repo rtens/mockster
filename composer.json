@@ -26,11 +26,5 @@
             "spec\\rtens\\mockster": ""
         }
     },
-    "minimum-stability": "dev",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "http://localhost/watoki/factory/.git"
-        }
-    ]
+    "minimum-stability": "dev"
 }
