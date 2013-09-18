@@ -165,7 +165,7 @@ class MockProvider implements Provider {
             return \$method->invoke(func_get_args());
         } else {
             \$value = parent::$methodName( $argsString );
-            \$method->log(func_get_args(), \$value);
+            \$method->getHistory()->log(func_get_args(), \$value);
             return \$value;
         }
     }";

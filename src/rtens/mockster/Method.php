@@ -3,9 +3,10 @@ namespace rtens\mockster;
 use rtens\mockster\behaviour\ReturnValueBehaviour;
 use rtens\mockster\behaviour\CallbackBehaviour;
 use rtens\mockster\behaviour\ThrowExceptionBehaviour;
+use watoki\factory\ClassResolver;
 
 /**
- * A mocked method collects all its invokation all forwards them to a Behaviour if set.
+ * A mocked method collects all its invocations and forwards them to a Behaviour if set.
  *
  * Arguments are saved with their parameter names but can also be accessed via their position.
  */
@@ -15,16 +16,6 @@ class Method {
      * @var \ReflectionMethod
      */
     private $reflection;
-
-    /**
-     * @var array|array[] Collection of called arguments (named)
-     */
-    private $calledArguments = array();
-
-    /**
-     * @var array|mixed[] Collection of returned values
-     */
-    private $returnedValues = array();
 
     /**
      * @var array|Behaviour[] Registered behaviours
@@ -37,17 +28,21 @@ class Method {
     private $mocked = true;
 
     /**
-     * @var Generator
+     * @var MockFactory
      */
-    private $generator;
+    private $factory;
+
+    /** @var History */
+    private $history;
 
     /**
      * @param \rtens\mockster\MockFactory $factory
      * @param \ReflectionMethod $reflection
      */
     public function __construct(MockFactory $factory, \ReflectionMethod $reflection) {
+        $this->factory = $factory;
         $this->reflection = $reflection;
-        $this->generator = new Generator($factory);
+        $this->history = new History($reflection);
     }
 
     /**
@@ -60,31 +55,14 @@ class Method {
         foreach ($this->behaviours as $behaviour) {
             if ($behaviour->appliesTo($arguments)) {
                 $value = $behaviour->getReturnValue($arguments);
-                $this->log($arguments, $value);
+                $this->history->log($arguments, $value);
                 return $value;
             }
         }
 
         $value = $this->getReturnTypeHintMock();
-        $this->log($arguments, $value);
+        $this->history->log($arguments, $value);
         return $value;
-    }
-
-    /**
-     * @param array $arguments
-     * @param mixed $returnValue
-     * @return void
-     */
-    public function log($arguments, $returnValue) {
-        $parameters = array();
-        foreach ($this->reflection->getParameters() as $i => $param) {
-            if (array_key_exists($i, $arguments)) {
-                $parameters[$param->getName()] = $arguments[$i];
-            }
-        }
-
-        $this->calledArguments[] = $parameters;
-        $this->returnedValues[] = $returnValue;
     }
 
     /**
@@ -92,15 +70,88 @@ class Method {
      * @return array|bool|float|int|Mock|null|string
      */
     public function getReturnTypeHintMock() {
-        $parser = new AnnotationParser($this->reflection->getDocComment());
-        $hint = $parser->find('return');
+        $matches = array();
+        $found = preg_match('/@return\s+(\S+)/', $this->reflection->getDocComment(), $matches);
 
-        try {
-            return $this->generator->getInstanceFromHint($hint, $this->reflection->getDeclaringClass());
-        } catch (\InvalidArgumentException $e) {
-            throw new \Exception("Error while creating mock from return type hint of " .
-            $this->reflection->getDeclaringClass()->getShortName() . '::' . $this->reflection->getName() .
-            ': ' . $e->getMessage());
+        if (!$found) {
+            return null;
+        }
+
+        return $this->getInstanceFromHint($matches[1], $this->reflection->getDeclaringClass());
+    }
+
+    /**
+     * Returns a mock or default value based on a type hint which may contain several classes spearated by |
+     *
+     * e.g.
+     * string[]|array => array()
+     * null|string => null
+     * string|null => ''
+     *
+     * @param string $hint
+     * @param \ReflectionClass $class
+     * @throws \InvalidArgumentException
+     * @return Mock|null|array|bool|float|int|string
+     */
+    public function getInstanceFromHint($hint, \ReflectionClass $class) {
+        if (!$hint) {
+            return null;
+        }
+
+        foreach ($this->explodeMultipleHints($hint) as $typeHint) {
+            $resolver = new ClassResolver($class);
+            $className = $resolver->resolve($typeHint);
+            if ($className) {
+                return $this->factory->getInstance($className);
+            }
+
+            try {
+                return $this->getPrimitiveFromHint($typeHint);
+            } catch (\InvalidArgumentException $e) {
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Creates a mocked object or default value for given class or primitive.
+     *
+     * @param string $type
+     * @return array|bool|float|int|Mock|null|string
+     * @throws \InvalidArgumentException
+     */
+    private function getPrimitiveFromHint($type) {
+        switch (strtolower($type)) {
+            case 'array':
+                return array();
+            case 'int':
+            case 'integer':
+                return 0;
+            case 'float':
+                return 0.0;
+            case 'bool':
+            case 'boolean':
+                return false;
+            case 'string':
+                return '';
+            case 'null':
+            case 'mixed':
+            case 'object':
+            case 'callable':
+            case 'void':
+            case 'closure':
+                return null;
+        }
+
+        throw new \InvalidArgumentException("Not a primitive type [$type].");
+    }
+
+    private function explodeMultipleHints($hint) {
+        if (strpos($hint, '|') !== false) {
+            return explode('|', $hint);
+        } else {
+            return array($hint);
         }
     }
 
@@ -135,103 +186,10 @@ class Method {
     }
 
     /**
-     * @return string History with called arguments and returned value
+     * @return History
      */
     public function getHistory() {
-        $history = 'Method: ' . $this->getName() . "\n";
-        $returned = $this->getReturnedValues();
-        foreach ($this->getCalledArguments() as $i => $args) {
-            $argsStrings = array();
-            foreach ($args as $arg) {
-                if (is_object($arg)) {
-                    $classname = explode('\\', get_class($arg));
-                    $argsStrings[] = end($classname);
-                } else if (is_array($arg)) {
-                    $argsStrings[] = 'array(' . implode(', ', array_keys($arg)) . ')';
-                } else {
-                    $argsStrings[] = print_r($arg, true);
-                }
-            }
-            $history .= '  called: (' . implode(', ', $argsStrings) . ') => ' . print_r($returned[$i], true) . "\n";
-        }
-
-        return $history;
-    }
-
-    /**
-     * @return array Off all arguments this method was invoked with indexed by their parameter names.
-     */
-    public function getCalledArguments() {
-        return $this->calledArguments;
-    }
-
-    /**
-     * @param int $index The arguments of the first invokation will be at index 0. If negative, counts from end.
-     * @return array Of one set of arguments indexed by their parameter names.
-     */
-    public function getCalledArgumentsAt($index) {
-        if ($index < 0) {
-            $index = count($this->calledArguments) + $index;
-        }
-
-        return $this->calledArguments[$index];
-    }
-
-    /**
-     * @param int $index Index of the invokation (see getCalledArgumentsAt)
-     * @param int|string $paramNameOrIndex Number for position or parameter name
-     * @return mixed Argument at position or with name $paramIndex of the $index'th call
-     */
-    public function getCalledArgumentAt($index, $paramNameOrIndex) {
-        $args = $this->getCalledArgumentsAt($index);
-        if (is_numeric($paramNameOrIndex)) {
-            $args = array_values($args);
-        }
-        return $args[$paramNameOrIndex];
-    }
-
-    /**
-     * @return int Number of times the method was invoked
-     */
-    public function getCalledCount() {
-        return count($this->calledArguments);
-    }
-
-    public function getReturnedValues() {
-        return $this->returnedValues;
-    }
-
-    /**
-     * The arguments can be either given as a list (numeric indices) or as a map with the parameter names as indices.
-     *
-     * A list is compared for exact matching with the invoked arguments. A map can be incomplete and out of order.
-     *
-     * @param array $arguments Either a list or a map of the argument.
-     * @return bool If any invokation of the method matches the given arguments.
-     */
-    public function wasCalledWith($arguments) {
-        $keys = array_keys($arguments);
-
-        foreach ($this->calledArguments as $args) {
-            if (!empty($arguments) && is_numeric($keys[0])) {
-                if (array_values($args) == $arguments) {
-                    return true;
-                }
-            } else {
-                $allMatch = true;
-                foreach ($arguments as $name => $value) {
-                    if (!isset($args[$name]) || $args[$name] != $value) {
-                        $allMatch = false;
-                        break;
-                    }
-                }
-
-                if ($allMatch) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return $this->history;
     }
 
     /**
@@ -268,13 +226,6 @@ class Method {
      */
     public function willCall($callback) {
         return $this->willDo(new CallbackBehaviour($callback));
-    }
-
-    /**
-     * @return bool
-     */
-    public function wasCalled() {
-        return $this->getCalledCount() > 0;
     }
 
 }

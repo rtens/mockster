@@ -155,23 +155,24 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function thenTheCallCountOf_ShouldBe($method, $count) {
-        $this->spec->assertEquals($count, $this->mock->__mock()->method($method)->getCalledCount());
+        $this->spec->assertEquals($count, $this->mock->__mock()->method($method)->getHistory()->getCalledCount());
     }
 
     public function thenTheArgumentsOfCallIndex_OfMethod_ShouldBe($index, $method, $args) {
-        $this->spec->assertEquals($args, $this->mock->__mock()->method($method)->getCalledArgumentsAt($index));
+        $this->spec->assertEquals($args, $this->mock->__mock()->method($method)->getHistory()->getCalledArgumentsAt($index));
     }
 
     public function thenTheArgument_OfCallIndex_OfMethod_ShouldBe($argIndex, $methodIndex, $method, $value) {
-        $this->spec->assertEquals($value, $this->mock->__mock()->method($method)->getCalledArgumentAt($methodIndex, $argIndex));
+        $this->spec->assertEquals($value, $this->mock->__mock()->method($method)->getHistory()
+            ->getCalledArgumentAt($methodIndex, $argIndex));
     }
 
     public function thenTheCalledArgumentsOf_ShouldBe($method, $array) {
-        $this->spec->assertEquals($array, $this->mock->__mock()->method($method)->getCalledArguments());
+        $this->spec->assertEquals($array, $this->mock->__mock()->method($method)->getHistory()->getCalledArguments());
     }
 
     public function thenTheMethod_WasCalledWith($method, $array) {
-        $this->spec->assertTrue($this->mock->__mock()->method($method)->wasCalledWith($array),
+        $this->spec->assertTrue($this->mock->__mock()->method($method)->getHistory()->wasCalledWith($array),
             "Not called with " . json_encode($array));
     }
 

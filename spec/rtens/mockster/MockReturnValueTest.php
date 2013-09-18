@@ -87,6 +87,33 @@ class MockReturnValueTest extends Specification {
         $this->fixture->thenItShouldReturn(array());
     }
 
+    public function testInvalidHint() {
+        $this->fixture->givenTheClassDefinition('
+            class InvalidReturnHint {
+                /**
+                 * @return notAHint
+                 */
+                public function myFunction() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('InvalidReturnHint');
+        $this->fixture->whenIInvoke('myFunction');
+
+        $this->fixture->thenItShouldReturn(null);
+    }
+
+    public function testNoHint() {
+        $this->fixture->givenTheClassDefinition('
+            class NoReturnHint {
+                public function myFunction() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('NoReturnHint');
+        $this->fixture->whenIInvoke('myFunction');
+
+        $this->fixture->thenItShouldReturn(null);
+    }
+
     public function testMockCallChain() {
         $this->fixture->givenTheClassDefinition('
             class ChainedDependencyDependency {
