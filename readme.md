@@ -1,4 +1,4 @@
-# Mockster #
+# Mockster [![Build Status](https://travis-ci.org/rtens/mockster.png?branch=master)](https://travis-ci.org/rtens/mockster)
 
 *mockster* is a full-fledged, zero-configuration mocking framework for PHP.
 
