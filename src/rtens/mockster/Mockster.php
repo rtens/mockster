@@ -93,12 +93,16 @@ class Mockster {
     }
 
     private function getFilterCallback($filter, $customFilter) {
-        return function ($member) use ($filter, $customFilter) {
+        $fPublic = self::F_PUBLIC;
+        $fProtected = self::F_PROTECTED;
+        $fStatic = self::F_STATIC;
+
+        return function ($member) use ($filter, $customFilter, $fPublic, $fProtected, $fStatic) {
             /** @var \ReflectionProperty $member */
             return
-                (!$member->isPublic() || ($filter & self::F_PUBLIC) == self::F_PUBLIC) &&
-                (!$member->isProtected() || ($filter & self::F_PROTECTED) == self::F_PROTECTED) &&
-                (!$member->isStatic() || ($filter & self::F_STATIC) == self::F_STATIC) &&
+                (!$member->isPublic() || ($filter & $fPublic) == $fPublic) &&
+                (!$member->isProtected() || ($filter & $fProtected) == $fProtected) &&
+                (!$member->isStatic() || ($filter & $fStatic) == $fStatic) &&
                 (!$customFilter || $customFilter($member));
         };
     }
