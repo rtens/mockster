@@ -52,8 +52,15 @@ class Method {
      * @return mixed The return value
      */
     public function invoke($arguments) {
+        $named = array();
+        foreach ($this->reflection->getParameters() as $param) {
+            if (array_key_exists($param->getPosition(), $arguments)) {
+                $named[$param->getName()] = $arguments[$param->getPosition()];
+            }
+        }
+
         foreach ($this->behaviours as $behaviour) {
-            if ($behaviour->appliesTo($arguments)) {
+            if ($behaviour->appliesTo($named)) {
                 $value = $behaviour->getReturnValue($arguments);
                 $this->history->log($arguments, $value);
                 return $value;

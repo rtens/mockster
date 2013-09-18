@@ -30,9 +30,9 @@ class History {
      */
     public function log($arguments, $returnValue) {
         $parameters = array();
-        foreach ($this->reflection->getParameters() as $i => $param) {
-            if (array_key_exists($i, $arguments)) {
-                $parameters[$param->getName()] = $arguments[$i];
+        foreach ($this->reflection->getParameters() as $param) {
+            if (array_key_exists($param->getPosition(), $arguments)) {
+                $parameters[$param->getName()] = $arguments[$param->getPosition()];
             }
         }
 

@@ -137,4 +137,49 @@ class MethodBehaviourTest extends Specification {
         $this->fixture->thenItShouldReturn('two');
     }
 
+    public function testWithMixedArguments() {
+        $this->fixture->givenTheClassDefinition('
+            class WithMixedArguments {
+                public function myFunction($one, $two, $three) {}
+            }
+        ');
+
+        $this->fixture->whenICreateTheMockOf('WithMixedArguments');
+        $this->fixture->whenIConfigureTheMethod_ToReturn_WhenCalledWith('myFunction', 'hit', array('two' => 2, 0 => 1));
+
+        $this->fixture->whenIInvoke_WithTheArguments__And('myFunction', 1, 2, 3);
+        $this->fixture->thenItShouldReturn('hit');
+
+        $this->fixture->whenIInvoke_WithTheArguments__And('myFunction', 1, 2, 5);
+        $this->fixture->thenItShouldReturn('hit');
+
+        $this->fixture->whenIInvoke_WithTheArguments__And('myFunction', 2, 1, 3);
+        $this->fixture->thenItShouldReturn(null);
+
+        $this->fixture->whenIInvoke_WithTheArguments__And('myFunction', 2, 2, 3);
+        $this->fixture->thenItShouldReturn(null);
+    }
+
+    public function testWithCallback() {
+        $this->fixture->givenTheClassDefinition('
+            class WithCallback {
+                public function myFunction($arg) {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('WithCallback');
+        $this->fixture->whenIConfigureTheMethod_ToReturn_WhenTheArgumentIsBetween_And('myFunction', 'me', 2, 5);
+
+        $this->fixture->whenIInvoke_WithTheArgument('myFunction', 2);
+        $this->fixture->thenItShouldReturn(null);
+
+        $this->fixture->whenIInvoke_WithTheArgument('myFunction', 3);
+        $this->fixture->thenItShouldReturn('me');
+
+        $this->fixture->whenIInvoke_WithTheArgument('myFunction', 4);
+        $this->fixture->thenItShouldReturn('me');
+
+        $this->fixture->whenIInvoke_WithTheArgument('myFunction', 5);
+        $this->fixture->thenItShouldReturn(null);
+    }
+
 }

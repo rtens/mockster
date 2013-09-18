@@ -5,7 +5,7 @@ abstract class Behaviour {
 
     private $timesCalled = 0;
     private $maxCalls;
-    private $arguments;
+    private $matcher;
 
     /**
      * @param array $arguments
@@ -21,8 +21,9 @@ abstract class Behaviour {
      * @return boolean
      */
     public function appliesTo(array $arguments) {
+        $matcher = $this->matcher;
         return ((!isset($this->maxCalls) || $this->timesCalled < $this->maxCalls)
-                && (!isset($this->arguments) || $arguments == $this->arguments));
+            && (!isset($matcher) || $matcher($arguments)));
     }
 
     /**
@@ -45,8 +46,34 @@ abstract class Behaviour {
      * @return Behaviour
      */
     public function withArguments() {
-        $this->arguments = func_get_args();
+        $args = func_get_args();
+        $this->matcher = function ($arguments) use ($args) {
+            return array_values($arguments) == $args;
+        };
+        return $this;
+    }
+
+    public function with($args) {
+        $this->matcher = function ($arguments) use ($args) {
+            $values = array_values($arguments);
+            foreach ($args as $name => $value) {
+                if (array_key_exists($name, $arguments) && $arguments[$name] !== $value
+                    || array_key_exists($name, $values) && $values[$name] !== $value
+                ) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        return $this;
+    }
+
+    public function when($matches) {
+        $this->matcher = function ($arguments) use ($matches) {
+            return call_user_func_array($matches, $arguments);
+        };
         return $this;
     }
 }
+
 ?>
