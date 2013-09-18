@@ -20,14 +20,14 @@ class MockFactoryFixture extends Fixture {
 
     private $returnValue;
 
-    private $counter = 0;
+    private static $counter = 0;
 
     public function __construct(Specification $spec, Factory $factory) {
         parent::__construct($spec, $factory);
     }
 
     public function givenTheClassDefinition($string) {
-        $file = __DIR__ . '/tmp/class' . $this->counter++ . '.php';
+        $file = __DIR__ . '/tmp/class' . self::$counter++ . '.php';
         @mkdir(dirname($file));
         file_put_contents($file, "<?php $string");
         /** @noinspection PhpIncludeInspection */

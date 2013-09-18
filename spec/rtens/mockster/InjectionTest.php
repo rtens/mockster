@@ -108,8 +108,6 @@ class InjectionTest extends Specification {
     }
 
     public function testInjectAnnotatedConstructorArguments() {
-        $this->markTestSkipped("Doesn't work yet");
-
         $this->fixture->givenTheClassDefinition('
             class AnnotatedArguments {
                 /**
@@ -122,7 +120,7 @@ class InjectionTest extends Specification {
         $this->fixture->whenICreateTheMockOf_WithTheConstructorArguments('AnnotatedArguments', array());
 
         $this->fixture->thenTheInjectedArgument_ShouldBeAnInstanceOf('foo', 'StdClass');
-        $this->fixture->thenTheInjectedArgument_ShouldBeAnInstanceOf('foo', 'DateTime');
+        $this->fixture->thenTheInjectedArgument_ShouldBeAnInstanceOf('bar', 'DateTime');
     }
 
     public function testInjectProperties() {
@@ -242,8 +240,6 @@ class InjectionTest extends Specification {
     }
 
     public function testMockMethodArguments() {
-        $this->markTestSkipped('Not working');
-
         $this->fixture->givenTheClassDefinition('
             class MethodWithDependencies {
                 /**
