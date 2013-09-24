@@ -77,15 +77,15 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function thenItsProperty_ShouldBeAnInstanceOf($property, $class) {
-        $this->spec->assertInstanceOf($class, @$this->mock->$property);
+        $this->spec->assertInstanceOf($class, $this->mock->__mock()->get($property));
     }
 
     public function thenItsProperty_ShouldNotBeAnInstanceOf($property, $class) {
-        $this->spec->assertNotInstanceOf($class, @$this->mock->$property);
+        $this->spec->assertNotInstanceOf($class, $this->mock->__mock()->get($property));
     }
 
     public function thenItsProperty_OfProperty_ShouldBe($innerProperty, $property, $class) {
-        $this->spec->assertEquals($class, @$this->mock->$property->$innerProperty);
+        $this->spec->assertEquals($class, $this->mock->__mock()->get($property)->__mock()->get($innerProperty));
     }
 
     public function thenTheConstructorArgument_ShouldBe($name, $value) {
@@ -206,6 +206,10 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function whenIMockItsProtectedProperties() {
+        $this->mock->__mock()->mockProperties(Mockster::F_PROTECTED);
+    }
+
+    public function whenIMockAllItsProperties() {
         $this->mock->__mock()->mockProperties(Mockster::F_PROTECTED);
     }
 

@@ -13,6 +13,8 @@ class InjectionTest extends Specification {
         $this->fixture->givenTheClassDefinition('class ConstructorDependencyTwo {}');
         $this->fixture->givenTheClassDefinition('
             class ConstructorInjection {
+                public $one;
+                public $two;
                 public function __construct(ConstructorDependencyOne $one, ConstructorDependencyTwo $two) {
                     $this->one = $one;
                     $this->two = $two;
@@ -47,21 +49,22 @@ class InjectionTest extends Specification {
         $this->fixture->givenTheClassDefinition('
             class RecursiveDependencyTwo {
                 public $one;
-                public function __construct(ConstructorDependencyOne $one) {
+                public function __construct(RecursiveDependencyOne $one) {
                     $this->one = $one;
                 }
             }
         ');
         $this->fixture->givenTheClassDefinition('
             class RecursiveInjection {
-                public function __construct(ConstructorDependencyTwo $two) {
+                public $two;
+                public function __construct(RecursiveDependencyTwo $two) {
                     $this->two = $two;
                 }
             }
         ');
         $this->fixture->whenICreateTheMockOf_WithTheConstructorArguments('RecursiveInjection', array());
 
-        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('two', 'ConstructorDependencyTwo');
+        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('two', 'RecursiveDependencyTwo');
         $this->fixture->thenItsProperty_OfProperty_ShouldBe('one', 'two', null);
     }
 
@@ -83,6 +86,8 @@ class InjectionTest extends Specification {
     public function testMixConstructorInjectionAndArguments() {
         $this->fixture->givenTheClassDefinition('
             class MixConstructor {
+                public $one;
+                public $two;
                 public function __construct(StdClass $one, StdClass $two) {
                     $this->one = $one;
                     $this->two = $two;
@@ -148,6 +153,21 @@ class InjectionTest extends Specification {
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('foo', 'StdClass');
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'DateTime');
         $this->fixture->thenItsProperty_ShouldBe('notMarked', null);
+    }
+
+    public function testInjectPrivateProperty() {
+        $this->fixture->givenTheClassDefinition('
+            class PrivateProperty {
+                /**
+                 * @var StdClass
+                 */
+                private $foo;
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('PrivateProperty');
+        $this->fixture->whenIMockAllItsProperties();
+
+        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('foo', 'StdClass');
     }
 
     public function testInjectionOfPrimitiveTypes() {
@@ -242,6 +262,10 @@ class InjectionTest extends Specification {
     public function testMockMethodArguments() {
         $this->fixture->givenTheClassDefinition('
             class MethodWithDependencies {
+                public $one;
+                public $two;
+                public $three;
+
                 /**
                  * @param DateTime $one
                  * @param DateTime $two
@@ -265,6 +289,7 @@ class InjectionTest extends Specification {
     public function testNotMockMethodOfInjectedMock() {
         $this->fixture->givenTheClassDefinition('
             class DependencyWithMethod {
+                public $called = false;
                 public function myFunction() {
                     $this->called = true;
                 }

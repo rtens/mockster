@@ -38,7 +38,7 @@ A typical test with mockster looks like this.
 	$uut = $factory->getInstance('MyUnitUnderTest');
 	$uut->__mock()->mockProperties();
 	$uut->__mock()->mockMethods(Mockster::F_NONE);
-	$dbMock = $uut->__mock()->getProperty('database');
+	$dbMock = $uut->__mock()->get('database');
 	
 	$user = $factory->getInstance('User');
 	$dbMock->__mock()->method('readUser')->willReturn($user);
@@ -77,7 +77,7 @@ By default, all without a default value are mocked. You can specify which proper
 		return strpos('@inject', $p->getDocComment()) !== false;
 	});
 	
-If you call any method (e.g. `$mock->foo()`), the invocation is logged and return value is inferred from a `@return` type hint (if provided). In the case of `foo`, an empty string is returned because of the `string` hint. If the type hint is a class, an empty mock of this class is created. For example the call `$mock->__mock()->getProperty('yours')->bar()` returns a mock of `MyClass`.
+If you call any method (e.g. `$mock->foo()`), the invocation is logged and return value is inferred from a `@return` type hint (if provided). In the case of `foo`, an empty string is returned because of the `string` hint. If the type hint is a class, an empty mock of this class is created. For example the call `$mock->__mock()->get('yours')->bar()` returns a mock of `MyClass`.
 
 If you want certain methods to actually be invoked on the base class, you can un-mock methods.
 

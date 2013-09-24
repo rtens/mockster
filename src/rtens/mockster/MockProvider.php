@@ -70,28 +70,6 @@ class MockProvider implements Provider {
     }
 
     /**
-     * Overwrites all protected properties for external access to dependencies
-     *
-     * @param \ReflectionClass $classReflection
-     * @return string Of all properties definitions of the mock class
-     */
-    private function getPropertyDefinitions(\ReflectionClass $classReflection) {
-        $defs = '';
-
-        foreach ($classReflection->getProperties() as $propRefl) {
-            if ($propRefl->isStatic() || !$propRefl->isProtected()) {
-                continue;
-            }
-
-            $defs .= "
-
-    public $" . $propRefl->getName() . ";";
-        }
-
-        return $defs;
-    }
-
-    /**
      * Overwrites all protected and public methods of the mocked class.
      *
      * @param \ReflectionClass $classReflection
@@ -188,8 +166,6 @@ class MockProvider implements Provider {
 
         $methodDefs = $this->getMethodDefinitions($classReflection);
 
-        $propertiesDefs = $this->getPropertyDefinitions($classReflection);
-
         $constuctorDef = '';
         if (!$callConstructor) {
             $constuctorDef = 'public function __construct() {}';
@@ -199,8 +175,6 @@ class MockProvider implements Provider {
 class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
     private $__mock;
-
-    ' . $propertiesDefs . '
 
     public function __mock() {
         return $this->__mock;

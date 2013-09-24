@@ -70,11 +70,11 @@ class Mockster {
      * @param null|callable $customFilter
      * @throws \Exception If a property cannot be mocked because the class of the type hint cannot be found
      */
-    public function mockProperties($filter = Mockster::F_PROTECTED, $customFilter = null) {
+    public function mockProperties($filter = Mockster::F_ALL, $customFilter = null) {
         $callback = $this->getFilterCallback($filter, $customFilter);
         $this->injector->injectProperties($this->mock,
             function (\ReflectionProperty $property) use ($callback) {
-                return !$property->isPrivate() && $callback($property);
+                return $callback($property);
             },
             new \ReflectionClass($this->classname));
     }
@@ -126,6 +126,16 @@ class Mockster {
 
         throw new \InvalidArgumentException(sprintf("Can't mock method '%s'. Does not exist in class '%s'",
             $methodName, $this->classname));
+    }
+
+    /**
+     * @param string $propertyName
+     * @return Mock
+     */
+    public function get($propertyName) {
+        $property = new \ReflectionProperty($this->classname, $propertyName);
+        $property->setAccessible(true);
+        return $property->getValue($this->mock);
     }
 
     /**
