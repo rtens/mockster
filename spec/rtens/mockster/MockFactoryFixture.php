@@ -68,6 +68,10 @@ class MockFactoryFixture extends Fixture {
         $this->returnValue = call_user_func(array($this->mock, $method), $arg1, $arg2);
     }
 
+    public function whenIInvoke_WithTheArguments__And($method, $arg1, $arg2, $arg3) {
+        $this->returnValue = call_user_func(array($this->mock, $method), $arg1, $arg2, $arg3);
+    }
+
     public function thenItShouldReturn($string) {
         $this->spec->assertEquals($string, $this->returnValue);
     }
@@ -133,6 +137,10 @@ class MockFactoryFixture extends Fixture {
 
     public function whenIConfigureTheMethod_ToReturn_OnceWhenCalledWithTheArgument($method, $return, $arg) {
         $this->mock->__mock()->method($method)->willReturn($return)->withArguments($arg)->once();
+    }
+
+    public function whenIConfigureTheMethod_ToReturn_WhenCalledWith($method, $return, $args) {
+        $this->mock->__mock()->method($method)->willReturn($return)->with($args);
     }
 
     public function whenIConfigureTheMethod_ToReturn_Once($method, $return) {
@@ -240,6 +248,12 @@ class MockFactoryFixture extends Fixture {
         } catch (\Exception $e) {
             $this->caught = $e;
         }
+    }
+
+    public function whenIConfigureTheMethod_ToReturn_WhenTheArgumentIsBetween_And($method, $return, $low, $high) {
+        $this->mock->__mock()->method($method)->willReturn($return)->when(function ($arg) use ($low, $high) {
+            return $arg > $low && $arg < $high;
+        });
     }
 
 }

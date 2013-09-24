@@ -13,8 +13,7 @@ class CallbackBehaviour extends Behaviour {
 
     public function getReturnValue(array $arguments) {
         parent::getReturnValue($arguments);
-        $callback = $this->callback;
-        return call_user_func_array($callback, $arguments);
+        return call_user_func_array($this->callback, $arguments);
     }
 }
 ?>
