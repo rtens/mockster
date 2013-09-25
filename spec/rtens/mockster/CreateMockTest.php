@@ -119,4 +119,23 @@ class CreateMockTest extends Specification {
         $this->fixture->thenItsStaticProperty_ShouldBe('called', true);
     }
 
+    public function testTestUnit() {
+        $this->fixture->givenTheClassDefinition('
+            class TestUnit {
+                /** @var StdClass */
+                protected $bar;
+                public $foo;
+                public function doFoo() {
+                    $this->foo = "foo";
+                }
+            }
+        ');
+        $this->fixture->whenICreateATestUnitOf('TestUnit');
+        $this->fixture->whenIInvoke('doFoo');
+
+        $this->fixture->thenItsProperty_ShouldBe('foo', 'foo');
+        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'StdClass');
+        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'rtens\mockster\Mock');
+    }
+
 }

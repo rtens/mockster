@@ -48,6 +48,11 @@ class MockFactoryFixture extends Fixture {
         $this->mock = $factory->getInstance($class, $args);
     }
 
+    public function whenICreateATestUnitOf($class) {
+        $factory = new MockFactory();
+        $this->mock = $factory->getInstance($class)->__mock()->makeTestUnit();
+    }
+
     public function whenITryToInvoke($method) {
         try {
             $this->whenIInvoke($method);

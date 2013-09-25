@@ -214,6 +214,18 @@ class Mockster {
         return $code;
     }
 
+    /**
+     * Un-mocks all methods and injects mocks for all properties passing the filter.
+     *
+     * @param callable $propertyFilter will be passed a \ReflectionProperty instance
+     * @return \rtens\mockster\Mock
+     */
+    public function makeTestUnit($propertyFilter = null) {
+        $this->mockMethods(Mockster::F_NONE);
+        $this->mockProperties(Mockster::F_ALL, $propertyFilter);
+        return $this->mock;
+    }
+
 }
 
 ?>
