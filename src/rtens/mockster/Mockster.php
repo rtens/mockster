@@ -48,6 +48,7 @@ class Mockster {
         $this->constructorArguments = $constructorArguments;
         $this->code = $code;
         $this->injector = new Injector($factory);
+        $this->injector->setThrowWhenCantInjectProperty(false);
 
         $reflection = new \ReflectionClass($classname);
         $this->methods = $reflection->getMethods();
@@ -136,6 +137,16 @@ class Mockster {
         $property = new \ReflectionProperty($this->classname, $propertyName);
         $property->setAccessible(true);
         return $property->getValue($this->mock);
+    }
+
+    /**
+     * @param string $propertyName
+     * @param mixed $value
+     */
+    public function set($propertyName, $value) {
+        $property = new \ReflectionProperty($this->classname, $propertyName);
+        $property->setAccessible(true);
+        $property->setValue($this->mock, $value);
     }
 
     /**

@@ -180,9 +180,8 @@ class InjectionTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('PrimitiveProperties');
-        $this->fixture->whenITryToMockAllOfItsProperties();
+        $this->fixture->whenIMockAllMarkedProperties();
 
-        $this->fixture->thenAnExceptionShouldBeThrownContaining('Error while loading dependency');
         $this->fixture->thenItsProperty_ShouldBe('array', null);
     }
 
@@ -253,9 +252,8 @@ class InjectionTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('MultiTypeHint');
-        $this->fixture->whenITryToMockAllOfItsProperties();
+        $this->fixture->whenIMockAllMarkedProperties();
 
-        $this->fixture->thenAnExceptionShouldBeThrownContaining('Error while loading dependency');
         $this->fixture->thenItsProperty_ShouldBe('foo', null);
     }
 

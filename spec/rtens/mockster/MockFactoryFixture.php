@@ -247,7 +247,7 @@ class MockFactoryFixture extends Fixture {
         $this->spec->assertEquals($value, $mockClass::${$property});
     }
 
-    public function whenITryToMockAllOfItsProperties() {
+    public function whenITryToMockAllMarkedProperties() {
         try {
             $this->whenIMockAllMarkedProperties();
         } catch (\Exception $e) {
