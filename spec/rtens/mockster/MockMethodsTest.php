@@ -57,7 +57,7 @@ class MockMethodsTest extends Specification {
         $this->fixture->whenICreateTheMockOf('NoMethodHere');
         $this->fixture->whenITryToAccessTheMethod('notExisting');
 
-        $this->fixture->thenAnExceptionShouldBeThrownContaining("Can't mock method 'notExisting'.");
+        $this->fixture->thenAnExceptionShouldBeThrownContaining("Can't mock method NoMethodHere::notExisting.");
     }
 
     public function testComplainWhenMethodIsStatic() {
@@ -69,7 +69,7 @@ class MockMethodsTest extends Specification {
         $this->fixture->whenICreateTheMockOf('HasAStaticMethod');
         $this->fixture->whenITryToAccessTheMethod('foo');
 
-        $this->fixture->thenAnExceptionShouldBeThrownContaining("Can't mock private or static method HasAStaticMethod::foo.");
+        $this->fixture->thenAnExceptionShouldBeThrownContaining("Can't mock method HasAStaticMethod::foo.");
     }
 
     public function testComplainWhenMethodIsPrivate() {
@@ -81,7 +81,7 @@ class MockMethodsTest extends Specification {
         $this->fixture->whenICreateTheMockOf('HasAPrivateMethod');
         $this->fixture->whenITryToAccessTheMethod('foo');
 
-        $this->fixture->thenAnExceptionShouldBeThrownContaining("Can't mock private or static method HasAPrivateMethod::foo.");
+        $this->fixture->thenAnExceptionShouldBeThrownContaining("Can't mock method HasAPrivateMethod::foo.");
     }
 
     public function testMockNoMethods() {
@@ -115,6 +115,7 @@ class MockMethodsTest extends Specification {
                 protected function myProtectedFunction() {
                     $this->called++;
                 }
+                private function myPrivateFunction() {}
             }
         ');
         $this->fixture->whenICreateTheMockOf('DontMockPublicMethods');

@@ -51,7 +51,9 @@ class Mockster {
         $this->injector->setThrowWhenCantInjectProperty(false);
 
         $reflection = new \ReflectionClass($classname);
-        $this->methods = $reflection->getMethods();
+        $this->methods = array_filter($reflection->getMethods(), function (\ReflectionMethod $m) {
+            return !$m->isPrivate() && !$m->isStatic();
+        });
     }
 
     /**
@@ -116,11 +118,6 @@ class Mockster {
     public function method($methodName) {
         foreach ($this->methods as $method) {
             if ($method->getName() == $methodName) {
-                if ($method->isStatic() || $method->isPrivate()) {
-                    throw new \InvalidArgumentException(sprintf("Can't mock private or static method %s::%s.",
-                        $this->classname, $methodName));
-                }
-
                 if (!array_key_exists($methodName, $this->stubs)) {
                     $this->stubs[$methodName] = new Method($this->factory, $method);
                 }
@@ -129,8 +126,8 @@ class Mockster {
             }
         }
 
-        throw new \InvalidArgumentException(sprintf("Can't mock method '%s'. Does not exist in class '%s'",
-            $methodName, $this->classname));
+        throw new \InvalidArgumentException(sprintf("Can't mock method %s::%s.",
+            $this->classname, $methodName));
     }
 
     /**
