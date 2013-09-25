@@ -60,6 +60,30 @@ class MockMethodsTest extends Specification {
         $this->fixture->thenAnExceptionShouldBeThrownContaining("Can't mock method 'notExisting'.");
     }
 
+    public function testComplainWhenMethodIsStatic() {
+        $this->fixture->givenTheClassDefinition('
+            class HasAStaticMethod {
+                public static function foo() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('HasAStaticMethod');
+        $this->fixture->whenITryToAccessTheMethod('foo');
+
+        $this->fixture->thenAnExceptionShouldBeThrownContaining("Can't mock private or static method HasAStaticMethod::foo.");
+    }
+
+    public function testComplainWhenMethodIsPrivate() {
+        $this->fixture->givenTheClassDefinition('
+            class HasAPrivateMethod {
+                private function foo() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('HasAPrivateMethod');
+        $this->fixture->whenITryToAccessTheMethod('foo');
+
+        $this->fixture->thenAnExceptionShouldBeThrownContaining("Can't mock private or static method HasAPrivateMethod::foo.");
+    }
+
     public function testMockNoMethods() {
         $this->fixture->givenTheClassDefinition('
             class MockNoMethods {

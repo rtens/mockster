@@ -118,7 +118,7 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function thenAnExceptionShouldBeThrownContaining($message) {
-        $this->spec->assertNotNull($this->caught);
+        $this->spec->assertNotNull($this->caught, "No exception containing [$message] was caught.");
         $this->spec->assertContains($message, $this->caught->getMessage());
     }
 

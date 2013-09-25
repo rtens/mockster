@@ -116,6 +116,10 @@ class Mockster {
     public function method($methodName) {
         foreach ($this->methods as $method) {
             if ($method->getName() == $methodName) {
+                if ($method->isStatic() || $method->isPrivate()) {
+                    throw new \InvalidArgumentException(sprintf("Can't mock private or static method %s::%s.",
+                        $this->classname, $methodName));
+                }
 
                 if (!array_key_exists($methodName, $this->stubs)) {
                     $this->stubs[$methodName] = new Method($this->factory, $method);
