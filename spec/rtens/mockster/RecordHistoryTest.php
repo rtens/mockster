@@ -74,7 +74,7 @@ class RecordHistoryTest extends Specification {
         $this->fixture->whenIUnMockTheMethod('myFunction');
         $this->fixture->whenIInvoke_WithTheArgument_And('myFunction', 'a', 'b');
 
-        $this->fixture->thenTheHistoryOf_ShouldBe('myFunction', "Method: myFunction\n  called: (a, b) => x\n");
+        $this->fixture->thenTheHistoryOf_ShouldBe('myFunction', "myFunction\n  (a, b) -> x\n");
     }
 
     public function testCompleteHistory() {
@@ -100,15 +100,15 @@ class RecordHistoryTest extends Specification {
         $this->fixture->whenIInvoke_WithTheArgument('two', 'd');
 
         $this->fixture->thenTheHistoryShouldBe('
-Method: one
-  called: (a, b) => a
+one
+  (a, b) -> a
 
-Method: two
-  called: (c) => returnTwoC
-  called: (d) => returnTwoD
+two
+  (c) -> returnTwoC
+  (d) -> returnTwoD
 
-Method: three
-  called: () => returnThree
+three
+  () -> returnThree
 ');
     }
 

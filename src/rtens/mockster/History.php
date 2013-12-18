@@ -1,6 +1,6 @@
 <?php
 namespace rtens\mockster;
- 
+
 class History {
 
     /** @var \ReflectionMethod */
@@ -117,24 +117,47 @@ class History {
     }
 
     public function __toString() {
-        $history = 'Method: ' . $this->reflection->getName() . "\n";
+        return $this->toString();
+    }
+
+    public function toString($verbosity = 0) {
+        $history = $this->reflection->getName() . PHP_EOL;
         $returned = $this->getReturnedValues();
         foreach ($this->getCalledArguments() as $i => $args) {
             $argsStrings = array();
             foreach ($args as $arg) {
-                if (is_object($arg)) {
-                    $classname = explode('\\', get_class($arg));
-                    $argsStrings[] = end($classname);
-                } else if (is_array($arg)) {
-                    $argsStrings[] = 'array(' . implode(', ', array_keys($arg)) . ')';
-                } else {
-                    $argsStrings[] = print_r($arg, true);
-                }
+                $argsStrings[] = $this->asString($arg, $verbosity);
             }
-            $history .= '  called: (' . implode(', ', $argsStrings) . ') => ' . print_r($returned[$i], true) . "\n";
+            $history .= '  (' . implode(', ', $argsStrings) . ') -> '
+                . $this->asString($returned[$i], $verbosity) . "\n";
         }
 
         return $history;
+    }
+
+    private function asString($arg, $verbosity) {
+        if (is_object($arg)) {
+            if ($verbosity == 0) {
+                $classname = explode('\\', get_class($arg));
+                return end($classname);
+            }
+            return get_class($arg);
+
+        } else if (is_array($arg)) {
+            if ($verbosity == 0 || count($arg) == 0) {
+                return 'array(' . count($arg) . ')';
+            }
+
+            $pairs = array();
+            $keys = array_keys($arg);
+            $isList = $keys[0] === 0;
+            foreach ($arg as $key => $value) {
+                $pairs[] = ($isList ? '' : (print_r($key, true) . ' => ')) . $this->asString($value, $verbosity - 1);
+            }
+            return '[' . implode(', ', $pairs) . ']';
+        } else {
+            return print_r($arg, true);
+        }
     }
 
 }

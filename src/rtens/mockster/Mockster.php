@@ -57,12 +57,15 @@ class Mockster {
     }
 
     /**
+     * @param int $verbosity
      * @return string History of method calls on this mock
      */
-    public function getHistory() {
+    public function getHistory($verbosity = 0) {
         $history = '';
         foreach ($this->stubs as $stub) {
-            $history .= "\n" . $stub->getHistory();
+            if ($stub->getHistory()->wasCalled()) {
+                $history .= PHP_EOL . $stub->getHistory()->toString($verbosity);
+            }
         }
 
         return $history;
@@ -236,6 +239,13 @@ class Mockster {
         $this->mockMethods(Mockster::F_NONE);
         $this->mockProperties(Mockster::F_ALL, $propertyFilter);
         return $this->mock;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClassname() {
+        return $this->classname;
     }
 
 }
