@@ -3,6 +3,9 @@ namespace rtens\mockster;
 
 class History {
 
+    /** @var bool */
+    private static $enabled = true;
+
     /** @var \ReflectionMethod */
     private $reflection;
 
@@ -14,6 +17,14 @@ class History {
 
     function __construct(\ReflectionMethod $reflection) {
         $this->reflection = $reflection;
+    }
+
+    public static function enable() {
+        self::$enabled = true;
+    }
+
+    public static function disable() {
+        self::$enabled = false;
     }
 
     /**
@@ -29,6 +40,10 @@ class History {
      * @return void
      */
     public function log($arguments, $returnValue) {
+        if (!self::$enabled) {
+            return;
+        }
+
         $parameters = array();
         foreach ($this->reflection->getParameters() as $param) {
             if (array_key_exists($param->getPosition(), $arguments)) {
@@ -121,7 +136,7 @@ class History {
     }
 
     public function toString($verbosity = 0) {
-        $history = $this->reflection->getName() . PHP_EOL;
+        $history = $this->reflection->getName() . ' (' . $this->getCalledCount() . ')' . PHP_EOL;
         $returned = $this->getReturnedValues();
         foreach ($this->getCalledArguments() as $i => $args) {
             $argsStrings = array();
