@@ -21,13 +21,10 @@ class Mockster {
     /** @var string Code of the generated Mock class */
     private $code;
 
-    /** @var array|Method[] */
-    private $stubs = array();
-
     /** @var string Name of this class */
     private $classname;
 
-    /** @var array|\ReflectionMethod[] */
+    /** @var MethodCollection */
     private $methods;
 
     /** @var \rtens\mockster\Mock Back-reference to parent */
@@ -52,9 +49,7 @@ class Mockster {
         $this->injector->setThrowWhenCantInjectProperty(false);
 
         $reflection = new \ReflectionClass($classname);
-        $this->methods = array_filter($reflection->getMethods(), function (\ReflectionMethod $m) {
-            return !$m->isPrivate() && !$m->isStatic();
-        });
+        $this->methods = new MethodCollection($factory, $classname, $reflection->getMethods());
     }
 
     /**
@@ -62,14 +57,7 @@ class Mockster {
      * @return string History of method calls on this mock
      */
     public function getHistory($verbosity = 0) {
-        $history = '';
-        foreach ($this->stubs as $stub) {
-            if ($stub->getHistory()->wasCalled()) {
-                $history .= PHP_EOL . $stub->getHistory()->toString($verbosity);
-            }
-        }
-
-        return $history;
+        return $this->methods->getHistory($verbosity);
     }
 
     /**
@@ -93,10 +81,14 @@ class Mockster {
      * @param null|callable $customFilter
      */
     public function mockMethods($filter = Mockster::F_ALL, $customFilter = null) {
-        $filter = new Filter($filter, $customFilter);
-        foreach ($this->methods as $method) {
-            $this->method($method->getName())->setMocked($filter->apply($method));
-        }
+        $this->methods()->dontMock()->filter($filter, $customFilter)->setMocked(true);
+    }
+
+    /**
+     * @return MethodCollection
+     */
+    public function methods() {
+        return $this->methods;
     }
 
     /**
@@ -105,18 +97,7 @@ class Mockster {
      * @return Method
      */
     public function method($methodName) {
-        foreach ($this->methods as $method) {
-            if ($method->getName() == $methodName) {
-                if (!array_key_exists($methodName, $this->stubs)) {
-                    $this->stubs[$methodName] = new Method($this->factory, $method);
-                }
-
-                return $this->stubs[$methodName];
-            }
-        }
-
-        throw new \InvalidArgumentException(sprintf("Can't mock method %s::%s.",
-            $this->classname, $methodName));
+        return $this->methods()->method($methodName);
     }
 
     /**
