@@ -1,6 +1,7 @@
 <?php
 namespace rtens\mockster;
 
+use rtens\mockster\filter\Filter;
 use watoki\factory\Injector;
 
 class Mockster {
@@ -77,10 +78,10 @@ class Mockster {
      * @throws \Exception If a property cannot be mocked because the class of the type hint cannot be found
      */
     public function mockProperties($filter = Mockster::F_ALL, $customFilter = null) {
-        $callback = $this->getFilterCallback($filter, $customFilter);
+        $filter = new Filter($filter, $customFilter);
         $this->injector->injectProperties($this->mock,
-            function (\ReflectionProperty $property) use ($callback) {
-                return $callback($property);
+            function (\ReflectionProperty $property) use ($filter) {
+                return $filter->apply($property);
             },
             new \ReflectionClass($this->classname));
     }
@@ -92,25 +93,10 @@ class Mockster {
      * @param null|callable $customFilter
      */
     public function mockMethods($filter = Mockster::F_ALL, $customFilter = null) {
-        $filter = $this->getFilterCallback($filter, $customFilter);
+        $filter = new Filter($filter, $customFilter);
         foreach ($this->methods as $method) {
-            $this->method($method->getName())->setMocked($filter($method));
+            $this->method($method->getName())->setMocked($filter->apply($method));
         }
-    }
-
-    private function getFilterCallback($filter, $customFilter) {
-        $fPublic = self::F_PUBLIC;
-        $fProtected = self::F_PROTECTED;
-        $fStatic = self::F_STATIC;
-
-        return function ($member) use ($filter, $customFilter, $fPublic, $fProtected, $fStatic) {
-            /** @var \ReflectionProperty $member */
-            return
-                (!$member->isPublic() || ($filter & $fPublic) == $fPublic) &&
-                (!$member->isProtected() || ($filter & $fProtected) == $fProtected) &&
-                (!$member->isStatic() || ($filter & $fStatic) == $fStatic) &&
-                (!$customFilter || $customFilter($member));
-        };
     }
 
     /**
