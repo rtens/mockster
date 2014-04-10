@@ -47,7 +47,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
 
     /**
      * @param bool $mocked
-     * @return Method
+     * @return MethodCollection
      */
     public function setMocked($mocked = true) {
         foreach ($this->methods as $method) {
@@ -57,7 +57,8 @@ class MethodCollection implements \Countable, \IteratorAggregate {
     }
 
     /**
-     * Sets the method to not-mocked
+     * Sets the methods to not-mocked
+     * @return MethodCollection
      */
     public function dontMock() {
         return $this->setMocked(false);
@@ -147,8 +148,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
     public function filter($filter = Mockster::F_ALL, $customFilter = null) {
         $filter = new Filter($filter, $customFilter);
         return new static($this->factory, $this->className, array_filter($this->methods, function(\ReflectionMethod $method) use ($filter) {
-            $a = $filter->apply($method);
-            return $a;
+            return $filter->apply($method);
         }), $this->stubRegistry);
     }
 
