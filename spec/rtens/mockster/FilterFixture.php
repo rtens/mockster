@@ -14,7 +14,7 @@ class FilterFixture extends Fixture {
     /**
      * @var array|\ReflectionMethod[]
      */
-    private $filterOutput = [];
+    private $filterOutput = array();
 
     public function givenTheFilterWithTheBitMask($bitmask) {
         $this->filter = new Filter($bitmask);
