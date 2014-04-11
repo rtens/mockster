@@ -13,7 +13,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
     /**
      * @var array|\ReflectionMethod[]
      */
-    private $methods;
+    private $methods = array();
 
     /**
      * @var StubRegistry
@@ -39,10 +39,14 @@ class MethodCollection implements \Countable, \IteratorAggregate {
     public function __construct(MockFactory $factory, $className, array $methods = array(), StubRegistry $stubRegistry = null) {
         $this->factory = $factory;
         $this->className = $className;
-        $this->methods = array_filter($methods, function (\ReflectionMethod $m) {
-            return !$m->isPrivate() && !$m->isStatic();
-        });
         $this->stubRegistry = $stubRegistry ? : new StubRegistry();
+
+        foreach ($methods as $method) {
+            if ($method->isPrivate() || $method->isStatic()) {
+                continue;
+            }
+            $this->methods[$method->getName()] = $method;
+        }
     }
 
     /**
@@ -133,17 +137,15 @@ class MethodCollection implements \Countable, \IteratorAggregate {
      * @throws \InvalidArgumentException
      */
     public function method($methodName) {
-        foreach ($this->methods as $method) {
-            if ($method->getName() == $methodName) {
-                if (!$this->stubRegistry->exists($methodName)) {
-                    $this->stubRegistry->set($methodName, new Method($this->factory, $method));
-                }
-                return $this->stubRegistry->get($methodName);
-            }
+        if (!isset($this->methods[$methodName])) {
+            throw new \InvalidArgumentException(sprintf("Can't mock method %s::%s.",
+                $this->className, $methodName));
         }
 
-        throw new \InvalidArgumentException(sprintf("Can't mock method %s::%s.",
-            $this->className, $methodName));
+        if (!$this->stubRegistry->exists($methodName)) {
+            $this->stubRegistry->set($methodName, new Method($this->factory, $this->methods[$methodName]));
+        }
+        return $this->stubRegistry->get($methodName);
     }
 
     /**
@@ -169,7 +171,10 @@ class MethodCollection implements \Countable, \IteratorAggregate {
      * <b>Traversable</b>
      */
     public function getIterator() {
-        return new ArrayIterator($this->methods);
+        $that = $this;
+        return new ArrayIterator(array_map(function(\ReflectionMethod $method) use ($that) {
+            return $that->method($method->getName());
+        }, $this->methods));
     }
 
     /**
