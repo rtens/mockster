@@ -65,6 +65,13 @@ class MockFactoryFixture extends Fixture {
         $this->returnValue = call_user_func(array($this->mock, $method));
     }
 
+    public function whenIInvokeAllMethods() {
+        foreach ($this->mock->__mock()->methods() as $method) {
+            /* @var $method \rtens\mockster\Method */
+            call_user_func(array($this->mock, $method->getName()));
+        }
+    }
+
     public function whenIInvoke_WithTheArgument($method, $argument) {
         $this->returnValue = call_user_func(array($this->mock, $method), $argument);
     }
