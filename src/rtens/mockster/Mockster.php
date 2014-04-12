@@ -106,6 +106,7 @@ class Mockster {
         return function ($member) use ($filter, $customFilter, $fPublic, $fProtected, $fStatic) {
             /** @var \ReflectionProperty $member */
             return
+                !$member->isPrivate() &&
                 (!$member->isPublic() || ($filter & $fPublic) == $fPublic) &&
                 (!$member->isProtected() || ($filter & $fProtected) == $fProtected) &&
                 (!$member->isStatic() || ($filter & $fStatic) == $fStatic) &&

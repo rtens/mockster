@@ -167,7 +167,7 @@ class InjectionTest extends Specification {
         $this->fixture->whenICreateTheMockOf('PrivateProperty');
         $this->fixture->whenIMockAllItsProperties();
 
-        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('foo', 'StdClass');
+        $this->fixture->thenItsProperty_ShouldBe('foo', null);
     }
 
     public function testInjectionOfPrimitiveTypes() {

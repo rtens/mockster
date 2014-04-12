@@ -223,7 +223,7 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function whenIMockAllItsProperties() {
-        $this->mock->__mock()->mockProperties(Mockster::F_PROTECTED);
+        $this->mock->__mock()->mockProperties(Mockster::F_ALL);
     }
 
     public function whenIInvoke_OnTheMockWithTheArguments($method, $args) {
