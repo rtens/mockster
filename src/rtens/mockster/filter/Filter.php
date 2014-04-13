@@ -33,6 +33,7 @@ class Filter {
         $customFilter = $this->customFilter;
 
         return
+            !$member->isPrivate() &&
             (!$member->isPublic() || ($this->filter & Mockster::F_PUBLIC) == Mockster::F_PUBLIC) &&
             (!$member->isProtected() || ($this->filter & Mockster::F_PROTECTED) == Mockster::F_PROTECTED) &&
             (!$member->isStatic() || ($this->filter & Mockster::F_STATIC) == Mockster::F_STATIC) &&

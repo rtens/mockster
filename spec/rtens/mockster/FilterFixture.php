@@ -36,6 +36,10 @@ class FilterFixture extends Fixture {
         $this->spec->assertNotNull($this->getFilteredMethod($methodName));
     }
 
+    public function thenFilterMatchesDoesNotContainTheMethod($methodName) {
+        $this->spec->assertNull($this->getFilteredMethod($methodName));
+    }
+
     /**
      * @param string $methodName
      * @return \ReflectionMethod|null

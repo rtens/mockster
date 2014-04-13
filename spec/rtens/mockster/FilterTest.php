@@ -16,12 +16,16 @@ class FilterTest extends Specification {
                 public function myFunction() {}
 
                 protected function myFunctionProtected() {}
+
+                private function myFunctionPrivate() {}
             }
         ');
         $this->filter->givenTheFilterWithTheBitMask(Mockster::F_ALL);
         $this->filter->whenTheFilterIsAppliedToTheMethodsOfClass('MatchAll');
         $this->filter->thenFilterMatchesContainTheMethod('myFunction');
         $this->filter->thenFilterMatchesContainTheMethod('myFunctionProtected');
+        // private members are ignored
+        $this->filter->thenFilterMatchesDoesNotContainTheMethod('myFunctionPrivate');
         $this->filter->thenTheFilterMatched_Methods(2);
     }
 
