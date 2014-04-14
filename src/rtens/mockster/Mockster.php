@@ -1,6 +1,7 @@
 <?php
 namespace rtens\mockster;
 
+use rtens\mockster\filter\Filter;
 use watoki\factory\Injector;
 
 class Mockster {
@@ -20,13 +21,10 @@ class Mockster {
     /** @var string Code of the generated Mock class */
     private $code;
 
-    /** @var array|Method[] */
-    private $stubs = array();
-
     /** @var string Name of this class */
     private $classname;
 
-    /** @var array|\ReflectionMethod[] */
+    /** @var MethodCollection */
     private $methods;
 
     /** @var \rtens\mockster\Mock Back-reference to parent */
@@ -51,9 +49,7 @@ class Mockster {
         $this->injector->setThrowWhenCantInjectProperty(false);
 
         $reflection = new \ReflectionClass($classname);
-        $this->methods = array_filter($reflection->getMethods(), function (\ReflectionMethod $m) {
-            return !$m->isPrivate() && !$m->isStatic();
-        });
+        $this->methods = new MethodCollection($factory, $classname, $reflection->getMethods());
     }
 
     /**
@@ -61,14 +57,7 @@ class Mockster {
      * @return string History of method calls on this mock
      */
     public function getHistory($verbosity = 0) {
-        $history = '';
-        foreach ($this->stubs as $stub) {
-            if ($stub->getHistory()->wasCalled()) {
-                $history .= PHP_EOL . $stub->getHistory()->toString($verbosity);
-            }
-        }
-
-        return $history;
+        return $this->methods->getHistory($verbosity);
     }
 
     /**
@@ -77,10 +66,10 @@ class Mockster {
      * @throws \Exception If a property cannot be mocked because the class of the type hint cannot be found
      */
     public function mockProperties($filter = Mockster::F_ALL, $customFilter = null) {
-        $callback = $this->getFilterCallback($filter, $customFilter);
+        $filter = new Filter($filter, $customFilter);
         $this->injector->injectProperties($this->mock,
-            function (\ReflectionProperty $property) use ($callback) {
-                return $callback($property);
+            function (\ReflectionProperty $property) use ($filter) {
+                return $filter->apply($property);
             },
             new \ReflectionClass($this->classname));
     }
@@ -92,26 +81,14 @@ class Mockster {
      * @param null|callable $customFilter
      */
     public function mockMethods($filter = Mockster::F_ALL, $customFilter = null) {
-        $filter = $this->getFilterCallback($filter, $customFilter);
-        foreach ($this->methods as $method) {
-            $this->method($method->getName())->setMocked($filter($method));
-        }
+        $this->methods()->dontMock()->filter($filter, $customFilter)->setMocked(true);
     }
 
-    private function getFilterCallback($filter, $customFilter) {
-        $fPublic = self::F_PUBLIC;
-        $fProtected = self::F_PROTECTED;
-        $fStatic = self::F_STATIC;
-
-        return function ($member) use ($filter, $customFilter, $fPublic, $fProtected, $fStatic) {
-            /** @var \ReflectionProperty $member */
-            return
-                !$member->isPrivate() &&
-                (!$member->isPublic() || ($filter & $fPublic) == $fPublic) &&
-                (!$member->isProtected() || ($filter & $fProtected) == $fProtected) &&
-                (!$member->isStatic() || ($filter & $fStatic) == $fStatic) &&
-                (!$customFilter || $customFilter($member));
-        };
+    /**
+     * @return MethodCollection
+     */
+    public function methods() {
+        return $this->methods;
     }
 
     /**
@@ -120,18 +97,7 @@ class Mockster {
      * @return Method
      */
     public function method($methodName) {
-        foreach ($this->methods as $method) {
-            if ($method->getName() == $methodName) {
-                if (!array_key_exists($methodName, $this->stubs)) {
-                    $this->stubs[$methodName] = new Method($this->factory, $method);
-                }
-
-                return $this->stubs[$methodName];
-            }
-        }
-
-        throw new \InvalidArgumentException(sprintf("Can't mock method %s::%s.",
-            $this->classname, $methodName));
+        return $this->methods()->method($methodName);
     }
 
     /**

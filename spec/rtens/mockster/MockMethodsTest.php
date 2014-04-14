@@ -212,4 +212,21 @@ class MockMethodsTest extends Specification {
         $this->fixture->whenIInvoke('myFunction');
     }
 
+    public function testMethodIterator() {
+        $this->fixture->givenTheClassDefinition('
+            class MethodIterator {
+                public $called = 0;
+                public function myPublicFunction() {
+                    $this->called++;
+                }
+                protected function myProtectedFunction() {
+                    $this->called++;
+                }
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('MethodIterator');
+        $this->fixture->whenIInvokeAllMethods();
+        $this->fixture->thenItsProperty_ShouldBe('called', 0);
+    }
+
 }
