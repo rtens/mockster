@@ -146,4 +146,55 @@ class MockReturnValueTest extends Specification {
         $this->fixture->thenItShouldReturn('foo');
     }
 
+    public function testMockReturnsScalarValueNotMatchingTypeHint() {
+        $this->markTestIncomplete();
+        $this->fixture->givenTheClassDefinition('
+            class ReturnsScalarValueNotMatchingTypeHint {
+                /**
+                 * @return string
+                 */
+                public function shouldReturnAString() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('ReturnsScalarValueNotMatchingTypeHint');
+        $this->fixture->whenIConfigureTheMethod_ToReturn('shouldReturnAString', 1);
+        $this->fixture->whenITryToInvoke('shouldReturnAString');
+
+        $this->fixture->thenAnExceptionShouldBeThrownContaining('foo');
+    }
+
+    public function testMockReturnsObjectNotMatchingTypeHint() {
+        $this->markTestIncomplete();
+        $this->fixture->givenTheClassDefinition('
+            class ReturnsObjectNotMatchingTypeHint {
+                /**
+                 * @return string
+                 */
+                public function shouldReturnAString() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('ReturnsObjectNotMatchingTypeHint');
+        $this->fixture->whenIConfigureTheMethod_ToReturn('shouldReturnAString', new \StdClass());
+        $this->fixture->whenIInvoke('shouldReturnAString');
+
+        $this->fixture->thenAnExceptionShouldBeThrownContaining('foo');
+    }
+
+    public function testMockReturnsValueMatchingTypeHint() {
+        $this->fixture->givenTheClassDefinition('
+            class ReturnsValueMatchingTypeHint {
+                /**
+                 * @return string
+                 */
+                public function shouldReturnAString() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('ReturnsValueMatchingTypeHint');
+        $this->fixture->whenIConfigureTheMethod_ToReturn('shouldReturnAString', 'a string');
+        $this->fixture->whenIInvoke('shouldReturnAString');
+
+        $this->fixture->thenItShouldReturn('a string');
+    }
+
+
 }

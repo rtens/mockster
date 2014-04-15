@@ -36,6 +36,11 @@ class Method {
     private $history;
 
     /**
+     * @var MethodTypeHint
+     */
+    private $typeHint;
+
+    /**
      * @param \rtens\mockster\MockFactory $factory
      * @param \ReflectionMethod $reflection
      */
@@ -43,6 +48,7 @@ class Method {
         $this->factory = $factory;
         $this->reflection = $reflection;
         $this->history = new History($reflection);
+        $this->typeHint = new MethodTypeHint($factory, $reflection);
     }
 
     /**
@@ -67,99 +73,16 @@ class Method {
             }
         }
 
-        $value = $this->getReturnTypeHintMock();
+        $value = $this->typeHint->getDefaultValue();
         $this->history->log($arguments, $value);
         return $value;
     }
 
     /**
-     * @throws \Exception
      * @return array|bool|float|int|Mock|null|string
      */
     public function getReturnTypeHintMock() {
-        $matches = array();
-        $found = preg_match('/@return\s+(\S+)/', $this->reflection->getDocComment(), $matches);
-
-        if (!$found) {
-            return null;
-        }
-
-        return $this->getInstanceFromHint($matches[1], $this->reflection->getDeclaringClass());
-    }
-
-    /**
-     * Returns a mock or default value based on a type hint which may contain several classes spearated by |
-     *
-     * e.g.
-     * string[]|array => array()
-     * null|string => null
-     * string|null => ''
-     *
-     * @param string $hint
-     * @param \ReflectionClass $class
-     * @throws \InvalidArgumentException
-     * @return Mock|null|array|bool|float|int|string
-     */
-    public function getInstanceFromHint($hint, \ReflectionClass $class) {
-        if (!$hint) {
-            return null;
-        }
-
-        foreach ($this->explodeMultipleHints($hint) as $typeHint) {
-            $resolver = new ClassResolver($class);
-            $className = $resolver->resolve($typeHint);
-            if ($className) {
-                return $this->factory->getInstance($className);
-            }
-
-            try {
-                return $this->getPrimitiveFromHint($typeHint);
-            } catch (\InvalidArgumentException $e) {
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Creates a mocked object or default value for given class or primitive.
-     *
-     * @param string $type
-     * @return array|bool|float|int|Mock|null|string
-     * @throws \InvalidArgumentException
-     */
-    private function getPrimitiveFromHint($type) {
-        switch (strtolower($type)) {
-            case 'array':
-                return array();
-            case 'int':
-            case 'integer':
-                return 0;
-            case 'float':
-                return 0.0;
-            case 'bool':
-            case 'boolean':
-                return false;
-            case 'string':
-                return '';
-            case 'null':
-            case 'mixed':
-            case 'object':
-            case 'callable':
-            case 'void':
-            case 'closure':
-                return null;
-        }
-
-        throw new \InvalidArgumentException("Not a primitive type [$type].");
-    }
-
-    private function explodeMultipleHints($hint) {
-        if (strpos($hint, '|') !== false) {
-            return explode('|', $hint);
-        } else {
-            return array($hint);
-        }
+        return $this->typeHint->getDefaultValue();
     }
 
     /**
