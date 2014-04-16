@@ -37,6 +37,37 @@ class MethodTypeHint {
     }
 
     /**
+     * Returns a list of all types which have been declared as return type of the method
+     *
+     * @return array
+     */
+    public function getTypeHints() {
+        return $this->getTypeHintsFromDocComment();
+    }
+
+    /**
+     * Evaluates if the given value matches at least one of the given method type hints
+     *
+     * @param mixed $value
+     * @return bool
+     */
+    public function matchesTypeHint($value) {
+        $types = $this->getTypeHintsFromDocComment();
+
+        if (!$types) {
+            // if no types are hinted, we assume that every return value matches
+            return true;
+        }
+
+        foreach($types as $type) {
+            if ($this->isOfType($type, $value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Returns a mock or scalar default value based on a type hint which may contain several classes separated by |
      *
      * @return Mock|null|array|bool|float|int|string
@@ -96,8 +127,40 @@ class MethodTypeHint {
     }
 
     /**
-     * Creates a mocked object or default value for given class or primitive.
-     *
+     * @param string $type
+     * @param mixed $value
+     * @return bool
+     */
+    private function isOfType($type, $value) {
+        switch (strtolower($type)) {
+            case 'array':
+                return is_array($value);
+            case 'int':
+            case 'integer':
+                return is_int($value);
+            case 'float':
+                return is_float($value);
+            case 'bool':
+            case 'boolean':
+                return is_bool($value);
+            case 'string':
+                return is_string($value);
+            case 'object':
+                return is_object($value);
+            case 'null':
+                return is_null($value);
+            case 'mixed':
+                return true;
+            case 'callable':
+            case 'closure':
+                return is_callable($value);
+            case 'void':
+                return is_null($value);
+        }
+        return $value instanceof $type;
+    }
+
+    /**
      * @param string $type
      * @return array|bool|float|int|Mock|null|string
      * @throws \InvalidArgumentException
@@ -128,6 +191,10 @@ class MethodTypeHint {
         throw new \InvalidArgumentException("Not a primitive type [$type].");
     }
 
+    /**
+     * @param string $hint
+     * @return array
+     */
     private function explodeMultipleHints($hint) {
         if (strpos($hint, '|') !== false) {
             return explode('|', $hint);

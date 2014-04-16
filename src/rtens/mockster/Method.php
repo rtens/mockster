@@ -68,6 +68,12 @@ class Method {
         foreach ($this->behaviours as $behaviour) {
             if ($behaviour->appliesTo($named)) {
                 $value = $behaviour->getReturnValue($arguments);
+                if (!$this->typeHint->matchesTypeHint($value)) {
+                    $actualType = is_object($value) ? get_class($value) : (gettype($value) === 'double' ? 'float' : gettype($value));
+                    throw new \InvalidArgumentException('Expected return value of method ' . $this->reflection->getDeclaringClass()->getName() .
+                        ':' . $this->getName() . ' to be of one of the following types: [' . implode(',', $this->typeHint->getTypeHints()) . ']. ' .
+                    'Instead value is ' . $actualType);
+                }
                 $this->history->log($arguments, $value);
                 return $value;
             }
