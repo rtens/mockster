@@ -273,4 +273,23 @@ class MockReturnValueTest extends Specification {
 
         $this->fixture->thenAnExceptionShouldBeThrownContaining('Instead value is NULL');
     }
+
+    public function testMockReturnsMock() {
+        $this->fixture->givenTheClassDefinition('
+            class MockReturnsMock_ClassToReturn {}
+        ');
+        $this->fixture->givenTheClassDefinition('
+            class MockReturnsMock {
+                /**
+                 * @return MockReturnsMock_ClassToReturn
+                 */
+                public function myFunction() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('MockReturnsMock');
+        $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'MockReturnsMock_ClassToReturn');
+        $this->fixture->whenIInvoke('myFunction');
+
+        $this->fixture->thenItShouldReturnAnInstanceOf('MockReturnsMock_ClassToReturn');
+    }
 }
