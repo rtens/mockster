@@ -51,11 +51,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
 
     /**
      * @param bool $mocked
-<<<<<<< HEAD
-     * @return Method
-=======
      * @return MethodCollection
->>>>>>> exposed-mock-methods
      */
     public function setMocked($mocked = true) {
         foreach ($this->methods as $method) {
@@ -65,12 +61,9 @@ class MethodCollection implements \Countable, \IteratorAggregate {
     }
 
     /**
-<<<<<<< HEAD
-     * Sets the method to not-mocked
-=======
      * Sets the methods to not-mocked
+     *
      * @return MethodCollection
->>>>>>> exposed-mock-methods
      */
     public function dontMock() {
         return $this->setMocked(false);
