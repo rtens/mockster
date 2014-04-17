@@ -143,6 +143,11 @@ class MockFactoryFixture extends Fixture {
         $this->mock->__mock()->method($method)->willReturn($return);
     }
 
+    public function whenIConfigureTheMethod_ToReturnAMockOf($method, $class) {
+        $factory = new MockFactory();
+        $this->mock->__mock()->method($method)->willReturn($factory->getInstance($class));
+    }
+
     public function whenIConfigureTheMethod_ToReturn_WhenCalledWithTheArgument($method, $return, $arg) {
         $this->mock->__mock()->method($method)->willReturn($return)->withArguments($arg);
     }

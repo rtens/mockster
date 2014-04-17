@@ -62,6 +62,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
 
     /**
      * Sets the methods to not-mocked
+     *
      * @return MethodCollection
      */
     public function dontMock() {
