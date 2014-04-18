@@ -313,6 +313,6 @@ class MockReturnValueTest extends Specification {
         $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn');
         $this->fixture->whenIInvoke('myFunction');
 
-        $this->fixture->thenItShouldReturnAnInstanceOf('some\name\space\ReturnsObjectReferencedInUseStatement');
+        $this->fixture->thenItShouldReturnAnInstanceOf('some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn');
     }
 }
