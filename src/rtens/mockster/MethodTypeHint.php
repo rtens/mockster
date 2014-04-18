@@ -74,7 +74,7 @@ class MethodTypeHint {
      */
     public function getDefaultValue() {
         if ($this->defaultValue === null) {
-            $this->defaultValue = $this->getDefaultValueGenerator();
+            $this->defaultValue = $this->generateDefaultValue();
         }
 
         $v = $this->defaultValue;
@@ -87,7 +87,7 @@ class MethodTypeHint {
      *
      * @return callable|array|bool|float|int|string
      */
-    private function getDefaultValueGenerator() {
+    private function generateDefaultValue() {
         $types = $this->getTypeHintsFromDocComment();
 
         foreach ($types as $type) {
@@ -199,7 +199,7 @@ class MethodTypeHint {
             };
         }
 
-        throw new \InvalidArgumentException("Not a primitive type [$type].");
+        throw new \InvalidArgumentException("Cannot resolve value for [$type].");
     }
 
     /**
