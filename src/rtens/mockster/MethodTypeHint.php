@@ -18,9 +18,9 @@ class MethodTypeHint {
     private $types;
 
     /**
-     * @var callable
+     * @var callable|array|bool|float|int|string
      */
-    private $defaultValueCallback;
+    private $defaultValue;
 
     /**
      * @var MockFactory
@@ -59,7 +59,7 @@ class MethodTypeHint {
             return true;
         }
 
-        foreach($types as $type) {
+        foreach ($types as $type) {
             if ($this->isOfType($type, $value)) {
                 return true;
             }
@@ -73,42 +73,35 @@ class MethodTypeHint {
      * @return Mock|null|array|bool|float|int|string
      */
     public function getDefaultValue() {
-        if ($this->defaultValueCallback === null) {
-            $this->defaultValueCallback = $this->getDefaultValueCallback();
+        if ($this->defaultValue === null) {
+            $this->defaultValue = $this->generateDefaultValue();
         }
 
-        $fn = $this->defaultValueCallback;
-        return $fn();
+        $v = $this->defaultValue;
+        return is_callable($v) ? $v() : $v;
     }
 
     /**
-     * Iterates over all type hints in the doc comment and creates a callback which will return the default value
+     * Iterates over all type hints in the doc comment and tries to find a matching default value
+     * If the returned value is a class instance or null a generator callback is returned instead
      *
-     * @return callable
+     * @return callable|array|bool|float|int|string
      */
-    private function getDefaultValueCallback() {
+    private function generateDefaultValue() {
         $types = $this->getTypeHintsFromDocComment();
-        $class = $this->reflection->getDeclaringClass();
 
         foreach ($types as $type) {
-            $resolver = new ClassResolver($class);
-            $className = $resolver->resolve($type);
-            if ($className) {
-                $factory = $this->factory;
-                return function() use ($factory, $className) {
-                    return $factory->getInstance($className);
-                };
-            }
-
             try {
-                $value = $this->getPrimitiveFromHint($type);
-                return function() use ($value) {
+                $value = $this->getValueFromHint($type);
+                if ($value !== null) {
                     return $value;
-                };
+                }
             } catch (\InvalidArgumentException $e) {}
         }
 
-        return function() {};
+        return function() {
+            return null;
+        };
     }
 
     /**
@@ -122,7 +115,15 @@ class MethodTypeHint {
         $matches = array();
         $found = preg_match('/@return\s+(\S+)/', $this->reflection->getDocComment(), $matches);
 
-        $this->types = $found ? $this->explodeMultipleHints($matches[1]) : array();
+        $types = $found ? $this->explodeMultipleHints($matches[1]) : array();
+        $resolver = new ClassResolver($this->reflection->getDeclaringClass());
+        $factory = $this->factory;
+
+        $this->types = array_map(function ($type) use ($factory, $resolver) {
+            $className = $resolver->resolve($type);
+            return $className ? : $type;
+        }, $types);
+
         return $this->types;
     }
 
@@ -162,10 +163,10 @@ class MethodTypeHint {
 
     /**
      * @param string $type
-     * @return array|bool|float|int|Mock|null|string
+     * @return array|bool|float|int|null|string
      * @throws \InvalidArgumentException
      */
-    private function getPrimitiveFromHint($type) {
+    private function getValueFromHint($type) {
         switch (strtolower($type)) {
             case 'array':
                 return array();
@@ -188,7 +189,17 @@ class MethodTypeHint {
                 return null;
         }
 
-        throw new \InvalidArgumentException("Not a primitive type [$type].");
+        $resolver = new ClassResolver($this->reflection->getDeclaringClass());
+        $className = $resolver->resolve($type);
+
+        if ($className) {
+            $factory = $this->factory;
+            return function() use($factory, $className) {
+                return $factory->getInstance($className);
+            };
+        }
+
+        throw new \InvalidArgumentException("Cannot resolve value for [$type].");
     }
 
     /**

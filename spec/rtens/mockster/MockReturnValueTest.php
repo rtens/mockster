@@ -292,4 +292,27 @@ class MockReturnValueTest extends Specification {
 
         $this->fixture->thenItShouldReturnAnInstanceOf('MockReturnsMock_ClassToReturn');
     }
+
+    public function testMockReturnsObjectReferencedInUseStatement() {
+        $this->fixture->givenTheClassDefinition('
+            namespace some\name\space;
+
+            class ReturnsObjectReferencedInUseStatement_ClassToReturn {}
+        ');
+        $this->fixture->givenTheClassDefinition('
+            use some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn;
+
+            class ReturnsObjectReferencedInUseStatement {
+                /**
+                 * @return ReturnsObjectReferencedInUseStatement_ClassToReturn
+                 */
+                public function myFunction() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('ReturnsObjectReferencedInUseStatement');
+        $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn');
+        $this->fixture->whenIInvoke('myFunction');
+
+        $this->fixture->thenItShouldReturnAnInstanceOf('some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn');
+    }
 }
