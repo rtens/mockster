@@ -1,5 +1,5 @@
 <?php
-namespace spec\rtens\mockster;
+namespace spec\rtens\mockster\fixtures;
 
 use rtens\mockster\Mock;
 use rtens\mockster\MockFactory;

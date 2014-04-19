@@ -1,5 +1,5 @@
 <?php
-namespace spec\rtens\mockster;
+namespace spec\rtens\mockster\fixtures;
 
 use rtens\mockster\filter\Filter;
 use watoki\scrut\Fixture;
