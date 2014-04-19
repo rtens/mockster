@@ -96,7 +96,8 @@ class MethodTypeHint {
                 if ($value !== null) {
                     return $value;
                 }
-            } catch (\InvalidArgumentException $e) {}
+            } catch (\InvalidArgumentException $e) {
+            }
         }
 
         return function() {
@@ -194,7 +195,7 @@ class MethodTypeHint {
 
         if ($className) {
             $factory = $this->factory;
-            return function() use($factory, $className) {
+            return function() use ($factory, $className) {
                 return $factory->getInstance($className);
             };
         }

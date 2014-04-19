@@ -1,9 +1,9 @@
 <?php
 namespace rtens\mockster;
+
 use rtens\mockster\behaviour\ReturnValueBehaviour;
 use rtens\mockster\behaviour\CallbackBehaviour;
 use rtens\mockster\behaviour\ThrowExceptionBehaviour;
-use watoki\factory\ClassResolver;
 
 /**
  * A mocked method collects all its invocations and forwards them to a Behaviour if set.
@@ -55,6 +55,7 @@ class Method {
      * Called when the method is invoked.
      *
      * @param array $arguments List of arguments
+     * @throws \InvalidArgumentException If the returned value does not match the type hint
      * @return mixed The return value
      */
     public function invoke($arguments) {
@@ -69,10 +70,13 @@ class Method {
             if ($behaviour->appliesTo($named)) {
                 $value = $behaviour->getReturnValue($arguments);
                 if (!$this->typeHint->matchesTypeHint($value)) {
-                    $actualType = is_object($value) ? get_class($value) : (gettype($value) === 'double' ? 'float' : gettype($value));
-                    throw new \InvalidArgumentException('Expected return value of method ' . $this->reflection->getDeclaringClass()->getName() .
-                        ':' . $this->getName() . ' to be of one of the following types: [' . implode(',', $this->typeHint->getTypeHints()) . ']. ' .
-                    'Instead value is ' . $actualType);
+                    $actualType = is_object($value) ? get_class($value) : gettype($value);
+                    throw new \InvalidArgumentException(
+                        'Expected return value of method ' .
+                        $this->reflection->getDeclaringClass()->getName() .
+                        ':' . $this->getName() . ' to be of one of the following types: [' .
+                        implode(',', $this->typeHint->getTypeHints()) . ']. ' .
+                        'Instead value is ' . $actualType);
                 }
                 $this->history->log($arguments, $value);
                 return $value;
