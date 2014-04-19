@@ -19,5 +19,13 @@ class MockFactory extends Factory {
         return parent::getInstance($class, $args);
     }
 
+    public function getMock($class) {
+        return $this->getInstance($class);
+    }
+
+    public function getTestUnit($class, $args = array()) {
+        return $this->getInstance($class, $args)->__mock()->makeTestUnit();
+    }
+
 }
 ?>
