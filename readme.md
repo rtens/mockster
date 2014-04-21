@@ -33,9 +33,8 @@ To run the test suite just execute `phpunit` in the base folder of mockster.
 
 ## Documentation ##
 
-You can find all documentation in form of [executable specification] on [dox].
+You can find all documentation in form of [executable specification on dox][dox].
 
-[executable specification]: http://specificationbyexample.com/key_ideas.html
 [dox]: http://dox.rtens.org/rtens-mockster
 
 ## Contribution ##
