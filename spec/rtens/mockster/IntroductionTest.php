@@ -13,16 +13,20 @@ class IntroductionTest extends Specification {
     public function testQuickStart() {
         $this->givenClassDefinitionsForQuickStart();
 
-        // First create the instance of our *Unit Under Test* using the `MockFactory` which automatically
-        // mocks all of its dependencies.
+        /*
+         * First create the instance of our *Unit Under Test* using the `MockFactory` which automatically
+         * mocks all of its dependencies.
+         */
         $factory = new MockFactory();
         $uut = $factory->getTestUnit('SomeClass');
 
-        // Then configure the behaviour of the dependencies. Create a mock of the `User` entity and
-        // use the injected `Database` mock.
+        /*
+         * Then configure the behaviour of the dependencies. Create a mock of the `User` entity and
+         * use the injected `Database` mock.
+         */
         $user = $factory->getInstance('User');
         $dbMock = $uut->__mock()->get('database');
-        $dbMock->__mock()->method('readUser')->willReturn($user); // stubs method to return mock
+        $dbMock->__mock()->method('readUser')->willReturn($user);
 
         // Now execute the code to be tested
         $uut->setUserName(1, 'Bart');
@@ -134,6 +138,7 @@ class IntroductionTest extends Specification {
          * [sbe]: http://specificationbyexample.com/
          * [bdd]: http://dannorth.net/introducing-bdd/
          */
+        null;
     }
 
     private function givenClassDefinitionsForQuickStart() {
