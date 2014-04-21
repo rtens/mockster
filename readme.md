@@ -33,12 +33,10 @@ To run the test suite just execute `phpunit` in the base folder of mockster.
 
 ## Documentation ##
 
-You can find all documentation in form of [executable specification] in the [spec] directory. If new to
-the project, start with the [introduction].
+You can find all documentation in form of [executable specification] on [dox].
 
 [executable specification]: http://specificationbyexample.com/key_ideas.html
-[spec]: https://github.com/rtens/mockster/tree/master/spec/rtens/mockster/
-[introduction]: https://github.com/rtens/mockster/tree/master/spec/rtens/mockster/IntroductionTest.php
+[dox]: http://dox.rtens.org/rtens-mockster
 
 ## Contribution ##
 
