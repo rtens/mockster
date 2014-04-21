@@ -130,13 +130,17 @@ class IntroductionTest extends Specification {
     public function testFurtherDocumentation() {
         /*
          * This project is documented using [Specification by Example][sbe] (aka [Behavior-Driven Development][bdd]).
-         * You can find the executable specifications in the `spec` folder (along with this file).
+         * You can find the executable specifications in the [`spec`][spec] folder (along with this file).
          *
-         * As a starting point, try `CreateMock` and `MethodBehaviour`. For making assertions check out
-         * `RecordHistory`.
+         * You can find a browsable human-friendly export of this documentation of [dox].
          *
+         * As a starting point, try [`CreateMock`](CreateMock) and [`MethodBehaviour`](MethodBehaviour). For
+         * documentation on making assertions check out [`RecordHistory`](RecordHistory).
+         *
+         * [dox]: http://dox.rtens.org/rtens-mockster
          * [sbe]: http://specificationbyexample.com/
          * [bdd]: http://dannorth.net/introducing-bdd/
+         * [spec]: https://github.com/rtens/mockster/tree/master/spec/rtens/mockster
          */
         null;
     }
