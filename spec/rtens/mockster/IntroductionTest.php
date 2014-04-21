@@ -11,7 +11,38 @@ class IntroductionTest extends Specification {
      * A typical test with *mockster* might look like this.
      */
     public function testQuickStart() {
-        $this->givenClassDefinitionsForQuickStart();
+        $this->givenTheClassDefinitions('
+            class SomeClass {
+
+                /** @var Database */
+                protected $database;
+
+                public function setUserName($id, $name) {
+                    $user = $this->database->readUser($id);
+                    $user->setName($name);
+                    $this->database->update($user);
+                }
+
+            }
+
+            class DataBase {
+
+                public function readUser($id) {
+                    // [...]
+                }
+
+                public function update($object) {
+                    // [...]
+                }
+            }
+
+            class User {
+
+                public function setName($name) {
+                    // [...]
+                }
+            }'
+        );
 
         /*
          * First create the instance of our *Unit Under Test* using the `MockFactory` which automatically
@@ -40,7 +71,40 @@ class IntroductionTest extends Specification {
      * Let's have a look at the parts of the described test in more detail.
      */
     public function testBasicUsage() {
-        $this->givenClassDefinitionsForOverview();
+        $this->givenTheClassDefinitions('
+            class YourClass {
+
+                /**
+                 * @return MyClass
+                 */
+                public function bar() {
+                }
+            }
+
+            class MyClass {
+
+                /**
+                 * @var YourClass
+                 */
+                protected $yours;
+
+                /**
+                 * @param string $name
+                 * @param YourClass $yourClass
+                 */
+                public function __construct($name, YourClass $yourClass) {
+                    // [...]
+                }
+
+                /**
+                 * @param string $arg
+                 * @return string
+                 */
+                public function foo($arg = "") {
+                    return "foo" . $arg;
+                }
+            }'
+        );
 
         /*
          * Mocks are create by the `MockFactory`, extends [watoki/Factory] so it behaves a lot like a Dependency
@@ -145,78 +209,8 @@ class IntroductionTest extends Specification {
         null;
     }
 
-    private function givenClassDefinitionsForQuickStart() {
-        eval('
-            class SomeClass {
-
-                /** @var Database */
-                protected $database;
-
-                public function setUserName($id, $name) {
-                    $user = $this->database->readUser($id);
-                    $user->setName($name);
-                    $this->database->update($user);
-                }
-
-            }
-
-            class DataBase {
-
-                public function readUser($id) {
-                    // [...]
-                }
-
-                public function update($object) {
-                    // [...]
-                }
-
-            }
-
-            class User {
-
-                public function setName($name) {
-                    // [...]
-                }
-
-            }
-        ');
-    }
-
-    public function givenClassDefinitionsForOverview() {
-        eval('
-            class YourClass {
-
-                /**
-                 * @return MyClass
-                 */
-                public function bar() {
-                }
-            }
-
-            class MyClass {
-
-                /**
-                 * @var YourClass
-                 */
-                protected $yours;
-
-                /**
-                 * @param string $name
-                 * @param YourClass $yourClass
-                 */
-                public function __construct($name, YourClass $yourClass) {
-                    // [...]
-                }
-
-                /**
-                 * @param string $arg
-                 * @return string
-                 */
-                public function foo($arg = "") {
-                    return "foo" . $arg;
-                }
-            }'
-        );
+    private function givenTheClassDefinitions($code) {
+        eval($code);
     }
 
 } 
