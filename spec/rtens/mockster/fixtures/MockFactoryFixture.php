@@ -129,6 +129,10 @@ class MockFactoryFixture extends Fixture {
         $this->spec->assertContains($message, $this->caught->getMessage());
     }
 
+    public function thenNoExceptionShouldBeThrown() {
+        $this->spec->assertTrue($this->caught === null, "No Exception should be thrown");
+    }
+
     public function whenIMockAllMethodsMatching($filter) {
         $this->mock->__mock()->mockMethods($filter);
     }

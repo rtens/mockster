@@ -1,6 +1,6 @@
 <?php
 namespace spec\rtens\mockster;
- 
+
 use spec\rtens\mockster\fixtures\MockFactoryFixture;
 use watoki\scrut\Specification;
 
@@ -261,9 +261,9 @@ class MockReturnValueTest extends Specification {
         $this->fixture->whenIInvoke('myFunction');
         $this->fixture->thenItShouldReturn(23);
 
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', array(1,2,3));
+        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', array(1, 2, 3));
         $this->fixture->whenIInvoke('myFunction');
-        $this->fixture->thenItShouldReturn(array(1,2,3));
+        $this->fixture->thenItShouldReturn(array(1, 2, 3));
 
         $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', 'foo');
         $this->fixture->whenIInvoke('myFunction');
@@ -315,5 +315,37 @@ class MockReturnValueTest extends Specification {
         $this->fixture->whenIInvoke('myFunction');
 
         $this->fixture->thenItShouldReturnAnInstanceOf('some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn');
+    }
+
+    public function testArrayNotationTypeHint() {
+        $this->fixture->givenTheClassDefinition('
+            class UsingArrayTypeHint {
+                /**
+                 * @return DateTime[]
+                 */
+                public function foo() {}
+            }
+        ');
+
+        $this->fixture->whenICreateTheMockOf('UsingArrayTypeHint');
+        $this->fixture->whenIInvoke('foo');
+        $this->fixture->thenItShouldReturn(array());
+    }
+
+
+    public function testMockReturnsArrayOfObjects() {
+        $this->fixture->givenTheClassDefinition('
+            class ReturnsArrayOfObjects {
+                /**
+                 * @return DateTime[]
+                 */
+                public function myFunction() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('ReturnsArrayOfObjects');
+        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', array());
+        $this->fixture->whenITryToInvoke('myFunction');
+
+        $this->fixture->thenNoExceptionShouldBeThrown();
     }
 }

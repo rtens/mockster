@@ -100,7 +100,7 @@ class MethodTypeHint {
             }
         }
 
-        return function() {
+        return function () {
             return null;
         };
     }
@@ -121,6 +121,9 @@ class MethodTypeHint {
         $factory = $this->factory;
 
         $this->types = array_map(function ($type) use ($factory, $resolver) {
+            if (substr($type, -2) === '[]') {
+                return 'array';
+            }
             $className = $resolver->resolve($type);
             return $className ? : $type;
         }, $types);
@@ -195,7 +198,7 @@ class MethodTypeHint {
 
         if ($className) {
             $factory = $this->factory;
-            return function() use ($factory, $className) {
+            return function () use ($factory, $className) {
                 return $factory->getInstance($className);
             };
         }
