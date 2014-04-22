@@ -11,10 +11,17 @@ class IntroductionTest extends Specification {
      * A typical test with *mockster* might look like this.
      */
     public function testQuickStart() {
-        $this->givenTheClassDefinitions('
+        /**
+         * <a href="javascript: $('#quickStartDefinitions').toggle()">
+         * Show class definitions for this example
+         * </a><div id="quickStartDefinitions" style="display: none;">
+         */
+        eval('
             class SomeClass {
 
-                /** @var Database */
+                /**
+                 * @var Database
+                 */
                 protected $database;
 
                 public function setUserName($id, $name) {
@@ -43,6 +50,7 @@ class IntroductionTest extends Specification {
                 }
             }'
         );
+        // </div>
 
         /*
          * First create the instance of our *Unit Under Test* using the `MockFactory` which automatically
@@ -71,7 +79,12 @@ class IntroductionTest extends Specification {
      * Let's have a look at the parts of the described test in more detail.
      */
     public function testBasicUsage() {
-        $this->givenTheClassDefinitions('
+        /**
+         * <a href="javascript: $('#basicUsageDefinitions').toggle()">
+         * Show class definitions for this example
+         * </a><div id="basicUsageDefinitions" style="display: none;">
+         */
+        eval('
             class YourClass {
 
                 /**
@@ -105,6 +118,7 @@ class IntroductionTest extends Specification {
                 }
             }'
         );
+        // </div>
 
         /*
          * Mocks are create by the `MockFactory`, extends [watoki/Factory] so it behaves a lot like a Dependency
@@ -209,8 +223,4 @@ class IntroductionTest extends Specification {
         null;
     }
 
-    private function givenTheClassDefinitions($code) {
-        eval($code);
-    }
-
-} 
+}
