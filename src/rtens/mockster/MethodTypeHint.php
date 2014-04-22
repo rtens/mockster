@@ -121,6 +121,10 @@ class MethodTypeHint {
         $factory = $this->factory;
 
         $this->types = array_map(function ($type) use ($factory, $resolver) {
+            // if type hint ends with [], e.g. MyClass[], then the expected type is an array
+            if (substr($type, -strlen('[]')) === '[]') {
+                return 'array';
+            }
             $className = $resolver->resolve($type);
             return $className ? : $type;
         }, $types);
