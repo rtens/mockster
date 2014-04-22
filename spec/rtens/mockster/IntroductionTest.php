@@ -121,10 +121,12 @@ class IntroductionTest extends Specification {
         // </div>
 
         /*
-         * Mocks are create by the `MockFactory`, extends [watoki/Factory] so it behaves a lot like a Dependency
-         * Injection Provider. This means you can configure it using Singletons and Providers.
+         * Mocks are created by the `MockFactory`. It extends [watoki/Factory] so it behaves a lot like a
+         * [Dependency Injection Container][dic]. This means for example that you can configure it using
+         * Singletons and Providers.
          *
          * [watoki/Factory]: https://github.com/watoki/factory/
+         * [dic]: http://martinfowler.com/articles/injection.html
          */
         $factory = new MockFactory();
 
