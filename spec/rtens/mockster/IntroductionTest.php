@@ -12,7 +12,7 @@ class IntroductionTest extends Specification {
      */
     public function testQuickStart() {
         /**
-         * <a href="javascript: $('#quickStartDefinitions').toggle()">
+         * <a href="javascript: $('#quickStartDefinitions').toggle(); return false;">
          * Show class definitions for this example
          * </a><div id="quickStartDefinitions" style="display: none;">
          */
@@ -80,7 +80,7 @@ class IntroductionTest extends Specification {
      */
     public function testBasicUsage() {
         /**
-         * <a href="javascript: $('#basicUsageDefinitions').toggle()">
+         * <a href="javascript: $('#basicUsageDefinitions').toggle(); return false;">
          * Show class definitions for this example
          * </a><div id="basicUsageDefinitions" style="display: none;">
          */
