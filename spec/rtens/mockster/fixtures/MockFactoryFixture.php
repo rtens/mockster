@@ -148,6 +148,17 @@ class MockFactoryFixture extends Fixture {
         $this->mock->__mock()->method($method)->willReturn($factory->getInstance($class));
     }
 
+    public function whenIConfigureTheMethod_ToReturnAnArrayWith_MocksOf($method, $size, $class) {
+        $factory = new MockFactory();
+        $mocks = [];
+
+        for ($i = 0; $i < $size; $i++) {
+            $mocks[] = $factory->getInstance($class);
+        }
+
+        $this->mock->__mock()->method($method)->willReturn($mocks);
+    }
+
     public function whenIConfigureTheMethod_ToReturn_WhenCalledWithTheArgument($method, $return, $arg) {
         $this->mock->__mock()->method($method)->willReturn($return)->withArguments($arg);
     }
@@ -244,6 +255,12 @@ class MockFactoryFixture extends Fixture {
 
     public function thenItShouldReturnAnInstanceOf($string) {
         $this->spec->assertInstanceOf($string, $this->returnValue);
+    }
+
+    public function thenItShouldReturnAnArrayOfInstancesOf($string) {
+        foreach ($this->returnValue as $val) {
+            $this->spec->assertInstanceOf($string, $val);
+        }
     }
 
     public function whenIInvokeTheChain($chain) {

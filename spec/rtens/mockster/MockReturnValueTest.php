@@ -1,6 +1,6 @@
 <?php
 namespace spec\rtens\mockster;
- 
+
 use spec\rtens\mockster\fixtures\MockFactoryFixture;
 use watoki\scrut\Specification;
 
@@ -315,5 +315,47 @@ class MockReturnValueTest extends Specification {
         $this->fixture->whenIInvoke('myFunction');
 
         $this->fixture->thenItShouldReturnAnInstanceOf('some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn');
+    }
+
+    public function testMockReturnsArrayOfObjects() {
+        $this->fixture->givenTheClassDefinition('
+            class ReturnsArrayOfObjects_ClassToReturn {}
+        ');
+        $this->fixture->givenTheClassDefinition('
+            class ReturnsArrayOfObjects {
+                /**
+                 * @return ReturnsArrayOfObjects_ClassToReturn[]
+                 */
+                public function myFunction() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('ReturnsArrayOfObjects');
+        $this->fixture->whenIConfigureTheMethod_ToReturnAnArrayWith_MocksOf('myFunction', 3, 'ReturnsArrayOfObjects_ClassToReturn');
+        $this->fixture->whenIInvoke('myFunction');
+
+        $this->fixture->thenItShouldReturnAnArrayOfInstancesOf('ReturnsArrayOfObjects_ClassToReturn');
+    }
+
+    public function testMockReturnsArrayOfObjectsReferencedInUseStatement() {
+        $this->fixture->givenTheClassDefinition('
+            namespace some\name\space;
+
+            class ReturnsArrayOfObjectsReferencedInUseStatement_ClassToReturn {}
+        ');
+        $this->fixture->givenTheClassDefinition('
+            use some\name\space\ReturnsArrayOfObjectsReferencedInUseStatement_ClassToReturn;
+
+            class ReturnsArrayOfObjectsReferencedInUseStatement {
+                /**
+                 * @return ReturnsArrayOfObjectsReferencedInUseStatement_ClassToReturn[]
+                 */
+                public function myFunction() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('ReturnsArrayOfObjectsReferencedInUseStatement');
+        $this->fixture->whenIConfigureTheMethod_ToReturnAnArrayWith_MocksOf('myFunction', 3, 'some\name\space\ReturnsArrayOfObjectsReferencedInUseStatement_ClassToReturn');
+        $this->fixture->whenIInvoke('myFunction');
+
+        $this->fixture->thenItShouldReturnAnArrayOfInstancesOf('some\name\space\ReturnsArrayOfObjectsReferencedInUseStatement_ClassToReturn');
     }
 }
