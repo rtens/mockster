@@ -9,7 +9,7 @@ use watoki\scrut\Specification;
  */
 class MockReturnValueTest extends Specification {
 
-    public function testReturnMock() {
+    public function testReturnMockObject() {
         $this->fixture->givenTheClassDefinition('
             class ReturnMock {
                 /**
@@ -147,176 +147,6 @@ class MockReturnValueTest extends Specification {
         $this->fixture->thenItShouldReturn('foo');
     }
 
-    public function testMockReturnsScalarValueNotMatchingTypeHint() {
-        $this->fixture->givenTheClassDefinition('
-            class ReturnsScalarValueNotMatchingTypeHint {
-                /**
-                 * @return string
-                 */
-                public function shouldReturnAString() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('ReturnsScalarValueNotMatchingTypeHint');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('shouldReturnAString', 1);
-        $this->fixture->whenITryToInvoke('shouldReturnAString');
-
-        $this->fixture->thenAnExceptionShouldBeThrownContaining('Expected return value of method ReturnsScalarValueNotMatchingTypeHint:shouldReturnAString to be of one of the following types: [string]. Instead value is integer');
-    }
-
-    public function testMockReturnsObjectNotMatchingTypeHint() {
-        $this->fixture->givenTheClassDefinition('
-            class ReturnsObjectNotMatchingTypeHint {
-                /**
-                 * @return string
-                 */
-                public function shouldReturnAString() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('ReturnsObjectNotMatchingTypeHint');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('shouldReturnAString', new \StdClass());
-        $this->fixture->whenITryToInvoke('shouldReturnAString');
-
-        $this->fixture->thenAnExceptionShouldBeThrownContaining('Expected return value of method ReturnsObjectNotMatchingTypeHint:shouldReturnAString to be of one of the following types: [string]. Instead value is stdClass');
-    }
-
-    public function testMockReturnsObjectNotMatchingClassTypeHint() {
-        $this->fixture->givenTheClassDefinition('
-            class ReturnsObjectNotMatchingClassTypeHint_ClassToReturn {}
-        ');
-        $this->fixture->givenTheClassDefinition('
-            class ReturnsObjectNotMatchingClassTypeHint {
-                /**
-                 * @return ReturnsObjectNotMatchingClassTypeHint_ClassToReturn
-                 */
-                public function myFunction() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('ReturnsObjectNotMatchingClassTypeHint');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', new \StdClass());
-        $this->fixture->whenITryToInvoke('myFunction');
-
-        $this->fixture->thenAnExceptionShouldBeThrownContaining('Expected return value of method ReturnsObjectNotMatchingClassTypeHint:myFunction to be of one of the following types: [ReturnsObjectNotMatchingClassTypeHint_ClassToReturn]. Instead value is stdClass');
-    }
-
-    public function testMockReturnsScalarValueMatchingTypeHint() {
-        $this->fixture->givenTheClassDefinition('
-            class ReturnsScalarValueMatchingTypeHint {
-                /**
-                 * @return string
-                 */
-                public function shouldReturnAString() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('ReturnsScalarValueMatchingTypeHint');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('shouldReturnAString', 'a string');
-        $this->fixture->whenIInvoke('shouldReturnAString');
-
-        $this->fixture->thenItShouldReturn('a string');
-    }
-
-    public function testMockReturnsObjectMatchingTypeHint() {
-        $this->fixture->givenTheClassDefinition('
-            class ReturnsObjectMatchingTypeHint {
-                /**
-                 * @return \StdClass
-                 */
-                public function shouldReturnObject() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('ReturnsObjectMatchingTypeHint');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('shouldReturnObject', new \StdClass());
-        $this->fixture->whenIInvoke('shouldReturnObject');
-
-        $this->fixture->thenItShouldReturn(new \StdClass());
-    }
-
-    public function testMockHasNoTypeHint() {
-        $this->fixture->givenTheClassDefinition('
-            class HasNoTypeHint {
-                public function myFunction() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('HasNoTypeHint');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', new \StdClass());
-        $this->fixture->whenIInvoke('myFunction');
-
-        $this->fixture->thenItShouldReturn(new \StdClass());
-    }
-
-    public function testMockReturnsValueAndHasMultipleTypeHints() {
-        $this->fixture->givenTheClassDefinition('
-            class ReturnsValueAndHasMultipleTypeHints {
-                /**
-                 * @return array|int|string|object
-                 */
-                public function myFunction() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('ReturnsValueAndHasMultipleTypeHints');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', new \StdClass());
-        $this->fixture->whenIInvoke('myFunction');
-        $this->fixture->thenItShouldReturn(new \StdClass());
-
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', 23);
-        $this->fixture->whenIInvoke('myFunction');
-        $this->fixture->thenItShouldReturn(23);
-
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', array(1, 2, 3));
-        $this->fixture->whenIInvoke('myFunction');
-        $this->fixture->thenItShouldReturn(array(1, 2, 3));
-
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', 'foo');
-        $this->fixture->whenIInvoke('myFunction');
-        $this->fixture->thenItShouldReturn('foo');
-
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', null);
-        $this->fixture->whenITryToInvoke('myFunction');
-
-        $this->fixture->thenAnExceptionShouldBeThrownContaining('Instead value is NULL');
-    }
-
-    public function testMockReturnsMock() {
-        $this->fixture->givenTheClassDefinition('
-            class MockReturnsMock_ClassToReturn {}
-        ');
-        $this->fixture->givenTheClassDefinition('
-            class MockReturnsMock {
-                /**
-                 * @return MockReturnsMock_ClassToReturn
-                 */
-                public function myFunction() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('MockReturnsMock');
-        $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'MockReturnsMock_ClassToReturn');
-        $this->fixture->whenIInvoke('myFunction');
-
-        $this->fixture->thenItShouldReturnAnInstanceOf('MockReturnsMock_ClassToReturn');
-    }
-
-    public function testMockReturnsObjectReferencedInUseStatement() {
-        $this->fixture->givenTheClassDefinition('
-            namespace some\name\space;
-
-            class ReturnsObjectReferencedInUseStatement_ClassToReturn {}
-        ');
-        $this->fixture->givenTheClassDefinition('
-            use some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn;
-
-            class ReturnsObjectReferencedInUseStatement {
-                /**
-                 * @return ReturnsObjectReferencedInUseStatement_ClassToReturn
-                 */
-                public function myFunction() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('ReturnsObjectReferencedInUseStatement');
-        $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn');
-        $this->fixture->whenIInvoke('myFunction');
-
-        $this->fixture->thenItShouldReturnAnInstanceOf('some\name\space\ReturnsObjectReferencedInUseStatement_ClassToReturn');
-    }
-
     public function testArrayNotationTypeHint() {
         $this->fixture->givenTheClassDefinition('
             class UsingArrayTypeHint {
@@ -330,22 +160,5 @@ class MockReturnValueTest extends Specification {
         $this->fixture->whenICreateTheMockOf('UsingArrayTypeHint');
         $this->fixture->whenIInvoke('foo');
         $this->fixture->thenItShouldReturn(array());
-    }
-
-
-    public function testMockReturnsArrayOfObjects() {
-        $this->fixture->givenTheClassDefinition('
-            class ReturnsArrayOfObjects {
-                /**
-                 * @return DateTime[]
-                 */
-                public function myFunction() {}
-            }
-        ');
-        $this->fixture->whenICreateTheMockOf('ReturnsArrayOfObjects');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', array());
-        $this->fixture->whenITryToInvoke('myFunction');
-
-        $this->fixture->thenNoExceptionShouldBeThrown();
     }
 }
