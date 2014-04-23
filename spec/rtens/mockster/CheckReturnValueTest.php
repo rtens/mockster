@@ -204,16 +204,9 @@ class CheckReturnValueTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('HintedAsArrayButReturnsTraversable');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', new TraversableCollection());
+        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', new \ArrayObject());
         $this->fixture->whenITryToInvoke('myFunction');
 
         $this->fixture->thenNoExceptionShouldBeThrown();
-    }
-}
-
-class TraversableCollection implements \IteratorAggregate {
-
-    public function getIterator() {
-        return new \ArrayIterator(array());
     }
 }
