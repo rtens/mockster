@@ -194,4 +194,19 @@ class CheckReturnValueTest extends Specification {
         $this->fixture->thenNoExceptionShouldBeThrown();
     }
 
-} 
+    public function testHintedAsArrayButReturnsTraversable() {
+        $this->fixture->givenTheClassDefinition('
+            class HintedAsArrayButReturnsTraversable {
+                /**
+                 * @return DateTime[]
+                 */
+                public function myFunction() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('HintedAsArrayButReturnsTraversable');
+        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', new \ArrayObject());
+        $this->fixture->whenITryToInvoke('myFunction');
+
+        $this->fixture->thenNoExceptionShouldBeThrown();
+    }
+}
