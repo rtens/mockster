@@ -204,9 +204,17 @@ class CheckReturnValueTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('HintedAsArrayButReturnsTraversable');
-        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', new \ArrayObject());
-        $this->fixture->whenITryToInvoke('myFunction');
 
+        $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'Iterator');
+        $this->fixture->whenITryToInvoke('myFunction');
         $this->fixture->thenNoExceptionShouldBeThrown();
+
+        $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'IteratorAggregate');
+        $this->fixture->whenITryToInvoke('myFunction');
+        $this->fixture->thenNoExceptionShouldBeThrown();
+
+        $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'ArrayAccess');
+        $this->fixture->whenITryToInvoke('myFunction');
+        $this->fixture->thenAnExceptionShouldBeThrownContaining('types: [Traversable]');
     }
 }
