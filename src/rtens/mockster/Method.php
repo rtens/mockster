@@ -12,32 +12,22 @@ use rtens\mockster\behaviour\ThrowExceptionBehaviour;
  */
 class Method {
 
-    /**
-     * @var \ReflectionMethod
-     */
+    /** @var \ReflectionMethod */
     private $reflection;
 
-    /**
-     * @var array|Behaviour[] Registered behaviours
-     */
+    /** @var array|Behaviour[] Registered behaviours */
     private $behaviours = array();
 
-    /**
-     * @var boolean
-     */
+    /** @var boolean */
     private $mocked = true;
 
-    /**
-     * @var MockFactory
-     */
+    /** @var MockFactory */
     private $factory;
 
     /** @var History */
     private $history;
 
-    /**
-     * @var MethodTypeHint
-     */
+    /** @var MethodTypeHint */
     private $typeHint;
 
     /**
