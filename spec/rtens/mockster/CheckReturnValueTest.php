@@ -194,4 +194,20 @@ class CheckReturnValueTest extends Specification {
         $this->fixture->thenNoExceptionShouldBeThrown();
     }
 
-} 
+    public function testDoNoPerformCheckIfExplicitDisabled() {
+        $this->fixture->givenTheClassDefinition('
+            class DoNoPerformCheckIfExplicitDisabled {
+                /**
+                 * @return DateTime
+                 */
+                public function myFunction() {}
+            }
+        ');
+        $this->fixture->whenICreateTheMockOf('DoNoPerformCheckIfExplicitDisabled');
+        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', "a string");
+        $this->fixture->whenIDisableTheReturnTypeHintCheckForTheMethod('myFunction');
+        $this->fixture->whenITryToInvoke('myFunction');
+
+        $this->fixture->thenNoExceptionShouldBeThrown();
+    }
+}
