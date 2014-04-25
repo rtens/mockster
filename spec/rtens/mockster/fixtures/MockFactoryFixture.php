@@ -175,6 +175,10 @@ class MockFactoryFixture extends Fixture {
         });
     }
 
+    public function whenIDisableTheReturnTypeHintCheckForTheMethod($method) {
+        $this->mock->__mock()->method($method)->dontCheckReturnType();
+    }
+
     public function thenTheCallbackShouldBeCalledWith($string) {
         $this->spec->assertEquals($string, self::$calledWith);
     }
