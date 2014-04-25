@@ -71,12 +71,13 @@ class Method {
                 $value = $behaviour->getReturnValue($arguments);
                 if (!$this->typeHint->matchesTypeHint($value)) {
                     $actualType = is_object($value) ? get_class($value) : gettype($value);
-                    throw new \InvalidArgumentException(
-                        'Expected return value of method ' .
+                    $message = 'Expected return value of method ' .
                         $this->reflection->getDeclaringClass()->getName() .
                         ':' . $this->getName() . ' to be of one of the following types: [' .
                         implode(',', $this->typeHint->getTypeHints()) . ']. ' .
-                        'Instead value is ' . $actualType);
+                        'Instead value is ' . $actualType;
+                    trigger_error($message);
+                    throw new \InvalidArgumentException($message);
                 }
                 $this->history->log($arguments, $value);
                 return $value;
