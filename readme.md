@@ -21,7 +21,7 @@ You will need [Composer], [PHP] and [git] to download the project
 or add it as a requirement to your projects `composer.json`
 
     "rtens/mockster": "*"
-	
+
 To run the test suite just execute `phpunit` in the base folder of mockster.
 
     cd mockster
@@ -35,7 +35,7 @@ To run the test suite just execute `phpunit` in the base folder of mockster.
 
 You can find all documentation in form of [executable specification on dox][dox].
 
-[dox]: http://dox.rtens.org/rtens-mockster
+[dox]: http://dox.rtens.org/projects/rtens-mockster/specs/Introduction
 
 ## Contribution ##
 

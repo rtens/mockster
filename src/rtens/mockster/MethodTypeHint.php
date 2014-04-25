@@ -122,7 +122,7 @@ class MethodTypeHint {
 
         $this->types = array_map(function ($type) use ($factory, $resolver) {
             if (substr($type, -2) === '[]') {
-                return 'array';
+                return 'Traversable';
             }
             $className = $resolver->resolve($type);
             return $className ? : $type;
@@ -161,6 +161,8 @@ class MethodTypeHint {
                 return is_callable($value);
             case 'void':
                 return is_null($value);
+            case 'traversable':
+                return is_array($value) || $value instanceof \Traversable;
         }
         return $value instanceof $type;
     }
@@ -173,6 +175,7 @@ class MethodTypeHint {
     private function getValueFromHint($type) {
         switch (strtolower($type)) {
             case 'array':
+            case 'traversable':
                 return array();
             case 'int':
             case 'integer':
