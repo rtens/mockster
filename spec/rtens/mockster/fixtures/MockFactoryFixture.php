@@ -176,8 +176,7 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function whenIDisableTheReturnTypeHintCheckForTheMethod($method) {
-        // @todo implement specification
-        //$this->mock->__mock()->method($method)->setReturnTypeCheckingEnabled(false);
+        $this->mock->__mock()->method($method)->dontCheckReturnType();
     }
 
     public function thenTheCallbackShouldBeCalledWith($string) {
