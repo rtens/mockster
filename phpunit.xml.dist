@@ -9,4 +9,7 @@
             <directory suffix="Test.php">spec</directory>
         </testsuite>
     </testsuites>
+    <logging>
+        <log type="tap" target="report.tap"/>
+    </logging>
 </phpunit>
