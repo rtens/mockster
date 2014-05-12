@@ -50,6 +50,28 @@ class MethodCollection implements \Countable, \IteratorAggregate {
     }
 
     /**
+     * Sets if the type of method return values will be checked against the methods doc type hint
+     *
+     * @param bool $enabled
+     * @return MethodCollection
+     */
+    public function setReturnTypeCheckingEnabled($enabled = true) {
+        foreach ($this->methods as $method) {
+            $this->method($method->getName())->setReturnTypeCheckingEnabled($enabled);
+        }
+        return $this;
+    }
+
+    /**
+     * Disables type checking of the return values
+     *
+     * @return MethodCollection
+     */
+    public function dontCheckReturnType() {
+        return $this->setReturnTypeCheckingEnabled(false);
+    }
+
+    /**
      * @param bool $mocked
      * @return MethodCollection
      */

@@ -21,6 +21,9 @@ class Method {
     /** @var boolean */
     private $mocked = true;
 
+    /** @var bool */
+    private $isReturnTypeCheckingEnabled = true;
+
     /** @var MockFactory */
     private $factory;
 
@@ -59,7 +62,7 @@ class Method {
         foreach ($this->behaviours as $behaviour) {
             if ($behaviour->appliesTo($named)) {
                 $value = $behaviour->getReturnValue($arguments);
-                if (!$this->typeHint->matchesTypeHint($value)) {
+                if ($this->isReturnTypeCheckingEnabled && !$this->typeHint->matchesTypeHint($value)) {
                     $actualType = is_object($value) ? get_class($value) : gettype($value);
                     throw new \InvalidArgumentException(
                         'Expected return value of method ' .
@@ -83,6 +86,26 @@ class Method {
      */
     public function getReturnTypeHintMock() {
         return $this->typeHint->getDefaultValue();
+    }
+
+    /**
+     * Sets if the type of method return value will be checked against the method doc type hint
+     *
+     * @param bool $enabled
+     * @return Method
+     */
+    public function setReturnTypeCheckingEnabled($enabled = true) {
+        $this->isReturnTypeCheckingEnabled = $enabled;
+        return $this;
+    }
+
+    /**
+     * Disables type checking of the method return value
+     *
+     * @return Method
+     */
+    public function dontCheckReturnType() {
+        return $this->setReturnTypeCheckingEnabled(false);
     }
 
     /**

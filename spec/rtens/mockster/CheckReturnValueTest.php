@@ -22,8 +22,7 @@ class CheckReturnValueTest extends Specification {
         $this->fixture->whenIConfigureTheMethod_ToReturn('shouldReturnAString', 1);
         $this->fixture->whenITryToInvoke('shouldReturnAString');
 
-        $this->fixture->thenAnExceptionShouldBeThrownContaining(
-            'Expected return value of method PrimitiveNotMatchingPrimitiveHint:shouldReturnAString to be of one of the following types: [string]. Instead value is integer');
+        $this->fixture->thenAnExceptionShouldBeThrownContaining('Expected return value of method PrimitiveNotMatchingPrimitiveHint:shouldReturnAString to be of one of the following types: [string]. Instead value is integer');
     }
 
     public function testObjectNotMatchingPrimitiveHint() {
@@ -203,6 +202,7 @@ class CheckReturnValueTest extends Specification {
                 public function myFunction() {}
             }
         ');
+
         $this->fixture->whenICreateTheMockOf('HintedAsArrayButReturnsTraversable');
 
         $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'Iterator');
@@ -216,5 +216,23 @@ class CheckReturnValueTest extends Specification {
         $this->fixture->whenIConfigureTheMethod_ToReturnAMockOf('myFunction', 'ArrayAccess');
         $this->fixture->whenITryToInvoke('myFunction');
         $this->fixture->thenAnExceptionShouldBeThrownContaining('types: [Traversable]');
+    }
+
+    public function testDoNoPerformCheckIfExplicitDisabled() {
+        $this->fixture->givenTheClassDefinition('
+            class DoNoPerformCheckIfExplicitDisabled {
+                /**
+                 * @return DateTime
+                 */
+                 public function myFunction() {}
+            }
+        ');
+
+        $this->fixture->whenICreateTheMockOf('DoNoPerformCheckIfExplicitDisabled');
+        $this->fixture->whenIConfigureTheMethod_ToReturn('myFunction', "a string");
+        $this->fixture->whenIDisableTheReturnTypeHintCheckForTheMethod('myFunction');
+        $this->fixture->whenITryToInvoke('myFunction');
+
+        $this->fixture->thenNoExceptionShouldBeThrown();
     }
 }
