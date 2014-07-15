@@ -230,4 +230,33 @@ class MockMethodsTest extends Specification {
         $this->fixture->thenItsProperty_ShouldBe('called', 0);
     }
 
+    /**
+     * @dataProvider typehintProvider
+     */
+    public function testMockTypehints($typehint, $value) {
+        $className = 'Typehint' . str_replace('\\', '', $typehint);
+        $this->fixture->givenTheClassDefinition('
+            class ' . $className . ' {
+                public function myFunction(' . $typehint . ' $one) {
+                }
+            }
+        ');
+
+        $this->fixture->whenICreateTheMockOf($className);
+        $this->fixture->whenIInvoke_WithTheArgument('myFunction', $value);
+    }
+
+    public function typehintProvider() {
+        $data = array(
+            array('array', array()),
+            array('\\DateTime', new \DateTime()),
+            array('\\Traversable', new \ArrayObject()),
+        );
+
+        if (PHP_VERSION_ID >= 50400) {
+            $data[] = array('callable', function () {});
+        }
+
+        return $data;
+    }
 }

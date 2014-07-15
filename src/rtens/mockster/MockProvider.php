@@ -1,6 +1,6 @@
 <?php
 namespace rtens\mockster;
- 
+
 use watoki\factory\Injector;
 use watoki\factory\Provider;
 
@@ -95,11 +95,13 @@ class MockProvider implements Provider {
 
                 if ($param->isArray()) {
                     $typeHint = 'array ';
+                } else if (method_exists($param, 'isCallable') && $param->isCallable()) {
+                    $typeHint = 'callable ';
                 } else {
                     try {
                         $class = $param->getClass();
                     } catch (\ReflectionException $e) {
-                        $class = FALSE;
+                        $class = false;
                     }
 
                     if ($class) {
@@ -109,7 +111,7 @@ class MockProvider implements Provider {
 
                 if ($param->isDefaultValueAvailable()) {
                     $value = $param->getDefaultValue();
-                    $default = ' = ' . var_export($value, TRUE);
+                    $default = ' = ' . var_export($value, true);
                 } else if ($param->isOptional()) {
                     $default = ' = null';
                 }
