@@ -230,33 +230,31 @@ class MockMethodsTest extends Specification {
         $this->fixture->thenItsProperty_ShouldBe('called', 0);
     }
 
-    /**
-     * @dataProvider typehintProvider
-     */
-    public function testMockTypehints($typehint, $value) {
-        $className = 'Typehint' . str_replace('\\', '', $typehint);
+    public function testMockTypeHints() {
         $this->fixture->givenTheClassDefinition('
-            class ' . $className . ' {
-                public function myFunction(' . $typehint . ' $one) {
+            class MockTypeHints {
+                public function foo(array $one, DateTime $two, Traversable $three) {
                 }
             }
         ');
 
-        $this->fixture->whenICreateTheMockOf($className);
-        $this->fixture->whenIInvoke_WithTheArgument('myFunction', $value);
+        $this->fixture->whenITryToCreateTheMockOf('MockTypeHints');
+        $this->fixture->thenNoExceptionShouldBeThrown();
     }
 
-    public function typehintProvider() {
-        $data = array(
-            array('array', array()),
-            array('\\DateTime', new \DateTime()),
-            array('\\Traversable', new \ArrayObject()),
-        );
-
-        if (PHP_VERSION_ID >= 50400) {
-            $data[] = array('callable', function () {});
+    public function testMockCallableTypeHint() {
+        if (PHP_VERSION_ID < 50400) {
+            $this->markTestSkipped('Only in PHP >= 5.4');
         }
 
-        return $data;
+        $this->fixture->givenTheClassDefinition('
+            class MockCallableTypeHint {
+                public function foo(callable $one) {
+                }
+            }
+        ');
+
+        $this->fixture->whenITryToCreateTheMockOf('MockCallableTypeHint');
+        $this->fixture->thenNoExceptionShouldBeThrown();
     }
 }

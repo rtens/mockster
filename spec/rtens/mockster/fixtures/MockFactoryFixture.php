@@ -130,7 +130,8 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function thenNoExceptionShouldBeThrown() {
-        $this->spec->assertTrue($this->caught === null, "No Exception should be thrown");
+        $this->spec->assertTrue($this->caught === null, "Caught something: "
+            . (is_object($this->caught) ? $this->caught->getMessage() : print_r($this->caught, true)));
     }
 
     public function whenIMockAllMethodsMatching($filter) {
@@ -279,6 +280,14 @@ class MockFactoryFixture extends Fixture {
         $this->mock->__mock()->method($method)->willReturn($return)->when(function ($arg) use ($low, $high) {
             return $arg > $low && $arg < $high;
         });
+    }
+
+    public function whenITryToCreateTheMockOf($className) {
+        try {
+            $this->whenICreateTheMockOf($className);
+        } catch (\Exception $e) {
+            $this->caught = $e;
+        }
     }
 
 }
