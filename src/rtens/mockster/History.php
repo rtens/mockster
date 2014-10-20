@@ -94,8 +94,19 @@ class History {
         return count($this->calledArguments);
     }
 
+    /**
+     * @return array|mixed[]|Mock[]
+     */
     public function getReturnedValues() {
         return $this->returnedValues;
+    }
+
+    /**
+     * @param int $index
+     * @return mixed|Mock
+     */
+    public function getReturnedValueAt($index) {
+        return $this->returnedValues[$index];
     }
 
     /**

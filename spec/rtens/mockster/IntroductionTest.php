@@ -103,7 +103,7 @@ class IntroductionTest extends Specification {
 
                 /**
                  * @param string $name
-                 * @param YourClass $yourClass
+                 * @param YourClass $yourClass <-
                  */
                 public function __construct($name, YourClass $yourClass) {
                     // [...]

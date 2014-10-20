@@ -16,6 +16,7 @@ class InjectionTest extends Specification {
             class ConstructorInjection {
                 public $one;
                 public $two;
+                /** @param $one <- @param $two <- */
                 public function __construct(ConstructorDependencyOne $one, ConstructorDependencyTwo $two) {
                     $this->one = $one;
                     $this->two = $two;
@@ -50,6 +51,7 @@ class InjectionTest extends Specification {
         $this->fixture->givenTheClassDefinition('
             class RecursiveDependencyTwo {
                 public $one;
+                /** @param $one <- */
                 public function __construct(RecursiveDependencyOne $one) {
                     $this->one = $one;
                 }
@@ -58,6 +60,7 @@ class InjectionTest extends Specification {
         $this->fixture->givenTheClassDefinition('
             class RecursiveInjection {
                 public $two;
+                /** @param $two <- */
                 public function __construct(RecursiveDependencyTwo $two) {
                     $this->two = $two;
                 }
@@ -89,6 +92,7 @@ class InjectionTest extends Specification {
             class MixConstructor {
                 public $one;
                 public $two;
+                /** @param $one <- @param $two <- */
                 public function __construct(StdClass $one, StdClass $two) {
                     $this->one = $one;
                     $this->two = $two;
@@ -104,6 +108,7 @@ class InjectionTest extends Specification {
     public function testAccessArgumentsInjectedInConstructor() {
         $this->fixture->givenTheClassDefinition('
             class AccessArguments {
+                /** @param $one <- @param $two <- */
                 public function __construct(StdClass $one, DateTime $two) {}
             }
         ');
@@ -117,8 +122,8 @@ class InjectionTest extends Specification {
         $this->fixture->givenTheClassDefinition('
             class AnnotatedArguments {
                 /**
-                 * @param StdClass $foo
-                 * @param StdClass $bar
+                 * @param StdClass $foo <-
+                 * @param StdClass $bar <-
                  */
                 public function __construct($foo, DateTime $bar) {}
             }
@@ -266,8 +271,8 @@ class InjectionTest extends Specification {
                 public $three;
 
                 /**
-                 * @param DateTime $one
-                 * @param DateTime $two
+                 * @param DateTime $one <-
+                 * @param DateTime $two <-
                  */
                 public function myFunction(StdClass $one, $two, $three) {
                     $this->one = $one;

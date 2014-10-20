@@ -4,9 +4,7 @@ namespace spec\rtens\mockster\fixtures;
 use rtens\mockster\Mock;
 use rtens\mockster\MockFactory;
 use rtens\mockster\Mockster;
-use watoki\factory\Factory;
 use watoki\scrut\Fixture;
-use watoki\scrut\Specification;
 
 class MockFactoryFixture extends Fixture {
 
@@ -21,10 +19,6 @@ class MockFactoryFixture extends Fixture {
     private $returnValue;
 
     private static $counter = 0;
-
-    public function __construct(Specification $spec, Factory $factory) {
-        parent::__construct($spec, $factory);
-    }
 
     public function givenTheClassDefinition($string) {
         $file = __DIR__ . '/tmp/class' . self::$counter++ . '.php';
