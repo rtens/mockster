@@ -1,7 +1,7 @@
 <?php
 namespace rtens\mockster;
 
-use watoki\factory\ClassResolver;
+use watoki\reflect\ClassResolver;
 
 class MethodTypeHint {
 
