@@ -2,11 +2,11 @@
 namespace spec\rtens\mockster\deprecated;
 
 use rtens\mockster\deprecated\Mockster2;
-use spec\rtens\mockster\fixtures\MockFactoryFixture;
+use spec\rtens\mockster\deprecated\fixtures\MockFactoryFixture;
 use watoki\scrut\Specification;
 
 /**
- * @property MockFactoryFixture fixture <-
+ * @property \spec\rtens\mockster\deprecated\fixtures\MockFactoryFixture fixture <-
  */
 class MockMethodsTest extends Specification {
 

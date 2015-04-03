@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\mockster\deprecated;
 
-use spec\rtens\mockster\fixtures\MockFactoryFixture;
+use spec\rtens\mockster\deprecated\fixtures\MockFactoryFixture;
 use watoki\scrut\Specification;
 
 /**

@@ -2,13 +2,13 @@
 namespace spec\rtens\mockster\deprecated;
 
 use rtens\mockster\deprecated\Mockster2;
-use spec\rtens\mockster\fixtures\FilterFixture;
-use spec\rtens\mockster\fixtures\MockFactoryFixture;
+use spec\rtens\mockster\deprecated\fixtures\FilterFixture;
+use spec\rtens\mockster\deprecated\fixtures\MockFactoryFixture;
 use watoki\scrut\Specification;
 
 /**
  * @property MockFactoryFixture fixture <-
- * @property FilterFixture filter <-
+ * @property \spec\rtens\mockster\deprecated\fixtures\FilterFixture filter <-
  */
 class FilterTest extends Specification {
 

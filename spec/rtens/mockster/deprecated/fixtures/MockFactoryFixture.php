@@ -1,7 +1,6 @@
 <?php
-namespace spec\rtens\mockster\fixtures;
+namespace spec\rtens\mockster\deprecated\fixtures;
 
-use rtens\mockster\deprecated\Mock;
 use rtens\mockster\deprecated\MockFactory;
 use rtens\mockster\deprecated\Mockster2;
 use watoki\scrut\Fixture;
