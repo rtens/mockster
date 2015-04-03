@@ -33,6 +33,15 @@ class StubMethodsTest extends Specification {
         $this->assertEquals('foo', $this->mock->bar());
         $this->assertEquals('bar', $this->mock->bar());
     }
+
+    function testThrowException() {
+        Mockster::method($this->foo->bar())->will()->throw_(new \InvalidArgumentException());
+
+        try {
+            $this->mock->bar();
+            $this->fail("Should have thrown an exception");
+        } catch (\InvalidArgumentException $ignored) {}
+    }
 }
 
 class Foo {
