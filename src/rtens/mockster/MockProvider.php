@@ -40,7 +40,7 @@ class MockProvider implements Provider {
         }
         $instance = $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array());
 
-        $mockster = new Mockster($this->factory, $classname, $instance, $constructorArgs, $code);
+        $mockster = new Mockster2($this->factory, $classname, $instance, $constructorArgs, $code);
         $this->setMockster($instance, $mockster);
 
         return $instance;
@@ -62,7 +62,7 @@ class MockProvider implements Provider {
         return self::$mockCodes[$mockClassName];
     }
 
-    private function setMockster($instance, Mockster $mockster) {
+    private function setMockster($instance, Mockster2 $mockster) {
         $reflection = new \ReflectionClass($instance);
         $mockProperty = $reflection->getProperty('__mock');
         $mockProperty->setAccessible(true);

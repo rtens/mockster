@@ -1,7 +1,7 @@
 <?php
 namespace rtens\mockster\filter;
 
-use rtens\mockster\Mockster;
+use rtens\mockster\Mockster2;
 
 class Filter {
 
@@ -34,9 +34,9 @@ class Filter {
 
         return
             !$member->isPrivate() &&
-            (!$member->isPublic() || ($this->filter & Mockster::F_PUBLIC) == Mockster::F_PUBLIC) &&
-            (!$member->isProtected() || ($this->filter & Mockster::F_PROTECTED) == Mockster::F_PROTECTED) &&
-            (!$member->isStatic() || ($this->filter & Mockster::F_STATIC) == Mockster::F_STATIC) &&
+            (!$member->isPublic() || ($this->filter & Mockster2::F_PUBLIC) == Mockster2::F_PUBLIC) &&
+            (!$member->isProtected() || ($this->filter & Mockster2::F_PROTECTED) == Mockster2::F_PROTECTED) &&
+            (!$member->isStatic() || ($this->filter & Mockster2::F_STATIC) == Mockster2::F_STATIC) &&
             (!$customFilter || $customFilter($member));
     }
 } 

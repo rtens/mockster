@@ -4,7 +4,7 @@ namespace rtens\mockster;
 use rtens\mockster\filter\Filter;
 use watoki\factory\Injector;
 
-class Mockster {
+class Mockster2 {
 
     const F_NONE = 0;
 
@@ -65,7 +65,7 @@ class Mockster {
      * @param null|callable $customFilter
      * @throws \Exception If a property cannot be mocked because the class of the type hint cannot be found
      */
-    public function mockProperties($filter = Mockster::F_ALL, $customFilter = null) {
+    public function mockProperties($filter = Mockster2::F_ALL, $customFilter = null) {
         $filter = new Filter($filter, $customFilter);
         $this->injector->injectProperties($this->mock,
             function (\ReflectionProperty $property) use ($filter) {
@@ -80,7 +80,7 @@ class Mockster {
      * @param $filter int Constants from Mockster::F_
      * @param null|callable $customFilter
      */
-    public function mockMethods($filter = Mockster::F_ALL, $customFilter = null) {
+    public function mockMethods($filter = Mockster2::F_ALL, $customFilter = null) {
         $this->methods()->dontMock()->filter($filter, $customFilter)->setMocked(true);
     }
 
@@ -203,8 +203,8 @@ class Mockster {
      * @return \rtens\mockster\Mock
      */
     public function makeTestUnit($propertyFilter = null) {
-        $this->mockMethods(Mockster::F_NONE);
-        $this->mockProperties(Mockster::F_ALL, $propertyFilter);
+        $this->mockMethods(Mockster2::F_NONE);
+        $this->mockProperties(Mockster2::F_ALL, $propertyFilter);
         return $this->mock;
     }
 

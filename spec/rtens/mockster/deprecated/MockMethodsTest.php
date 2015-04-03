@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\mockster\deprecated;
 
-use rtens\mockster\Mockster;
+use rtens\mockster\Mockster2;
 use spec\rtens\mockster\fixtures\MockFactoryFixture;
 use watoki\scrut\Specification;
 
@@ -98,7 +98,7 @@ class MockMethodsTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('UnMockMethods');
-        $this->fixture->whenIMockAllMethodsMatching(Mockster::F_NONE);
+        $this->fixture->whenIMockAllMethodsMatching(Mockster2::F_NONE);
 
         $this->fixture->whenIInvoke('myPublicFunction');
         $this->fixture->whenIInvoke('myProtectedFunction');
@@ -120,7 +120,7 @@ class MockMethodsTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('DontMockPublicMethods');
-        $this->fixture->whenIMockAllMethodsMatching(~Mockster::F_PUBLIC);
+        $this->fixture->whenIMockAllMethodsMatching(~Mockster2::F_PUBLIC);
 
         $this->fixture->whenIInvoke('myPublicFunction');
         $this->fixture->thenItsProperty_ShouldBe('called', 1);
@@ -142,7 +142,7 @@ class MockMethodsTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('DontMockProtectedMethods');
-        $this->fixture->whenIMockAllMethodsMatching(~Mockster::F_PROTECTED);
+        $this->fixture->whenIMockAllMethodsMatching(~Mockster2::F_PROTECTED);
 
         $this->fixture->whenIInvoke('myPublicFunction');
         $this->fixture->thenItsProperty_ShouldBe('called', 0);
@@ -168,7 +168,7 @@ class MockMethodsTest extends Specification {
             }
         ');
         $this->fixture->whenICreateTheMockOf('MockOnlyAnnotatedMethods');
-        $this->fixture->whenIMockAllMethodsMatching_WithAnnotation(Mockster::F_ALL, '@mockThis');
+        $this->fixture->whenIMockAllMethodsMatching_WithAnnotation(Mockster2::F_ALL, '@mockThis');
 
         $this->fixture->whenIInvoke('functionOne');
         $this->fixture->thenItsProperty_ShouldBe('called', 0);

@@ -2,7 +2,7 @@
 namespace spec\rtens\mockster\deprecated;
 
 use rtens\mockster\MockFactory;
-use rtens\mockster\Mockster;
+use rtens\mockster\Mockster2;
 use watoki\scrut\Specification;
 
 class IntroductionTest extends Specification {
@@ -167,8 +167,8 @@ class IntroductionTest extends Specification {
          * should be mocked by either providing a filter bit - mask as first arguments or a filter function as second
          * argument.
          */
-        $mock->__mock()->mockProperties(Mockster::F_PROTECTED | Mockster::F_NON_STATIC);
-        $mock->__mock()->mockProperties(Mockster::F_ALL, function (\ReflectionProperty $p) {
+        $mock->__mock()->mockProperties(Mockster2::F_PROTECTED | Mockster2::F_NON_STATIC);
+        $mock->__mock()->mockProperties(Mockster2::F_ALL, function (\ReflectionProperty $p) {
             return strpos('@inject', $p->getDocComment()) !== false;
         });
 

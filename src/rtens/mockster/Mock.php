@@ -4,7 +4,7 @@ namespace rtens\mockster;
 interface Mock {
 
     /**
-     * @return \rtens\mockster\Mockster
+     * @return \rtens\mockster\Mockster2
      */
     public function __mock();
 }

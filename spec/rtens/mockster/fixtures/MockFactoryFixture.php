@@ -3,7 +3,7 @@ namespace spec\rtens\mockster\fixtures;
 
 use rtens\mockster\Mock;
 use rtens\mockster\MockFactory;
-use rtens\mockster\Mockster;
+use rtens\mockster\Mockster2;
 use watoki\scrut\Fixture;
 
 class MockFactoryFixture extends Fixture {
@@ -222,23 +222,23 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function whenIMockAllMarkedProperties() {
-        $this->mock->__mock()->mockProperties(Mockster::F_ALL, function (\ReflectionProperty $prop) {
+        $this->mock->__mock()->mockProperties(Mockster2::F_ALL, function (\ReflectionProperty $prop) {
             return strpos($prop->getDocComment(), '<-') !== false;
         });
     }
 
     public function whenIMockAllOfItsPropertiesAnnotatedWith($string) {
-        $this->mock->__mock()->mockProperties(Mockster::F_ALL, function (\ReflectionProperty $property) use ($string) {
+        $this->mock->__mock()->mockProperties(Mockster2::F_ALL, function (\ReflectionProperty $property) use ($string) {
             return strpos($property->getDocComment(), $string) !== false;
         });
     }
 
     public function whenIMockItsProtectedProperties() {
-        $this->mock->__mock()->mockProperties(Mockster::F_PROTECTED);
+        $this->mock->__mock()->mockProperties(Mockster2::F_PROTECTED);
     }
 
     public function whenIMockAllItsProperties() {
-        $this->mock->__mock()->mockProperties(Mockster::F_ALL);
+        $this->mock->__mock()->mockProperties(Mockster2::F_ALL);
     }
 
     public function whenIInvoke_OnTheMockWithTheArguments($method, $args) {

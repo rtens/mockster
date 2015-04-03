@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\mockster\deprecated;
 
-use rtens\mockster\Mockster;
+use rtens\mockster\Mockster2;
 use spec\rtens\mockster\fixtures\FilterFixture;
 use spec\rtens\mockster\fixtures\MockFactoryFixture;
 use watoki\scrut\Specification;
@@ -22,7 +22,7 @@ class FilterTest extends Specification {
                 private function myFunctionPrivate() {}
             }
         ');
-        $this->filter->givenTheFilterWithTheBitMask(Mockster::F_ALL);
+        $this->filter->givenTheFilterWithTheBitMask(Mockster2::F_ALL);
         $this->filter->whenTheFilterIsAppliedToTheMethodsOfClass('MatchAll');
         $this->filter->thenFilterMatchesContainTheMethod('myFunction');
         $this->filter->thenFilterMatchesContainTheMethod('myFunctionProtected');
@@ -39,7 +39,7 @@ class FilterTest extends Specification {
                 protected function myFunctionProtected() {}
             }
         ');
-        $this->filter->givenTheFilterWithTheBitMask(Mockster::F_PUBLIC);
+        $this->filter->givenTheFilterWithTheBitMask(Mockster2::F_PUBLIC);
         $this->filter->whenTheFilterIsAppliedToTheMethodsOfClass('MatchPublic');
         $this->filter->thenFilterMatchesContainTheMethod('myFunction');
         $this->filter->thenTheFilterMatched_Methods(1);
@@ -53,7 +53,7 @@ class FilterTest extends Specification {
                 protected function myFunctionProtected() {}
             }
         ');
-        $this->filter->givenTheFilterWithTheBitMask(Mockster::F_PROTECTED);
+        $this->filter->givenTheFilterWithTheBitMask(Mockster2::F_PROTECTED);
         $this->filter->whenTheFilterIsAppliedToTheMethodsOfClass('MatchProtected');
         $this->filter->thenFilterMatchesContainTheMethod('myFunctionProtected');
         $this->filter->thenTheFilterMatched_Methods(1);
@@ -67,7 +67,7 @@ class FilterTest extends Specification {
                 protected function myFunctionProtected() {}
             }
         ');
-        $this->filter->givenTheFilterWithTheBitMask(Mockster::F_PUBLIC | Mockster::F_PROTECTED);
+        $this->filter->givenTheFilterWithTheBitMask(Mockster2::F_PUBLIC | Mockster2::F_PROTECTED);
         $this->filter->whenTheFilterIsAppliedToTheMethodsOfClass('MatchProtectedOrPublic');
         $this->filter->thenFilterMatchesContainTheMethod('myFunction');
         $this->filter->thenFilterMatchesContainTheMethod('myFunctionProtected');
@@ -82,7 +82,7 @@ class FilterTest extends Specification {
                 protected function myFunctionProtected() {}
             }
         ');
-        $this->filter->givenTheFilterWithTheBitMask(Mockster::F_NONE);
+        $this->filter->givenTheFilterWithTheBitMask(Mockster2::F_NONE);
         $this->filter->whenTheFilterIsAppliedToTheMethodsOfClass('MatchNone');
         $this->filter->thenTheFilterMatched_Methods(0);
     }

@@ -170,7 +170,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
      * @param \callable|null $customFilter
      * @return \rtens\mockster\MethodCollection
      */
-    public function filter($filter = Mockster::F_ALL, $customFilter = null) {
+    public function filter($filter = Mockster2::F_ALL, $customFilter = null) {
         $filter = new Filter($filter, $customFilter);
         return new static($this->factory, $this->className, array_filter($this->methods, function(\ReflectionMethod $method) use ($filter) {
             return $filter->apply($method);
