@@ -20,6 +20,13 @@ class StubMethodsTest extends Specification {
         $this->mock = $this->foo->mock();
     }
 
+    function testNoStubDefined() {
+        try {
+            $this->mock->bar();
+            $this->fail("Should have thrown an exception");
+        } catch (UndefinedBehaviourException $ignored) {}
+    }
+
     function testReturnValue() {
         Mockster::method($this->foo->bar())->will()->return_('foobar');
 
