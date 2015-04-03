@@ -7,29 +7,31 @@ use watoki\scrut\Specification;
 
 class StubMethodsTest extends Specification {
 
-    public function testReturnValue() {
-        /** @var Foo|Mockster $foo */
-        $foo = new Mockster(Foo::class);
+    /** @var Foo $mock */
+    private $mock;
 
-        Mockster::method($foo->bar())->will()->return_('foobar');
+    /** @var Foo|Mockster $foo */
+    private $foo;
 
-        /** @var Foo $mock */
-        $mock = $foo->mock();
-        $this->assertEquals('foobar', $mock->bar());
-        $this->assertEquals('foobar', $mock->bar());
+    protected function setUp() {
+        parent::setUp();
+        $this->foo = new Mockster(Foo::class);
+        $this->mock = $this->foo->mock();
     }
 
-    public function testReturnValueOnce() {
-        /** @var Foo|Mockster $foo */
-        $foo = new Mockster(Foo::class);
+    function testReturnValue() {
+        Mockster::method($this->foo->bar())->will()->return_('foobar');
 
-        Mockster::method($foo->bar())->will()->return_('foo')->once();
-        Mockster::method($foo->bar())->will()->return_('bar');
+        $this->assertEquals('foobar', $this->mock->bar());
+        $this->assertEquals('foobar', $this->mock->bar());
+    }
 
-        /** @var Foo $mock */
-        $mock = $foo->mock();
-        $this->assertEquals('foo', $mock->bar());
-        $this->assertEquals('bar', $mock->bar());
+    function testReturnValueOnce() {
+        Mockster::method($this->foo->bar())->will()->return_('foo')->once();
+        Mockster::method($this->foo->bar())->will()->return_('bar');
+
+        $this->assertEquals('foo', $this->mock->bar());
+        $this->assertEquals('bar', $this->mock->bar());
     }
 }
 
