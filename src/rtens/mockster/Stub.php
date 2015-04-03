@@ -19,6 +19,9 @@ class Stub {
     /** @var string */
     private $class;
 
+    /** @var boolean */
+    private $stubbed = true;
+
     /**
      * @param string $class
      * @param string $name
@@ -59,5 +62,13 @@ class Stub {
         }
         var_dump($this->behaviours);
         throw new UndefinedBehaviourException("No active behaviour available for [$this->class::$this->name()]");
+    }
+
+    public function dontStub() {
+        $this->stubbed = false;
+    }
+
+    public function isStubbed() {
+        return $this->stubbed;
     }
 }

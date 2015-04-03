@@ -59,12 +59,18 @@ class StubMethodsTest extends Specification {
 
         $this->assertEquals('unodos', $this->mock->bar('uno', 'dos'));
     }
+
+    function testDisableStubbing() {
+        Mockster::method($this->foo->bar())->dontStub();
+
+        $this->assertEquals('original', $this->mock->bar());
+    }
 }
 
 class Foo {
 
     public function bar($a = null, $b = null) {
-        return "Not implemented " . $a . $b;
+        return "original" . $a . $b;
     }
 }
 
@@ -80,11 +86,18 @@ class FooMock extends Foo {
     }
 
     public function bar($a = null, $b = null) {
-        return $this->stubs->invoke('bar', [
+        $args = [
             0 => $a,
             1 => $b,
             'a' => $a,
             'b' => $b
-        ]);
+        ];
+
+        $stub = $this->stubs->find('bar', $args);
+        if (!$stub->isStubbed()) {
+            return parent::bar($a, $b);
+        } else {
+            return $stub->invoke($args);
+        }
     }
 }
