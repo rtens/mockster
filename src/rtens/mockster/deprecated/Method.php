@@ -1,14 +1,10 @@
 <?php
 namespace rtens\mockster\deprecated;
 
-use rtens\mockster\deprecated\behaviour\ReturnValueBehaviour;
-use rtens\mockster\deprecated\behaviour\CallbackBehaviour;
-use rtens\mockster\deprecated\behaviour\ThrowExceptionBehaviour;
 use rtens\mockster\deprecated\Behaviour;
-use rtens\mockster\deprecated\History;
-use rtens\mockster\deprecated\MethodTypeHint;
-use rtens\mockster\deprecated\Mock;
-use rtens\mockster\deprecated\MockFactory;
+use rtens\mockster\deprecated\behaviour\CallbackBehaviour;
+use rtens\mockster\deprecated\behaviour\ReturnValueBehaviour;
+use rtens\mockster\deprecated\behaviour\ThrowExceptionBehaviour;
 
 /**
  * A mocked method collects all its invocations and forwards them to a Behaviour if set.

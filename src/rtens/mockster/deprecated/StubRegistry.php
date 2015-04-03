@@ -1,8 +1,6 @@
 <?php
 namespace rtens\mockster\deprecated;
 
-use rtens\mockster\deprecated\Method;
-
 class StubRegistry {
 
     /** @var array|Method[] */

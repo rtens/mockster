@@ -1,8 +1,6 @@
 <?php
 namespace rtens\mockster\deprecated;
 
-use rtens\mockster\deprecated\Mock;
-use rtens\mockster\deprecated\MockFactory;
 use watoki\reflect\ClassResolver;
 
 class MethodTypeHint {

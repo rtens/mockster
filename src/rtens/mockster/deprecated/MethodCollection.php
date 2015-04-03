@@ -4,14 +4,9 @@ namespace rtens\mockster\deprecated;
 use ArrayIterator;
 use rtens\mockster\deprecated\behaviour\CallbackBehaviour;
 use rtens\mockster\deprecated\behaviour\ReturnValueBehaviour;
-use rtens\mockster\deprecated\behaviour\ThrowExceptionBehaviour;
 use rtens\mockster\deprecated\Behaviour;
-use rtens\mockster\deprecated\History;
-use rtens\mockster\deprecated\Method;
+use rtens\mockster\deprecated\behaviour\ThrowExceptionBehaviour;
 use rtens\mockster\deprecated\filter\Filter;
-use rtens\mockster\deprecated\MockFactory;
-use rtens\mockster\deprecated\Mockster2;
-use rtens\mockster\deprecated\StubRegistry;
 use Traversable;
 
 class MethodCollection implements \Countable, \IteratorAggregate {
@@ -174,7 +169,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
      *
      * @param int $filter Constants from Mockster::F_
      * @param \callable|null $customFilter
-     * @return \rtens\mockster\MethodCollection
+     * @return \rtens\mockster\deprecated\MethodCollection
      */
     public function filter($filter = Mockster2::F_ALL, $customFilter = null) {
         $filter = new Filter($filter, $customFilter);
