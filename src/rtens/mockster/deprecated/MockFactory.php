@@ -1,6 +1,8 @@
 <?php
-namespace rtens\mockster;
+namespace rtens\mockster\deprecated;
 
+use rtens\mockster\deprecated\Mock;
+use rtens\mockster\deprecated\MockProvider;
 use watoki\factory\Factory;
 
 class MockFactory extends Factory {

@@ -1,8 +1,8 @@
 <?php
 namespace spec\rtens\mockster\deprecated;
 
-use rtens\mockster\MockFactory;
-use rtens\mockster\Mockster2;
+use rtens\mockster\deprecated\MockFactory;
+use rtens\mockster\deprecated\Mockster2;
 use watoki\scrut\Specification;
 
 class IntroductionTest extends Specification {

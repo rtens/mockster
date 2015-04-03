@@ -22,7 +22,7 @@ class MockReturnValueTest extends Specification {
         $this->fixture->whenIInvoke('myFunction');
 
         $this->fixture->thenItShouldReturnAnInstanceOf('StdClass');
-        $this->fixture->thenItShouldReturnAnInstanceOf('rtens\mockster\Mock');
+        $this->fixture->thenItShouldReturnAnInstanceOf('rtens\mockster\deprecated\Mock');
     }
 
     public function testReturnPrimitive() {

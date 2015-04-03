@@ -1,5 +1,5 @@
 <?php
-namespace rtens\mockster;
+namespace rtens\mockster\deprecated;
 
 class History {
 

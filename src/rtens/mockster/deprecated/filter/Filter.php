@@ -1,7 +1,7 @@
 <?php
-namespace rtens\mockster\filter;
+namespace rtens\mockster\deprecated\filter;
 
-use rtens\mockster\Mockster2;
+use rtens\mockster\deprecated\Mockster2;
 
 class Filter {
 

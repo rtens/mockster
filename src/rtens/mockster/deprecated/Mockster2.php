@@ -1,7 +1,7 @@
 <?php
-namespace rtens\mockster;
+namespace rtens\mockster\deprecated;
 
-use rtens\mockster\filter\Filter;
+use rtens\mockster\deprecated\filter\Filter;
 use watoki\factory\Injector;
 
 class Mockster2 {
@@ -27,7 +27,7 @@ class Mockster2 {
     /** @var MethodCollection */
     private $methods;
 
-    /** @var \rtens\mockster\Mock Back-reference to parent */
+    /** @var \rtens\mockster\deprecated\Mock Back-reference to parent */
     private $mock;
 
     /** @var MockFactory */
@@ -200,7 +200,7 @@ class Mockster2 {
      * Un-mocks all methods and injects mocks for all properties passing the filter.
      *
      * @param callable $propertyFilter will be passed a \ReflectionProperty instance
-     * @return \rtens\mockster\Mock
+     * @return \rtens\mockster\deprecated\Mock
      */
     public function makeTestUnit($propertyFilter = null) {
         $this->mockMethods(Mockster2::F_NONE);

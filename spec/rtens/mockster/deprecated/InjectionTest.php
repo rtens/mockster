@@ -26,10 +26,10 @@ class InjectionTest extends Specification {
         $this->fixture->whenICreateTheMockOf_WithTheConstructorArguments('ConstructorInjection', array());
 
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('one', 'ConstructorDependencyOne');
-        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('one', 'rtens\mockster\Mock');
+        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('one', 'rtens\mockster\deprecated\Mock');
 
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('two', 'ConstructorDependencyTwo');
-        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('two', 'rtens\mockster\Mock');
+        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('two', 'rtens\mockster\deprecated\Mock');
     }
 
     public function testNoInjectionIfConstructorIsNotCalled() {
@@ -101,8 +101,8 @@ class InjectionTest extends Specification {
         ');
         $this->fixture->whenICreateTheMockOf_WithTheConstructorArguments('MixConstructor', array('two' => new \StdClass));
 
-        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('one', 'rtens\mockster\Mock');
-        $this->fixture->thenItsProperty_ShouldNotBeAnInstanceOf('two', 'rtens\mockster\Mock');
+        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('one', 'rtens\mockster\deprecated\Mock');
+        $this->fixture->thenItsProperty_ShouldNotBeAnInstanceOf('two', 'rtens\mockster\deprecated\Mock');
     }
 
     public function testAccessArgumentsInjectedInConstructor() {
@@ -115,7 +115,7 @@ class InjectionTest extends Specification {
         $this->fixture->whenICreateTheMockOf_WithTheConstructorArguments('AccessArguments', array());
 
         $this->fixture->thenTheInjectedArgument_ShouldBeAnInstanceOf('one', 'StdClass');
-        $this->fixture->thenTheInjectedArgument_ShouldBeAnInstanceOf('two', 'rtens\mockster\Mock');
+        $this->fixture->thenTheInjectedArgument_ShouldBeAnInstanceOf('two', 'rtens\mockster\deprecated\Mock');
     }
 
     public function testInjectAnnotatedConstructorArguments() {

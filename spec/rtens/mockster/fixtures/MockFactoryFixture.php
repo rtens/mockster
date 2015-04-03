@@ -1,9 +1,9 @@
 <?php
 namespace spec\rtens\mockster\fixtures;
 
-use rtens\mockster\Mock;
-use rtens\mockster\MockFactory;
-use rtens\mockster\Mockster2;
+use rtens\mockster\deprecated\Mock;
+use rtens\mockster\deprecated\MockFactory;
+use rtens\mockster\deprecated\Mockster2;
 use watoki\scrut\Fixture;
 
 class MockFactoryFixture extends Fixture {
@@ -13,7 +13,7 @@ class MockFactoryFixture extends Fixture {
     /** @var null|\Exception */
     private $caught;
 
-    /** @var Mock */
+    /** @var \rtens\mockster\deprecated\Mock */
     private $mock;
 
     private $returnValue;
@@ -61,7 +61,7 @@ class MockFactoryFixture extends Fixture {
 
     public function whenIInvokeAllMethods() {
         foreach ($this->mock->__mock()->methods() as $method) {
-            /* @var $method \rtens\mockster\Method */
+            /* @var $method \rtens\mockster\deprecated\Method */
             call_user_func(array($this->mock, $method->getName()));
         }
     }

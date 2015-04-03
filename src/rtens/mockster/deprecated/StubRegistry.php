@@ -1,5 +1,7 @@
 <?php
-namespace rtens\mockster;
+namespace rtens\mockster\deprecated;
+
+use rtens\mockster\deprecated\Method;
 
 class StubRegistry {
 

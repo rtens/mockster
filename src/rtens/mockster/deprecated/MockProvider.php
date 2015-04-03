@@ -1,5 +1,5 @@
 <?php
-namespace rtens\mockster;
+namespace rtens\mockster\deprecated;
 
 use watoki\factory\Injector;
 use watoki\factory\Provider;
@@ -22,7 +22,7 @@ class MockProvider implements Provider {
      * @param string $classname Fully qualified name of the class or interface to mock.
      * @param null|array $constructorArgs Arguments for the constructor (as list or map). If null, the constructor is not invoked.
      * @throws \InvalidArgumentException
-     * @return \rtens\mockster\Mock
+     * @return \rtens\mockster\deprecated\Mock
      */
     public function provide($classname, array $constructorArgs = null) {
         $callConstructor = $constructorArgs !== null;
@@ -157,11 +157,11 @@ class MockProvider implements Provider {
     private function generateMockCode($classname, $mockClassName, $callConstructor) {
         $classReflection = new \ReflectionClass($classname);
 
-        $implements = 'implements \rtens\mockster\Mock';
+        $implements = 'implements \rtens\mockster\deprecated\Mock';
         $extends = '';
 
         if (interface_exists($classname)) {
-            $implements = 'implements ' . $classname . ', \rtens\mockster\Mock';
+            $implements = 'implements ' . $classname . ', \rtens\mockster\deprecated\Mock';
         } else if (class_exists($classname)) {
             $extends = ' extends ' . $classname;
         }

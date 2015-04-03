@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\mockster\fixtures;
 
-use rtens\mockster\filter\Filter;
+use rtens\mockster\deprecated\filter\Filter;
 use watoki\scrut\Fixture;
 
 class FilterFixture extends Fixture {

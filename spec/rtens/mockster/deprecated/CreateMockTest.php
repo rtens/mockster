@@ -21,7 +21,7 @@ class CreateMockTest extends Specification {
         $this->fixture->whenICreateTheMockOf('SkipThisConstructor');
 
         $this->fixture->thenItsProperty_ShouldBe('called', false);
-        $this->fixture->thenTheMockShouldBeAnInstanceOf('rtens\mockster\Mock');
+        $this->fixture->thenTheMockShouldBeAnInstanceOf('rtens\mockster\deprecated\Mock');
     }
 
     public function testCallConstructor() {
@@ -136,7 +136,7 @@ class CreateMockTest extends Specification {
 
         $this->fixture->thenItsProperty_ShouldBe('foo', 'foo');
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'StdClass');
-        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'rtens\mockster\Mock');
+        $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'rtens\mockster\deprecated\Mock');
     }
 
 }

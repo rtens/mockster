@@ -1,20 +1,16 @@
 <?php
 namespace spec\rtens\mockster;
 
-use rtens\mockster\MockFactory;
-use rtens\mockster\Mockster2;
+use rtens\mockster\Mockster;
 use watoki\scrut\Specification;
 
 class StubMethodsTest extends Specification {
 
     public function testFixedReturnValue() {
-        $this->markTestIncomplete();
+        /** @var Foo|Mockster $foo */
+        $foo = new Mockster(Foo::class);
 
-        $mf = new MockFactory();
-        /** @var Foo|Mockster2 $foo */
-        $foo = new Mockster2(Foo::class);
-
-        Mockster2::method($foo->bar())->willReturn('foobar');
+        Mockster::method($foo->bar())->willReturn('foobar');
 
         /** @var Foo $mock */
         $mock = $foo->mock();
@@ -26,5 +22,20 @@ class Foo {
 
     public function bar() {
         return null;
+    }
+}
+
+class FooMock extends Foo {
+    /**
+     * @var \rtens\mockster\Mockster
+     */
+    private $mockster;
+
+    function __construct(Mockster $mockster) {
+        $this->mockster = $mockster;
+    }
+
+    public function bar() {
+        //return $this->mockster->bar()->
     }
 }

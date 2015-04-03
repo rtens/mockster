@@ -1,11 +1,17 @@
 <?php
-namespace rtens\mockster;
+namespace rtens\mockster\deprecated;
 
 use ArrayIterator;
-use rtens\mockster\behaviour\CallbackBehaviour;
-use rtens\mockster\behaviour\ReturnValueBehaviour;
-use rtens\mockster\behaviour\ThrowExceptionBehaviour;
-use rtens\mockster\filter\Filter;
+use rtens\mockster\deprecated\behaviour\CallbackBehaviour;
+use rtens\mockster\deprecated\behaviour\ReturnValueBehaviour;
+use rtens\mockster\deprecated\behaviour\ThrowExceptionBehaviour;
+use rtens\mockster\deprecated\Behaviour;
+use rtens\mockster\deprecated\History;
+use rtens\mockster\deprecated\Method;
+use rtens\mockster\deprecated\filter\Filter;
+use rtens\mockster\deprecated\MockFactory;
+use rtens\mockster\deprecated\Mockster2;
+use rtens\mockster\deprecated\StubRegistry;
 use Traversable;
 
 class MethodCollection implements \Countable, \IteratorAggregate {
@@ -116,7 +122,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
 
     /**
      * @param mixed $value
-     * @return \rtens\mockster\behaviour\ReturnValueBehaviour
+     * @return \rtens\mockster\deprecated\behaviour\ReturnValueBehaviour
      */
     public function willReturn($value) {
         return $this->willDo(new ReturnValueBehaviour($value));
@@ -124,7 +130,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
 
     /**
      * @param \Exception $exception
-     * @return \rtens\mockster\behaviour\ThrowExceptionBehaviour
+     * @return \rtens\mockster\deprecated\behaviour\ThrowExceptionBehaviour
      */
     public function willThrow($exception) {
         return $this->willDo(new ThrowExceptionBehaviour($exception));
@@ -132,7 +138,7 @@ class MethodCollection implements \Countable, \IteratorAggregate {
 
     /**
      * @param \callable $callback
-     * @return \rtens\mockster\behaviour\CallBackBehaviour
+     * @return \rtens\mockster\deprecated\behaviour\CallBackBehaviour
      */
     public function willCall($callback) {
         return $this->willDo(new CallbackBehaviour($callback));
