@@ -2,19 +2,34 @@
 namespace spec\rtens\mockster;
 
 use rtens\mockster\Mockster;
+use rtens\mockster\Stubs;
 use watoki\scrut\Specification;
 
 class StubMethodsTest extends Specification {
 
-    public function testFixedReturnValue() {
+    public function testReturnValue() {
         /** @var Foo|Mockster $foo */
         $foo = new Mockster(Foo::class);
 
-        Mockster::method($foo->bar())->willReturn('foobar');
+        Mockster::method($foo->bar())->will()->return_('foobar');
 
         /** @var Foo $mock */
         $mock = $foo->mock();
         $this->assertEquals('foobar', $mock->bar());
+        $this->assertEquals('foobar', $mock->bar());
+    }
+
+    public function testReturnValueOnce() {
+        /** @var Foo|Mockster $foo */
+        $foo = new Mockster(Foo::class);
+
+        Mockster::method($foo->bar())->will()->return_('foo')->once();
+        Mockster::method($foo->bar())->will()->return_('bar');
+
+        /** @var Foo $mock */
+        $mock = $foo->mock();
+        $this->assertEquals('foo', $mock->bar());
+        $this->assertEquals('bar', $mock->bar());
     }
 }
 
@@ -26,16 +41,17 @@ class Foo {
 }
 
 class FooMock extends Foo {
-    /**
-     * @var \rtens\mockster\Mockster
-     */
-    private $mockster;
 
-    function __construct(Mockster $mockster) {
-        $this->mockster = $mockster;
+    /**
+     * @var \rtens\mockster\Stubs
+     */
+    private $stubs;
+
+    function __construct(Stubs $stubs) {
+        $this->stubs = $stubs;
     }
 
     public function bar() {
-        //return $this->mockster->bar()->
+        return $this->stubs->invoke('bar');
     }
 }

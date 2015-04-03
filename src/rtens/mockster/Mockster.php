@@ -8,26 +8,30 @@ class Mockster {
     /** @var string */
     private $class;
 
-    /**
-     * @param MethodCall|mixed $call
-     * @return MethodCall
-     */
-    public static function method(MethodCall $call) {
-        return $call;
-    }
+    /** @var \rtens\mockster\Stubs */
+    private $stubs;
 
     /**
      * @param string $class The FQN of the class to mock
      */
     function __construct($class) {
         $this->class = $class;
+        $this->stubs = new Stubs($class);
+    }
+
+    /**
+     * @param Stub|mixed $call
+     * @return Stub
+     */
+    public static function method(Stub $call) {
+        return $call;
     }
 
     /**
      * @return object A mock-instance of the class
      */
     public function mock() {
-        return new FooMock($this);
+        return new FooMock($this->stubs);
     }
 
     /**
@@ -35,10 +39,10 @@ class Mockster {
      *
      * @param string $name
      * @param array $arguments
-     * @return MethodCall
+     * @return Stub
      */
     function __call($name, $arguments) {
-        return new MethodCall($name, $arguments);
+        return $this->stubs->add($name, $arguments);
     }
 
 
