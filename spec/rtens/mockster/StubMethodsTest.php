@@ -1,6 +1,7 @@
 <?php
 namespace spec\rtens\mockster;
 
+use rtens\mockster\exceptions\UndefinedBehaviourException;
 use rtens\mockster\Mockster;
 use rtens\mockster\Stubs;
 use watoki\scrut\Specification;
@@ -45,7 +46,7 @@ class StubMethodsTest extends Specification {
     }
 
     function testCallCallback() {
-        Mockster::method($this->foo->bar())->will()->call(function ($args) {
+        Mockster::method($this->foo->bar('one', 'two'))->will()->call(function ($args) {
             return $args[0] . $args['b'];
         });
 
@@ -53,7 +54,7 @@ class StubMethodsTest extends Specification {
     }
 
     function testCallCallbackWithArguments() {
-        Mockster::method($this->foo->bar())->will()->forwardTo(function ($a, $b) {
+        Mockster::method($this->foo->bar('uno', 'dos'))->will()->forwardTo(function ($a, $b) {
             return $a . $b;
         });
 
@@ -64,6 +65,22 @@ class StubMethodsTest extends Specification {
         Mockster::method($this->foo->bar())->dontStub();
 
         $this->assertEquals('original', $this->mock->bar());
+    }
+
+    function testMatchWithExactArguments() {
+        Mockster::method($this->foo->bar("uno", "dos"))->will()->return_("foo")->once();
+        Mockster::method($this->foo->bar("one", "two"))->will()->return_("bar");
+        Mockster::method($this->foo->bar("uno", "dos"))->will()->return_("baz")->once();
+
+        $this->assertEquals("bar", $this->mock->bar("one", "two"));
+        $this->assertEquals("foo", $this->mock->bar("uno", "dos"));
+        $this->assertEquals("baz", $this->mock->bar("uno", "dos"));
+
+        try {
+            $this->mock->bar("not", "two");
+            $this->fail("Should have thrown an execption");
+        } catch (UndefinedBehaviourException $ignored) {
+        }
     }
 }
 
@@ -86,18 +103,17 @@ class FooMock extends Foo {
     }
 
     public function bar($a = null, $b = null) {
-        $args = [
-            0 => $a,
-            1 => $b,
-            'a' => $a,
-            'b' => $b
-        ];
+        $stub = $this->stubs->find('bar', func_get_args());
 
-        $stub = $this->stubs->find('bar', $args);
         if (!$stub->isStubbed()) {
             return parent::bar($a, $b);
         } else {
-            return $stub->invoke($args);
+            return $stub->invoke([
+                0 => $a,
+                1 => $b,
+                'a' => $a,
+                'b' => $b
+            ]);
         }
     }
 }

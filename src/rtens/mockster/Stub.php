@@ -27,7 +27,7 @@ class Stub {
      * @param string $name
      * @param array $arguments
      */
-    function __construct($class, $name, array $arguments = []) {
+    function __construct($class, $name, array $arguments) {
         $this->class = $class;
         $this->name = $name;
         $this->arguments = $arguments;
@@ -70,5 +70,9 @@ class Stub {
 
     public function isStubbed() {
         return $this->stubbed;
+    }
+
+    public function matches($arguments) {
+        return $this->arguments == $arguments;
     }
 }
