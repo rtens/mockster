@@ -6,13 +6,13 @@ abstract class Behaviour {
     /** @var null|int */
     private $callsLeft;
 
-    abstract protected function doInvoke();
+    abstract protected function doInvoke($args);
 
-    public function invoke() {
+    public function invoke($args) {
         if ($this->callsLeft !== null) {
             $this->callsLeft--;
         }
-        return $this->doInvoke();
+        return $this->doInvoke($args);
     }
 
     public function isActive() {

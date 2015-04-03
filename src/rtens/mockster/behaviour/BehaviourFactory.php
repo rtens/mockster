@@ -17,7 +17,7 @@ class BehaviourFactory {
      * @return Behaviour
      */
     public function return_($value) {
-        return $this->stub->will(new ReturnValueBehaviour($value));
+        return $this->stub->add(new ReturnValueBehaviour($value));
     }
 
     /**
@@ -25,6 +25,14 @@ class BehaviourFactory {
      * @return Behaviour
      */
     public function throw_($exception) {
-        return $this->stub->will(new ThrowExceptionBehaviour($exception));
+        return $this->stub->add(new ThrowExceptionBehaviour($exception));
+    }
+
+    public function call($callback) {
+        return $this->stub->add(new CallbackBehaviour($callback));
+    }
+
+    public function forwardTo($callbackWithArguments) {
+        return $this->stub->add(new CallbackWithArgumentsBehaviour($callbackWithArguments));
     }
 }

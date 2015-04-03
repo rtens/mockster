@@ -13,7 +13,7 @@ class ThrowExceptionBehaviour extends Behaviour {
         $this->exception = $exception;
     }
 
-    protected function doInvoke() {
+    protected function doInvoke($args) {
         throw $this->exception;
     }
 }

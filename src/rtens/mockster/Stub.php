@@ -31,25 +31,30 @@ class Stub {
     }
 
     /**
-     * @param Behaviour|null $behaviour
-     * @return Behaviour|BehaviourFactory
+     * @param Behaviour $behaviour
+     * @return Behaviour
      */
-    public function will(Behaviour $behaviour = null) {
-        if (!$behaviour) {
-            return new BehaviourFactory($this);
-        }
+    public function add(Behaviour $behaviour) {
         $this->behaviours[] = $behaviour;
         return $behaviour;
     }
 
     /**
-     * @return mixed The return value of the first active Behaviour
-     * @throws UndefinedBehaviourException
+     * @return BehaviourFactory
      */
-    public function invoke() {
+    public function will() {
+        return new BehaviourFactory($this);
+    }
+
+    /**
+     * @param array $args Indexed by position and name
+     * @throws exceptions\UndefinedBehaviourException
+     * @return mixed The return value of the first active Behaviour
+     */
+    public function invoke($args) {
         foreach ($this->behaviours as $behaviour) {
             if ($behaviour->isActive()) {
-                return $behaviour->invoke();
+                return $behaviour->invoke($args);
             }
         }
         var_dump($this->behaviours);

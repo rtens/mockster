@@ -40,14 +40,31 @@ class StubMethodsTest extends Specification {
         try {
             $this->mock->bar();
             $this->fail("Should have thrown an exception");
-        } catch (\InvalidArgumentException $ignored) {}
+        } catch (\InvalidArgumentException $ignored) {
+        }
+    }
+
+    function testCallCallback() {
+        Mockster::method($this->foo->bar())->will()->call(function ($args) {
+            return $args[0] . $args['b'];
+        });
+
+        $this->assertEquals('onetwo', $this->mock->bar('one', 'two'));
+    }
+
+    function testCallCallbackWithArguments() {
+        Mockster::method($this->foo->bar())->will()->forwardTo(function ($a, $b) {
+            return $a . $b;
+        });
+
+        $this->assertEquals('unodos', $this->mock->bar('uno', 'dos'));
     }
 }
 
 class Foo {
 
-    public function bar() {
-        return null;
+    public function bar($a = null, $b = null) {
+        return "Not implemented " . $a . $b;
     }
 }
 
@@ -62,7 +79,12 @@ class FooMock extends Foo {
         $this->stubs = $stubs;
     }
 
-    public function bar() {
-        return $this->stubs->invoke('bar');
+    public function bar($a = null, $b = null) {
+        return $this->stubs->invoke('bar', [
+            0 => $a,
+            1 => $b,
+            'a' => $a,
+            'b' => $b
+        ]);
     }
 }

@@ -10,7 +10,7 @@ class ReturnValueBehaviour extends Behaviour {
         $this->value = $value;
     }
 
-    protected function doInvoke() {
+    protected function doInvoke($args) {
         return $this->value;
     }
 }

@@ -16,8 +16,13 @@ class Stubs {
         $this->class = $class;
     }
 
-    public function invoke($name) {
-        return $this->find($name)->invoke();
+    /**
+     * @param string $name Of the method
+     * @param array $args Indexed by position and name
+     * @return mixed Return value of stub behaviour
+     */
+    public function invoke($name, $args) {
+        return $this->find($name)->invoke($args);
     }
 
     public function add($name, $arguments) {
