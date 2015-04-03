@@ -1,6 +1,7 @@
 <?php
 namespace rtens\mockster;
 
+use rtens\mockster\arguments\Argument;
 use rtens\mockster\behaviour\Behaviour;
 use rtens\mockster\behaviour\BehaviourFactory;
 use rtens\mockster\exceptions\UndefinedBehaviourException;
@@ -10,7 +11,7 @@ class Stub {
     /** @var string */
     private $name;
 
-    /** @var array */
+    /** @var array|Argument[] */
     private $arguments;
 
     /** @var Behaviour[] */
@@ -30,6 +31,14 @@ class Stub {
     function __construct($class, $name, array $arguments) {
         $this->class = $class;
         $this->name = $name;
+
+        $arguments = array_map(function ($arg) {
+            if (!($arg instanceof Argument)) {
+                return Argument::exact($arg);
+            } else {
+                return $arg;
+            }
+        }, $arguments);
         $this->arguments = $arguments;
     }
 
@@ -73,6 +82,15 @@ class Stub {
     }
 
     public function matches($arguments) {
-        return $this->arguments == $arguments;
+        if (count($arguments) != count($this->arguments)) {
+            return false;
+        }
+
+        foreach ($this->arguments as $i => $argument) {
+            if (!$argument->matches($arguments[$i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }

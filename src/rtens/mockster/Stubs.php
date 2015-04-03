@@ -21,7 +21,7 @@ class Stubs {
     public function add($name, $arguments) {
         try {
             $stub = $this->find($name, $arguments);
-        } catch (UndefinedBehaviourException $e) {
+        } catch (UndefinedBehaviourException $ignored) {
             $stub = new Stub($this->class, $name, $arguments);
             $this->stubs[$name][] = $stub;
         }
@@ -44,6 +44,6 @@ class Stubs {
                 }
             }
         }
-        throw new UndefinedBehaviourException("No stub set for [$this->class::$name()] with " . json_encode($args));
+        throw new UndefinedBehaviourException("No stub set for [$this->class::$name()] matching " . json_encode($args));
     }
 }

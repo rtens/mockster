@@ -1,6 +1,7 @@
 <?php
 namespace spec\rtens\mockster;
 
+use rtens\mockster\arguments\Argument;
 use rtens\mockster\exceptions\UndefinedBehaviourException;
 use rtens\mockster\Mockster;
 use rtens\mockster\Stubs;
@@ -88,6 +89,13 @@ class StubMethodsTest extends Specification {
             $this->fail("Should have thrown an execption");
         } catch (UndefinedBehaviourException $ignored) {
         }
+    }
+
+    function testMatchWithAnyArgument() {
+        Mockster::method($this->foo->bar(Argument::any(), Argument::any()))->will()->return_('foo');
+
+        $this->assertEquals('foo', $this->mock->bar('one', 'two'));
+        $this->assertEquals('foo', $this->mock->bar(null, true));
     }
 }
 
