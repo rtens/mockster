@@ -1,5 +1,5 @@
 <?php
-namespace spec\rtens\mockster;
+namespace spec\rtens\mockster\deprecated;
 
 use rtens\mockster\Mockster;
 use spec\rtens\mockster\fixtures\FilterFixture;
