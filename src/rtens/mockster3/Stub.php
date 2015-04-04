@@ -81,7 +81,11 @@ class Stub {
     }
 
     public function dontStub() {
-        $this->stubbed = false;
+        $this->setStubbed(false);
+    }
+
+    public function setStubbed($stubbed = true) {
+        $this->stubbed = $stubbed;
     }
 
     public function isStubbed() {

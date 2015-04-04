@@ -1,8 +1,6 @@
 <?php
 namespace rtens\mockster3;
 
-use rtens\mockster3\exceptions\UndefinedBehaviourException;
-
 class Stubs {
 
     /** @var array|Stub[][] */
@@ -10,6 +8,9 @@ class Stubs {
 
     /** @var string */
     private $class;
+
+    /** @var bool */
+    private $defaultStubbing = true;
 
     /**
      * @param string $class
@@ -29,7 +30,12 @@ class Stubs {
         }
 
         $stub = new Stub($this->class, $name, $arguments);
+        $stub->setStubbed($this->defaultStubbing);
         $this->stubs[$name][] = $stub;
         return $stub;
+    }
+
+    public function stubbedByDefault($stubbed = true) {
+        $this->defaultStubbing = $stubbed;
     }
 }

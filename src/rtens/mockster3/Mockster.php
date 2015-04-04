@@ -34,9 +34,12 @@ class Mockster {
      * @return object A mock-instance of the class
      */
     public function mock() {
-        $mock = $this->factory->getInstance($this->class, null);
-        $mock->__stubs = $this->stubs;
-        return $mock;
+        return $this->injectStubs($this->factory->getInstance($this->class, null));
+    }
+
+    public function uut($constructorArguments = []) {
+        $this->stubs->stubbedByDefault(false);
+        return $this->injectStubs($this->factory->getInstance($this->class, $constructorArguments));
     }
 
     /**
@@ -48,6 +51,11 @@ class Mockster {
      */
     function __call($name, $arguments) {
         return $this->stubs->add($name, $arguments);
+    }
+
+    private function injectStubs($instance) {
+        $instance->__stubs = $this->stubs;
+        return $instance;
     }
 
 

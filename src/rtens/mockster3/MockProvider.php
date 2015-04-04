@@ -5,17 +5,17 @@ use watoki\factory\Provider;
 
 class MockProvider implements Provider {
 
-    public function provide($classname, array $constructorArgs = null) {
+    public function provide($className, array $constructorArgs = null) {
         $callConstructor = $constructorArgs !== null;
-        $mockClassName = $this->makeMockClassName($classname, $callConstructor);
+        $mockClassName = $this->makeMockClassName($className, $callConstructor);
 
         if (!class_exists($mockClassName)) {
             $generator = new MockGenerator();
-            $code = $generator->generateMock($classname, $mockClassName, $callConstructor);
+            $code = $generator->generateMock($className, $mockClassName, $callConstructor);
             eval($code);
         }
 
-        return new $mockClassName;
+        return (new \ReflectionClass($mockClassName))->newInstanceArgs((array)$constructorArgs);
     }
 
     private function makeMockClassName($classname, $callConstructor) {
