@@ -11,6 +11,9 @@ class Mockster {
     /** @var \rtens\mockster3\Stubs */
     private $stubs;
 
+    /** @var \watoki\factory\Factory */
+    private $factory;
+
     /**
      * @param string $class The FQN of the class to mock
      */
@@ -18,7 +21,7 @@ class Mockster {
         $this->class = $class;
         $this->stubs = new Stubs($class);
         $this->factory = new Factory();
-        $this->factory->setProvider('StdClass', new MockProvider());
+        $this->factory->setProvider('StdClass', new MockProvider($this->factory));
     }
 
     /**

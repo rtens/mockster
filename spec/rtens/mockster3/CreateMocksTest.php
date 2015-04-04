@@ -30,8 +30,22 @@ class CreateMocksTest extends Specification {
     }
 
     function testPassConstructorArgumentsToUut() {
-        $this->mock = $this->foo->uut(['one' => 'uno', 'dos']);
+        $this->mock = $this->foo->uut(['uno', 'dos']);
         $this->assertEquals(['uno', 'dos'], $this->mock->constructorArguments);
+    }
+
+    function testPassConstructorArgumentsByName() {
+        $this->mock = $this->foo->uut(['one' => 'uno', 'two' => 'dos']);
+        $this->assertEquals(['uno', 'dos'], $this->mock->constructorArguments);
+    }
+
+    function testMockInjectableConstructorArguments() {
+        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        /** @var CreateMocksTest_InjectableClass $mock */
+        $mock = $injectable->uut();
+
+        $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->foo);
     }
 }
 
@@ -46,5 +60,18 @@ class CreateMocksTest_FooClass {
 
     function foo() {
         return 'bar';
+    }
+}
+
+class CreateMocksTest_InjectableClass {
+
+    /** @var CreateMocksTest_FooClass */
+    public $foo;
+
+    /**
+     * @param CreateMocksTest_FooClass $foo <-
+     */
+    function __construct($foo) {
+        $this->foo = $foo;
     }
 }
