@@ -23,6 +23,16 @@ class CreateMocksTest extends Specification {
         $this->assertTrue(Mockster::stub($this->foo->foo())->isStubbed());
     }
 
+    function testMockAbstractClass() {
+        $foo = new Mockster(CreateMocksTest_AbstractClass::class);
+        $this->assertInstanceOf(CreateMocksTest_AbstractClass::class, $foo->mock());
+    }
+
+    function testMockInterface() {
+        $foo = new Mockster(CreateMocksTest_Interface::class);
+        $this->assertInstanceOf(CreateMocksTest_Interface::class, $foo->mock());
+    }
+
     function testUnitUnderTest() {
         $this->mock = $this->foo->uut();
         $this->assertTrue($this->mock->constructorCalled);
@@ -61,6 +71,12 @@ class CreateMocksTest_FooClass {
     function foo() {
         return 'bar';
     }
+}
+
+abstract class CreateMocksTest_AbstractClass {
+}
+
+interface CreateMocksTest_Interface {
 }
 
 class CreateMocksTest_InjectableClass {
