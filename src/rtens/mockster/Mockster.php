@@ -1,7 +1,7 @@
 <?php
 namespace rtens\mockster;
 
-use spec\rtens\mockster\FooMock;
+use watoki\factory\Factory;
 
 class Mockster {
 
@@ -17,6 +17,8 @@ class Mockster {
     function __construct($class) {
         $this->class = $class;
         $this->stubs = new Stubs($class);
+        $this->factory = new Factory();
+        $this->factory->setProvider('StdClass', new MockProvider());
     }
 
     /**
@@ -32,7 +34,9 @@ class Mockster {
      * @return object A mock-instance of the class
      */
     public function mock() {
-        return new FooMock($this->stubs);
+        $mock = $this->factory->getInstance($this->class);
+        $mock->__stubs = $this->stubs;
+        return $mock;
     }
 
     /**

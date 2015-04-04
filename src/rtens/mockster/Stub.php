@@ -59,14 +59,21 @@ class Stub {
     }
 
     /**
-     * @param array $args Indexed by position and name
+     * @param array $arguments Indexed by position and name
      * @throws exceptions\UndefinedBehaviourException
      * @return mixed The return value of the first active Behaviour
      */
-    public function invoke($args) {
+    public function invoke($arguments) {
+        $reflection = new \ReflectionMethod($this->class, $this->name);
+        foreach ($reflection->getParameters() as $param) {
+            if (array_key_exists($param->getPosition(), $arguments)) {
+                $arguments[$param->getName()] = $arguments[$param->getPosition()];
+            }
+        }
+
         foreach ($this->behaviours as $behaviour) {
             if ($behaviour->isActive()) {
-                return $behaviour->invoke($args);
+                return $behaviour->invoke($arguments);
             }
         }
         var_dump($this->behaviours);

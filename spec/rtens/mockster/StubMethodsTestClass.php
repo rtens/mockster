@@ -4,20 +4,20 @@ namespace spec\rtens\mockster;
 use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\exceptions\UndefinedBehaviourException;
 use rtens\mockster\Mockster;
-use rtens\mockster\Stubs;
 use watoki\scrut\Specification;
 
 class StubMethodsTest extends Specification {
 
-    /** @var Foo $mock */
+    /** @var StubMethodsTest_FooClass $mock */
     private $mock;
 
-    /** @var Foo|Mockster $foo */
+    /** @var StubMethodsTest_FooClass|Mockster $foo */
     private $foo;
 
     protected function setUp() {
         parent::setUp();
-        $this->foo = new Mockster(Foo::class);
+
+        $this->foo = new Mockster(StubMethodsTest_FooClass::class);
         $this->mock = $this->foo->mock();
     }
 
@@ -99,36 +99,9 @@ class StubMethodsTest extends Specification {
     }
 }
 
-class Foo {
+class StubMethodsTest_FooClass {
 
     public function bar($a = null, $b = null) {
         return "original" . $a . $b;
-    }
-}
-
-class FooMock extends Foo {
-
-    /**
-     * @var \rtens\mockster\Stubs
-     */
-    private $stubs;
-
-    function __construct(Stubs $stubs) {
-        $this->stubs = $stubs;
-    }
-
-    public function bar($a = null, $b = null) {
-        $stub = $this->stubs->find('bar', func_get_args());
-
-        if (!$stub->isStubbed()) {
-            return parent::bar($a, $b);
-        } else {
-            return $stub->invoke([
-                0 => $a,
-                1 => $b,
-                'a' => $a,
-                'b' => $b
-            ]);
-        }
     }
 }
