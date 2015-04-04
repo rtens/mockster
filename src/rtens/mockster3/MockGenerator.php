@@ -126,14 +126,18 @@ class ' . $mockClassName . ' ' . $extends . ' {
     public function $methodName ( $paramsString ) {
         \$stub = \$this->__stubs->add('$methodName', func_get_args());
 
-        if (!\$stub->isStubbed()) {
-            \$return = parent::$methodName($argsString);
-        } else {
-            \$return = \$stub->invoke(func_get_args());
+        try {
+            if (!\$stub->isStubbed()) {
+                \$return = parent::$methodName($argsString);
+            } else {
+                \$return = \$stub->invoke(func_get_args());
+            }
+            \$stub->record(func_get_args(), \$return);
+            return \$return;
+        } catch (\\Exception \$e) {
+            \$stub->record(func_get_args(), null, \$e);
+            throw \$e;
         }
-
-        \$stub->record(func_get_args(), \$return);
-        return \$return;
     }";
     }
 }

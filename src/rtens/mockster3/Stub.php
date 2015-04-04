@@ -34,7 +34,7 @@ class Stub {
     private $factory;
 
     /** @var Call[] */
-    public $calls = [];
+    private $calls = [];
 
     /**
      * @param string $class
@@ -47,16 +47,15 @@ class Stub {
         $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
         $this->class = $class;
         $this->name = $name;
+        $this->factory = $factory;
 
-        $arguments = array_map(function ($arg) {
+        $this->arguments = array_map(function ($arg) {
             if (!($arg instanceof Argument)) {
                 return Argument::exact($arg);
             } else {
                 return $arg;
             }
         }, $arguments);
-        $this->arguments = $arguments;
-        $this->factory = $factory;
     }
 
     /**
@@ -81,15 +80,9 @@ class Stub {
      * @return mixed The return value of the first active Behaviour
      */
     public function invoke($arguments) {
-        foreach ($this->reflection->getParameters() as $param) {
-            if (array_key_exists($param->getPosition(), $arguments)) {
-                $arguments[$param->getName()] = $arguments[$param->getPosition()];
-            }
-        }
-
         foreach ($this->behaviours as $behaviour) {
             if ($behaviour->isActive()) {
-                return $behaviour->invoke($arguments);
+                return $behaviour->invoke($this->named($arguments));
             }
         }
 
@@ -127,9 +120,24 @@ class Stub {
         return true;
     }
 
-    public function record($arguments, $returnValue) {
-        $call = new Call($arguments, $returnValue);
-        $this->calls[] = $call;
-        return $call;
+    public function record($arguments, $returnValue, \Exception $thrown = null) {
+        $this->calls[] = new Call($this->named($arguments), $returnValue, $thrown);
+    }
+
+    public function calls() {
+        return $this->calls;
+    }
+
+    public function call($index) {
+        return $this->calls[$index];
+    }
+
+    private function named($arguments) {
+        foreach ($this->reflection->getParameters() as $param) {
+            if (array_key_exists($param->getPosition(), $arguments)) {
+                $arguments[$param->getName()] = $arguments[$param->getPosition()];
+            }
+        }
+        return $arguments;
     }
 }
