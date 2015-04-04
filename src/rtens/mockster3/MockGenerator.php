@@ -127,10 +127,13 @@ class ' . $mockClassName . ' ' . $extends . ' {
         \$stub = \$this->__stubs->add('$methodName', func_get_args());
 
         if (!\$stub->isStubbed()) {
-            return parent::$methodName($argsString);
+            \$return = parent::$methodName($argsString);
         } else {
-            return \$stub->invoke(func_get_args());
+            \$return = \$stub->invoke(func_get_args());
         }
+
+        \$stub->record(func_get_args(), \$return);
+        return \$return;
     }";
     }
 }

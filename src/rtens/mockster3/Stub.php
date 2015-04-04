@@ -29,7 +29,12 @@ class Stub {
 
     /** @var ReturnTypeInferer */
     private $typeHint;
+
+    /** @var \watoki\factory\Factory */
     private $factory;
+
+    /** @var Call[] */
+    public $calls = [];
 
     /**
      * @param string $class
@@ -120,5 +125,11 @@ class Stub {
             }
         }
         return true;
+    }
+
+    public function record($arguments, $returnValue) {
+        $call = new Call($arguments, $returnValue);
+        $this->calls[] = $call;
+        return $call;
     }
 }
