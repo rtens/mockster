@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\mockster;
 
-use rtens\mockster\arguments\Argument;
+use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\exceptions\UndefinedBehaviourException;
 use rtens\mockster\Mockster;
 use rtens\mockster\Stubs;
@@ -29,22 +29,22 @@ class StubMethodsTest extends Specification {
     }
 
     function testReturnValue() {
-        Mockster::method($this->foo->bar())->will()->return_('foobar');
+        Mockster::stub($this->foo->bar())->will()->return_('foobar');
 
         $this->assertEquals('foobar', $this->mock->bar());
         $this->assertEquals('foobar', $this->mock->bar());
     }
 
     function testReturnValueOnce() {
-        Mockster::method($this->foo->bar())->will()->return_('foo')->once();
-        Mockster::method($this->foo->bar())->will()->return_('bar');
+        Mockster::stub($this->foo->bar())->will()->return_('foo')->once();
+        Mockster::stub($this->foo->bar())->will()->return_('bar');
 
         $this->assertEquals('foo', $this->mock->bar());
         $this->assertEquals('bar', $this->mock->bar());
     }
 
     function testThrowException() {
-        Mockster::method($this->foo->bar())->will()->throw_(new \InvalidArgumentException());
+        Mockster::stub($this->foo->bar())->will()->throw_(new \InvalidArgumentException());
 
         try {
             $this->mock->bar();
@@ -54,7 +54,7 @@ class StubMethodsTest extends Specification {
     }
 
     function testCallCallback() {
-        Mockster::method($this->foo->bar('one', 'two'))->will()->call(function ($args) {
+        Mockster::stub($this->foo->bar('one', 'two'))->will()->call(function ($args) {
             return $args[0] . $args['b'];
         });
 
@@ -62,7 +62,7 @@ class StubMethodsTest extends Specification {
     }
 
     function testCallCallbackWithArguments() {
-        Mockster::method($this->foo->bar('uno', 'dos'))->will()->forwardTo(function ($a, $b) {
+        Mockster::stub($this->foo->bar('uno', 'dos'))->will()->forwardTo(function ($a, $b) {
             return $a . $b;
         });
 
@@ -70,15 +70,15 @@ class StubMethodsTest extends Specification {
     }
 
     function testDisableStubbing() {
-        Mockster::method($this->foo->bar())->dontStub();
+        Mockster::stub($this->foo->bar())->dontStub();
 
         $this->assertEquals('original', $this->mock->bar());
     }
 
     function testMatchWithExactArguments() {
-        Mockster::method($this->foo->bar("uno", "dos"))->will()->return_("foo")->once();
-        Mockster::method($this->foo->bar("one", "two"))->will()->return_("bar");
-        Mockster::method($this->foo->bar("uno", "dos"))->will()->return_("baz")->once();
+        Mockster::stub($this->foo->bar("uno", "dos"))->will()->return_("foo")->once();
+        Mockster::stub($this->foo->bar("one", "two"))->will()->return_("bar");
+        Mockster::stub($this->foo->bar("uno", "dos"))->will()->return_("baz")->once();
 
         $this->assertEquals("bar", $this->mock->bar("one", "two"));
         $this->assertEquals("foo", $this->mock->bar("uno", "dos"));
@@ -92,7 +92,7 @@ class StubMethodsTest extends Specification {
     }
 
     function testMatchWithAnyArgument() {
-        Mockster::method($this->foo->bar(Argument::any(), Argument::any()))->will()->return_('foo');
+        Mockster::stub($this->foo->bar(Arg::any(), Arg::any()))->will()->return_('foo');
 
         $this->assertEquals('foo', $this->mock->bar('one', 'two'));
         $this->assertEquals('foo', $this->mock->bar(null, true));

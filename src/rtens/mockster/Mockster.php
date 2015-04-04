@@ -20,11 +20,12 @@ class Mockster {
     }
 
     /**
-     * @param Stub|mixed $call
+     * The sole purpose of this method is its type hint
+     * @param Stub|mixed $stub
      * @return Stub
      */
-    public static function method(Stub $call) {
-        return $call;
+    public static function stub(Stub $stub) {
+        return $stub;
     }
 
     /**
