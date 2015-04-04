@@ -23,12 +23,20 @@ class Stub {
     /** @var boolean */
     private $stubbed = true;
 
+    /** @var \ReflectionMethod */
+    private $reflection;
+
+    /** @var ReturnTypeAnalyzer */
+    private $typeHint;
+
     /**
      * @param string $class
      * @param string $name
      * @param array $arguments
      */
     function __construct($class, $name, array $arguments) {
+        $this->reflection = new \ReflectionMethod($class, $name);
+        $this->typeHint = new ReturnTypeAnalyzer($this->reflection);
         $this->class = $class;
         $this->name = $name;
 
@@ -64,8 +72,7 @@ class Stub {
      * @return mixed The return value of the first active Behaviour
      */
     public function invoke($arguments) {
-        $reflection = new \ReflectionMethod($this->class, $this->name);
-        foreach ($reflection->getParameters() as $param) {
+        foreach ($this->reflection->getParameters() as $param) {
             if (array_key_exists($param->getPosition(), $arguments)) {
                 $arguments[$param->getName()] = $arguments[$param->getPosition()];
             }
@@ -76,8 +83,14 @@ class Stub {
                 return $behaviour->invoke($arguments);
             }
         }
-        var_dump($this->behaviours);
-        throw new UndefinedBehaviourException("No active behaviour available for [$this->class::$this->name()]");
+
+        try {
+            return $this->typeHint->mockValue();
+        } catch (\Exception $e) {
+            throw new UndefinedBehaviourException("No active behaviour available for [$this->class::$this->name()] " .
+                "and none could be inferred from return type hint.", 0, $e);
+        }
+
     }
 
     public function dontStub() {
