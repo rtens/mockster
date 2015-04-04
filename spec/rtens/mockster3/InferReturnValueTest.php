@@ -17,6 +17,7 @@ class InferReturnValueTest extends Specification {
         $this->assertEquals([], $mock->returnArray());
         $this->assertEquals(null, $mock->returnNull());
         $this->assertEquals("", $mock->returnMulti());
+        $this->assertEquals(null, $mock->returnNullableObject());
     }
 }
 
@@ -62,6 +63,13 @@ class InferReturnValue_FooClass {
      */
     public function returnNull() {
         return "foo";
+    }
+
+    /**
+     * @return null|\DateTime
+     */
+    public function returnNullableObject() {
+        return new \DateTime();
     }
 
     /**

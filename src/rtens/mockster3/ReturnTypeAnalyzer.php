@@ -1,6 +1,17 @@
 <?php
 namespace rtens\mockster3;
 
+use watoki\reflect\Type;
+use watoki\reflect\type\ArrayType;
+use watoki\reflect\type\BooleanType;
+use watoki\reflect\type\FloatType;
+use watoki\reflect\type\IntegerType;
+use watoki\reflect\type\MultiType;
+use watoki\reflect\type\NullableType;
+use watoki\reflect\type\NullType;
+use watoki\reflect\type\StringType;
+use watoki\reflect\TypeFactory;
+
 class ReturnTypeAnalyzer {
 
     /** @var \ReflectionMethod */
@@ -11,61 +22,50 @@ class ReturnTypeAnalyzer {
     }
 
     public function mockValue() {
-        return $this->generateDefaultValue();
+        return $this->generateMockValue();
     }
 
-    private function generateDefaultValue() {
-        $types = $this->getTypeHintsFromDocComment();
+    private function generateMockValue() {
+        $type = $this->getTypeFromDocComment();
 
-        foreach ($types as $type) {
-            try {
-                return $this->getValueFromHint($type);
-            } catch (\Exception $e) {
-            }
+        try {
+            return $this->getValueFromHint($type);
+        } catch (\InvalidArgumentException $e) {
+            throw new \Exception("Could not generate value from return type hint.", 0, $e);
         }
-
-        throw new \Exception("Could not generate value from " . json_encode($types));
     }
 
-    private function getTypeHintsFromDocComment() {
+    private function getTypeFromDocComment() {
         $matches = array();
         $found = preg_match('/@return\s+(\S+)/', $this->reflection->getDocComment(), $matches);
 
-        return $found ? $this->explodeMultipleHints($matches[1]) : array();
-    }
-
-    private function explodeMultipleHints($hint) {
-        if (strpos($hint, '|') !== false) {
-            return explode('|', $hint);
-        } else {
-            return array($hint);
-        }
-    }
-
-    private function getValueFromHint($type) {
-        switch (strtolower($type)) {
-            case 'array':
-            case 'traversable':
-                return array();
-            case 'int':
-            case 'integer':
-                return 0;
-            case 'float':
-                return 0.0;
-            case 'bool':
-            case 'boolean':
-                return false;
-            case 'string':
-                return '';
-            case 'null':
-            case 'mixed':
-            case 'object':
-            case 'callable':
-            case 'void':
-            case 'closure':
-                return null;
+        if (!$found) {
+            throw new \Exception("No type hint found.");
         }
 
-        throw new \InvalidArgumentException("Cannot resolve value for [$type].");
+        $type = new TypeFactory($this->reflection->getDeclaringClass());
+        return $type->fromTypeHints(explode("|", $matches[1]));
+    }
+
+    private function getValueFromHint(Type $type) {
+        if ($type instanceof IntegerType) {
+            return 0;
+        } else if ($type instanceof FloatType) {
+            return 0.0;
+        } else if ($type instanceof BooleanType) {
+            return false;
+        } else if ($type instanceof StringType) {
+            return '';
+        } else if ($type instanceof ArrayType) {
+            return array();
+        } else if ($type instanceof NullType
+            || $type instanceof NullableType
+        ) {
+            return null;
+        } else if ($type instanceof MultiType) {
+            return $this->getValueFromHint($type->getTypes()[0]);
+        }
+
+        throw new \InvalidArgumentException("Cannot mock value for [$type].");
     }
 }
