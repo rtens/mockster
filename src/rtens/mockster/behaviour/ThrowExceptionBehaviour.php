@@ -1,19 +1,19 @@
 <?php
 namespace rtens\mockster\behaviour;
 
+use rtens\mockster\Behaviour;
+
 class ThrowExceptionBehaviour extends Behaviour {
 
-    /** @var \Exception */
     private $exception;
 
-    /**
-     * @param \Exception $exception
-     */
-    function __construct($exception) {
+    public function __construct($exception) {
         $this->exception = $exception;
     }
 
-    protected function doInvoke($args) {
+    public function getReturnValue(array $arguments) {
+        parent::getReturnValue($arguments);
         throw $this->exception;
     }
 }
+?>

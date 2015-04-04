@@ -1,19 +1,19 @@
 <?php
 namespace rtens\mockster\behaviour;
 
+use rtens\mockster\Behaviour;
+
 class CallbackBehaviour extends Behaviour {
 
-    /** @var callable */
     private $callback;
 
-    /**
-     * @param callable $callback
-     */
-    function __construct($callback) {
+    public function __construct($callback) {
         $this->callback = $callback;
     }
 
-    protected function doInvoke($args) {
-        return call_user_func($this->callback, $args);
+    public function getReturnValue(array $arguments) {
+        parent::getReturnValue($arguments);
+        return call_user_func_array($this->callback, $arguments);
     }
 }
+?>
