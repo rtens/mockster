@@ -6,18 +6,31 @@ use watoki\scrut\Specification;
 
 class InferReturnValueTest extends Specification {
 
+    private $foo;
+
+    /** @var InferReturnValue_FooClass $mock */
+    private $mock;
+
+    protected function setUp() {
+        parent::setUp();
+        $this->foo = new Mockster(InferReturnValue_FooClass::class);
+        $this->mock = $this->foo->mock();
+    }
+
     function testInferPrimitive() {
-        $foo = new Mockster(InferReturnValue_FooClass::class);
-        /** @var InferReturnValue_FooClass $mock */
-        $mock = $foo->mock();
-        $this->assertEquals(0, $mock->returnInt());
-        $this->assertEquals(0.0, $mock->returnFloat());
-        $this->assertEquals(false, $mock->returnBoolean());
-        $this->assertEquals("", $mock->returnString());
-        $this->assertEquals([], $mock->returnArray());
-        $this->assertEquals(null, $mock->returnNull());
-        $this->assertEquals("", $mock->returnMulti());
-        $this->assertEquals(null, $mock->returnNullableObject());
+        $this->assertEquals(0, $this->mock->returnInt());
+        $this->assertEquals(0.0, $this->mock->returnFloat());
+        $this->assertEquals(false, $this->mock->returnBoolean());
+        $this->assertEquals("", $this->mock->returnString());
+        $this->assertEquals([], $this->mock->returnArray());
+        $this->assertEquals(null, $this->mock->returnNull());
+        $this->assertEquals("", $this->mock->returnMulti());
+        $this->assertEquals(null, $this->mock->returnNullableObject());
+    }
+
+    function testInferClass() {
+        $this->assertInstanceOf(Mockster::class, $this->mock->fullClassName());
+        $this->assertInstanceOf(Mockster::class, $this->mock->importedClass());
     }
 }
 
@@ -77,5 +90,19 @@ class InferReturnValue_FooClass {
      */
     public function returnMulti() {
         return "foo";
+    }
+
+    /**
+     * @return \rtens\mockster3\Mockster
+     */
+    public function fullClassName() {
+        return null;
+    }
+
+    /**
+     * @return Mockster
+     */
+    public function importedClass() {
+        return null;
     }
 }

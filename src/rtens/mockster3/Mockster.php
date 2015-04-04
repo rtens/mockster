@@ -19,9 +19,9 @@ class Mockster {
      */
     function __construct($class) {
         $this->class = $class;
-        $this->stubs = new Stubs($class);
         $this->factory = new Factory();
         $this->factory->setProvider('StdClass', new MockProvider($this->factory));
+        $this->stubs = new Stubs($class, $this->factory);
     }
 
     /**

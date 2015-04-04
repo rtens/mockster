@@ -1,6 +1,8 @@
 <?php
 namespace rtens\mockster3;
 
+use watoki\factory\Factory;
+
 class Stubs {
 
     /** @var array|Stub[][] */
@@ -11,12 +13,15 @@ class Stubs {
 
     /** @var bool */
     private $defaultStubbing = true;
+    private $factory;
 
     /**
      * @param string $class
+     * @param \watoki\factory\Factory $factory
      */
-    function __construct($class) {
+    function __construct($class, Factory $factory) {
         $this->class = $class;
+        $this->factory = $factory;
     }
 
     public function add($name, $arguments) {
@@ -29,7 +34,7 @@ class Stubs {
             }
         }
 
-        $stub = new Stub($this->class, $name, $arguments);
+        $stub = new Stub($this->class, $name, $arguments, $this->factory);
         $stub->setStubbed($this->defaultStubbing);
         $this->stubs[$name][] = $stub;
         return $stub;

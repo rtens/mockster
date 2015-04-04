@@ -5,6 +5,7 @@ use rtens\mockster3\arguments\Argument;
 use rtens\mockster3\behaviour\Behaviour;
 use rtens\mockster3\behaviour\BehaviourFactory;
 use rtens\mockster3\exceptions\UndefinedBehaviourException;
+use watoki\factory\Factory;
 
 class Stub {
 
@@ -26,17 +27,19 @@ class Stub {
     /** @var \ReflectionMethod */
     private $reflection;
 
-    /** @var ReturnTypeAnalyzer */
+    /** @var ReturnTypeInferer */
     private $typeHint;
+    private $factory;
 
     /**
      * @param string $class
      * @param string $name
      * @param array $arguments
+     * @param Factory $factory
      */
-    function __construct($class, $name, array $arguments) {
+    function __construct($class, $name, array $arguments, Factory $factory) {
         $this->reflection = new \ReflectionMethod($class, $name);
-        $this->typeHint = new ReturnTypeAnalyzer($this->reflection);
+        $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
         $this->class = $class;
         $this->name = $name;
 
@@ -48,6 +51,7 @@ class Stub {
             }
         }, $arguments);
         $this->arguments = $arguments;
+        $this->factory = $factory;
     }
 
     /**
