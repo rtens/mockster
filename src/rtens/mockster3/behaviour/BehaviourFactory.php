@@ -4,17 +4,17 @@ namespace rtens\mockster3\behaviour;
 class BehaviourFactory {
 
     /** @var callable */
-    private $setter;
+    private $listener;
 
     /**
-     * @param callable $setter Invoked with the selected Behaviour
+     * @param callable $listener Invoked with the selected Behaviour
      */
-    function __construct($setter) {
-        $this->setter = $setter;
+    function __construct($listener) {
+        $this->listener = $listener;
     }
 
     private function set(Behaviour $behaviour) {
-        call_user_func($this->setter, $behaviour);
+        call_user_func($this->listener, $behaviour);
         return $behaviour;
     }
 

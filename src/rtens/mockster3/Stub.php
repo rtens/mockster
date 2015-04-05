@@ -69,6 +69,7 @@ class Stub {
             return $behaviour;
         }
         return new BehaviourFactory(function (Behaviour $behaviour) {
+            $this->setStubbed(true);
             $this->behaviour = $behaviour;
         });
     }

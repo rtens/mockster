@@ -77,6 +77,12 @@ class StubMethodsTest extends Specification {
         $this->assertEquals('original', $this->mock->bar());
     }
 
+    function testEnableStubbingWhenSettingBehaviour() {
+        Mockster::stub($this->foo->bar())->dontStub();
+        Mockster::stub($this->foo->bar())->will()->return_('bar');
+        $this->assertEquals("bar", $this->mock->bar());
+    }
+
     function testMatchWithExactArguments() {
         Mockster::stub($this->foo->bar("uno", "dos"))->will()->return_("foo");
         Mockster::stub($this->foo->bar("one", "two"))->will()->return_("bar");
