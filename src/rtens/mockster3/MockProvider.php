@@ -4,6 +4,7 @@ namespace rtens\mockster3;
 use watoki\factory\Factory;
 use watoki\factory\Injector;
 use watoki\factory\Provider;
+use watoki\factory\providers\DefaultProvider;
 
 class MockProvider implements Provider {
 
@@ -24,7 +25,11 @@ class MockProvider implements Provider {
             eval($code);
         }
 
-        return $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array());
+        $instance = $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array());
+        $this->injector->injectProperties($instance, function (\ReflectionProperty $property) {
+            return true;
+        });
+        return $instance;
     }
 
     private function makeMockClassName($classname, $callConstructor) {

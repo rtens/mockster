@@ -58,6 +58,15 @@ class CreateMocksTest extends Specification {
         $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->foo);
     }
 
+    function testMockInjectableProperties() {
+        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        /** @var CreateMocksTest_InjectableClass $mock */
+        $mock = $injectable->uut();
+
+        $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->bar);
+    }
+
     function testForceParameterCount() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
         $methods = new Mockster(CreateMocksTest_Methods::class);
@@ -120,7 +129,11 @@ class CreateMocksTest extends Specification {
         /** @var CreateMocksTest_Methods $mock */
         $mock = $methods->mock();
 
-        $this->assertEquals('one two', $mock->variadic('one', 'two'));
+        Mockster::stub($methods->variadic('one', 'two'))->will()->call(function ($args) {
+            return json_encode($args);
+        });
+
+        $this->assertContains('"0":"one","1":"two"', $mock->variadic('one', 'two'));
     }
 }
 
@@ -147,7 +160,7 @@ interface CreateMocksTest_Interface {
 class CreateMocksTest_InjectableClass {
 
     /** @var CreateMocksTest_FooClass */
-    public $foo;
+    public $bar;
 
     /**
      * @param CreateMocksTest_FooClass $foo <-
@@ -171,6 +184,5 @@ class CreateMocksTest_Methods {
     }
 
     public function variadic(...$a) {
-        return implode(' ', $a);
     }
 }

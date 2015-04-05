@@ -8,7 +8,7 @@ use watoki\scrut\Specification;
 class IntroductionTest extends Specification {
 
     /**
-     * A typical test with *mockster3* might look like this.
+     * A typical test with *mockster* might look like this.
      */
     public function testQuickStart() {
         /**
@@ -157,7 +157,7 @@ class IntroductionTest extends Specification {
 
         /*
          * Most classes have dependencies to other classes which usually have to be mocked away individually. With
-         * *mockster3*, dependencies injected into the constructor are mocked automatically and also can be injected
+         * *mockster*, dependencies injected into the constructor are mocked automatically and also can be injected
          * into properties using
          */
         $mock->__mock()->mockProperties();
@@ -217,10 +217,10 @@ class IntroductionTest extends Specification {
          * As a starting point, try [`CreateMock`](CreateMock) and [`MethodBehaviour`](MethodBehaviour). For
          * documentation on making assertions check out [`RecordHistory`](RecordHistory).
          *
-         * [dox]: http://dox.rtens.org/rtens-mockster3
+         * [dox]: http://dox.rtens.org/rtens-mockster
          * [sbe]: http://specificationbyexample.com/
          * [bdd]: http://dannorth.net/introducing-bdd/
-         * [spec]: https://github.com/rtens/mockster3/tree/master/spec/rtens/mockster3
+         * [spec]: https://github.com/rtens/mockster/tree/master/spec/rtens/mockster
          */
         null;
     }
