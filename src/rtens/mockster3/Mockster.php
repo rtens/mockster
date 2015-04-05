@@ -5,6 +5,8 @@ use watoki\factory\Factory;
 
 class Mockster {
 
+    public static $enableReturnTypeChecking = true;
+
     /** @var string */
     private $class;
 

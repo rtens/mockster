@@ -39,6 +39,9 @@ class Stub {
     /** @var Stub[] */
     private $collected;
 
+    /** @var boolean */
+    private $checkReturnType;
+
     /**
      * @param Factory $factory
      * @param string $class
@@ -53,6 +56,8 @@ class Stub {
         $this->name = $name;
         $this->arguments = $arguments;
         $this->collected = $collected;
+
+        $this->checkReturnType = Mockster::$enableReturnTypeChecking;
 
         $this->reflection = new \ReflectionMethod($class, $name);
         $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
@@ -117,10 +122,18 @@ class Stub {
     }
 
     private function checkReturnValue($returnValue) {
+        if (!$this->checkReturnType) {
+            return;
+        }
+
         $type = $this->typeHint->getType();
         if (!$type->is($returnValue)) {
             throw new \ReflectionException("The returned value does not match the return type hint of [$this->class::$this->name()]");
         }
+    }
+
+    public function enableReturnTypeChecking($enabled = true) {
+        $this->checkReturnType = $enabled;
     }
 
     /**

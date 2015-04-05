@@ -57,6 +57,18 @@ class CheckReturnTypeTest extends Specification {
         } catch (\ReflectionException $e) {
         }
     }
+
+    function testDisableChecking() {
+        Mockster::stub($this->foo->returnsString())->will()->return_(null);
+        Mockster::stub($this->foo->returnsString())->enableReturnTypeChecking(false);
+        $this->mock->returnsString();
+    }
+
+    function testDisableCheckingGlobally() {
+        Mockster::$enableReturnTypeChecking = false;
+        Mockster::stub($this->foo->returnsString())->will()->return_(null);
+        $this->mock->returnsString();
+    }
 }
 
 class CheckReturnTypeTest_FooClass {
