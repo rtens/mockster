@@ -25,8 +25,19 @@ class CheckReturnTypeTest extends Specification {
         $this->mock->noHint();
     }
 
-    function testFailIfReturnedValuePrimitiveDoesNotMatch() {
+    function testFailIfPrimitiveValueDoesNotMatch() {
         Mockster::stub($this->foo->returnsString())->will()->return_(42);
+
+        try {
+            $this->mock->returnsString();
+            $this->fail("Should have thrown an exception");
+        } catch (\ReflectionException $e) {
+        }
+        $this->assertCount(1, Mockster::stub($this->foo->returnsString())->calls());
+    }
+
+    function testFailIfNonStubbedValueDoesNotMatch() {
+        Mockster::stub($this->foo->returnsString())->dontStub();
 
         try {
             $this->mock->returnsString();
