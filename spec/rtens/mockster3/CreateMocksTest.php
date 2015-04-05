@@ -67,6 +67,16 @@ class CreateMocksTest extends Specification {
         $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->bar);
     }
 
+    function testStubMethodsOfInjectedMocks() {
+        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        /** @var CreateMocksTest_InjectableClass $mock */
+        $mock = $injectable->uut();
+
+        $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->bar);
+        $mock->bar->foo();
+    }
+
     function testForceParameterCount() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
         $methods = new Mockster(CreateMocksTest_Methods::class);
@@ -146,6 +156,9 @@ class CreateMocksTest_FooClass {
         $this->constructorArguments = [$one, $two];
     }
 
+    /**
+     * @return string
+     */
     function foo() {
         return 'bar';
     }
