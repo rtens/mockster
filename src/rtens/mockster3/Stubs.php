@@ -14,6 +14,8 @@ class Stubs {
 
     /** @var bool */
     private $defaultStubbing = true;
+
+    /** @var \watoki\factory\Factory */
     private $factory;
 
     /**
@@ -29,11 +31,23 @@ class Stubs {
         $arguments = $this->normalize($arguments);
 
         if (array_key_exists($name, $this->stubs)) {
+            $collected = false;
+            $collectStub = new CollectStub($this->class, $name, $arguments, $this->factory);
+            $collectStub->setStubbed($this->defaultStubbing);
+
             foreach ($this->stubs[$name] as $stub) {
                 /** @var Stub $stub */
                 if ($stub->arguments() == $arguments) {
                     return $stub;
+                } else if ($this->accept($arguments, $stub->arguments())) {
+                    $collected = true;
+                    $collectStub->add($stub);
                 }
+            }
+
+            if ($collected) {
+                $this->stubs[$name][] = $collectStub;
+                return $collectStub;
             }
         }
 
@@ -41,16 +55,18 @@ class Stubs {
     }
 
     public function find($name, $arguments) {
+        $arguments = $this->normalize($arguments);
+
         if (array_key_exists($name, $this->stubs)) {
             foreach ($this->stubs[$name] as $stub) {
                 /** @var Stub $stub */
-                if ($stub->matches($arguments)) {
+                if ($this->accept($stub->arguments(), $arguments)) {
                     return $stub;
                 }
             }
         }
 
-        return $this->addStub($name, $this->normalize($arguments));
+        return $this->addStub($name, $arguments);
     }
 
     private function addStub($name, $arguments) {
@@ -76,5 +92,23 @@ class Stubs {
                 return Argument::exact($arg);
             }
         }, $arguments);
+    }
+
+    /**
+     * @param Argument[] $a
+     * @param Argument[] $b
+     * @return bool
+     */
+    private function accept($a, $b) {
+        if (count($a) != count($b)) {
+            return false;
+        }
+
+        foreach ($a as $i => $argument) {
+            if (!$argument->accepts($b[$i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }

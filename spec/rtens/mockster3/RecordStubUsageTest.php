@@ -52,13 +52,12 @@ class RecordStubUsageTest extends Specification {
     }
 
     function testFindStubByGeneralArguments() {
-        $this->markTestIncomplete();
-
         $this->mock->foo('one');
         $this->mock->foo('two');
+        $this->mock->foo('three');
         $this->assertCount(1, Mockster::stub($this->foo->foo('one'))->calls());
         $this->assertCount(1, Mockster::stub($this->foo->foo('two'))->calls());
-        $this->assertCount(2, Mockster::stub($this->foo->foo(Argument::any()))->calls());
+        $this->assertCount(3, Mockster::stub($this->foo->foo(Argument::any()))->calls());
     }
 }
 

@@ -44,7 +44,6 @@ abstract class Behaviour {
             return $behaviour;
         }
         return new BehaviourFactory(function (Behaviour $behaviour) {
-            var_dump("Next", $behaviour);
             $this->next = $behaviour;
         });
     }

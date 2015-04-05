@@ -97,19 +97,6 @@ class Stub {
         return $this->stubbed;
     }
 
-    public function matches($arguments) {
-        if (count($arguments) != count($this->arguments)) {
-            return false;
-        }
-
-        foreach ($this->arguments as $i => $argument) {
-            if (!$argument->matches($arguments[$i])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public function record($arguments, $returnValue, \Exception $thrown = null) {
         $this->calls[] = new Call($this->named($arguments), $returnValue, $thrown);
     }
@@ -119,7 +106,7 @@ class Stub {
     }
 
     public function call($index) {
-        return $this->calls[$index];
+        return $this->calls()[$index];
     }
 
     private function named($arguments) {

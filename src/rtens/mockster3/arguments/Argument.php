@@ -11,5 +11,5 @@ abstract class Argument {
         return new ExactArgument($value);
     }
 
-    abstract public function matches($value);
+    abstract public function accepts(Argument $argument);
 }

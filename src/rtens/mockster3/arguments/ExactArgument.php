@@ -9,7 +9,11 @@ class ExactArgument extends Argument {
         $this->value = $value;
     }
 
-    public function matches($value) {
-        return $this->value === $value;
+    public function accepts(Argument $argument) {
+        if ($argument instanceof ExactArgument) {
+            return $this->value === $argument->value;
+        } else {
+            return false;
+        }
     }
 }

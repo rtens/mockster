@@ -3,7 +3,7 @@ namespace rtens\mockster3\arguments;
 
 class AnyArgument extends Argument {
 
-    public function matches($value) {
+    public function accepts(Argument $argument) {
         return true;
     }
 }
