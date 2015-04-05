@@ -66,11 +66,21 @@ class MockGenerator {
 
     private function generateMethodParameters(\ReflectionMethod $method) {
         $params = array();
-        foreach ($method->getParameters() as $param) {
-            $params[] = $this->generateTypeHint($param)
+
+        $parameters = $method->getParameters();
+        foreach ($parameters as $i => $param) {
+            $typeHint = $this->generateTypeHint($param);
+            $defaultValue = $this->generateDefaultValue($param);
+
+            if ($i + 1 == count($parameters) && $method->isVariadic()) {
+                $typeHint .= ' ...';
+                $defaultValue = '';
+            }
+
+            $params[] = $typeHint
                 . $this->generateReferenceToken($param)
                 . '$' . $param->getName()
-                . $this->generateDefaultValue($param);
+                . $defaultValue;
         }
         return $params;
     }
