@@ -132,12 +132,13 @@ class ' . $mockClassName . ' ' . $extends . ' {
             } else {
                 \$return = \$stub->invoke(func_get_args());
             }
-            \$stub->record(func_get_args(), \$return);
-            return \$return;
         } catch (\\Exception \$e) {
             \$stub->record(func_get_args(), null, \$e);
             throw \$e;
         }
+
+        \$stub->record(func_get_args(), \$return);
+        return \$return;
     }";
     }
 }

@@ -45,6 +45,7 @@ class Stub {
      * @param string $name
      * @param array|Argument[] $arguments
      * @param array|Stub[] $collected
+     * @throws \ReflectionException If the method cannot be stubbed
      */
     function __construct(Factory $factory, $class, $name, array $arguments = [], array $collected = []) {
         $this->factory = $factory;
@@ -55,6 +56,12 @@ class Stub {
 
         $this->reflection = new \ReflectionMethod($class, $name);
         $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
+
+        if ($this->reflection->isPrivate()) {
+            throw new \ReflectionException("Cannot stub private methods [$this->class::$name()]");
+        } else if ($this->reflection->isStatic()) {
+            throw new \ReflectionException("Cannot stub static methods [$this->class::$name()]");
+        }
     }
 
     /**
@@ -106,6 +113,14 @@ class Stub {
 
     public function record($arguments, $returnValue, \Exception $thrown = null) {
         $this->calls[] = new Call($this->named($arguments), $returnValue, $thrown);
+        $this->checkReturnValue($returnValue);
+    }
+
+    private function checkReturnValue($returnValue) {
+        $type = $this->typeHint->getType();
+        if (!$type->is($returnValue)) {
+            throw new \ReflectionException("The returned value does not match the return type hint of [$this->class::$this->name()]");
+        }
     }
 
     /**

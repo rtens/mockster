@@ -12,6 +12,7 @@ use watoki\reflect\type\MultiType;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\NullType;
 use watoki\reflect\type\StringType;
+use watoki\reflect\type\UnknownType;
 use watoki\reflect\TypeFactory;
 
 class ReturnTypeInferer {
@@ -28,15 +29,18 @@ class ReturnTypeInferer {
     }
 
     public function mockValue() {
-        return $this->getValueFromHint($this->getTypeFromDocComment());
+        return $this->getValueFromHint($this->getType());
     }
 
-    private function getTypeFromDocComment() {
+    /**
+     * @return Type
+     */
+    public function getType() {
         $matches = array();
         $found = preg_match('/@return\s+(\S+)/', $this->reflection->getDocComment(), $matches);
 
         if (!$found) {
-            throw new \Exception("No type hint found.");
+            return new UnknownType('');
         }
 
         $type = new TypeFactory($this->reflection->getDeclaringClass());

@@ -70,7 +70,7 @@ class RecordStubUsageTest_FooClass {
     /**
      * @param null $a
      * @param null $b
-     * @return null
+     * @return null|mixed
      */
     public function foo($a = null, $b = null) {
         return 'bar' . $a . $b;
