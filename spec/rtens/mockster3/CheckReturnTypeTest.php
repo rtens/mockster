@@ -32,6 +32,7 @@ class CheckReturnTypeTest extends Specification {
             $this->mock->returnsString();
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
+            $this->assertContains("does not match the return type", $e->getMessage());
         }
         $this->assertCount(1, Mockster::stub($this->foo->returnsString())->calls());
     }
@@ -46,6 +47,16 @@ class CheckReturnTypeTest extends Specification {
         }
         $this->assertCount(1, Mockster::stub($this->foo->returnsString())->calls());
     }
+
+    function testFailIfObjectDoesNotMatch() {
+        Mockster::stub($this->foo->returnsDateTime())->will()->return_(new \DateTimeImmutable());
+
+        try {
+            $this->mock->returnsDateTime();
+            $this->fail("Should have thrown an exception");
+        } catch (\ReflectionException $e) {
+        }
+    }
 }
 
 class CheckReturnTypeTest_FooClass {
@@ -58,6 +69,13 @@ class CheckReturnTypeTest_FooClass {
      * @return string
      */
     public function returnsString() {
+        return null;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function returnsDateTime() {
         return null;
     }
 }
