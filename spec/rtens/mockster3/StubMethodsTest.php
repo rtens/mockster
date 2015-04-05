@@ -98,6 +98,13 @@ class StubMethodsTest extends Specification {
         $this->assertEquals('foo', $this->mock->bar(null, true));
     }
 
+    function testMatchWithDefaultArguments() {
+        Mockster::stub($this->foo->bar())->will()->return_('foo');
+
+        $this->assertEquals('foo', $this->mock->bar(null));
+        $this->assertEquals('foo', $this->mock->bar(null, null));
+    }
+
     function testCanNotGetMoreSpecificWithArguments() {
         Mockster::stub($this->foo->bar(Argument::any()))->will()->return_('foo');
         Mockster::stub($this->foo->bar('one'))->will()->return_('bar');

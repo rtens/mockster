@@ -28,7 +28,7 @@ class Stubs {
     }
 
     public function add($name, $arguments) {
-        $arguments = $this->normalize($arguments);
+        $arguments = $this->normalize($name, $arguments);
         $collected = [];
 
         if (array_key_exists($name, $this->stubs)) {
@@ -46,7 +46,7 @@ class Stubs {
     }
 
     public function find($name, $arguments) {
-        $arguments = $this->normalize($arguments);
+        $arguments = $this->normalize($name, $arguments);
 
         if (array_key_exists($name, $this->stubs)) {
             foreach ($this->stubs[$name] as $stub) {
@@ -72,17 +72,28 @@ class Stubs {
     }
 
     /**
+     * @param $method
      * @param $arguments
      * @return array|Argument[]
      */
-    private function normalize($arguments) {
-        return array_map(function ($arg) {
-            if ($arg instanceof Argument) {
-                return $arg;
-            } else {
-                return Argument::exact($arg);
+    private function normalize($method, $arguments) {
+        $normalized = [];
+
+        $reflection = new \ReflectionMethod($this->class, $method);
+        foreach ($reflection->getParameters() as $i => $parameter) {
+            if (array_key_exists($i, $arguments)) {
+                $argument = $arguments[$i];
+                if ($argument instanceof Argument) {
+                    $normalized[] = $argument;
+                } else {
+                    $normalized[] = Argument::exact($argument);
+                }
+            } else if ($parameter->isDefaultValueAvailable()) {
+                $normalized[] = Argument::exact($parameter->getDefaultValue());
             }
-        }, $arguments);
+        }
+
+        return $normalized;
     }
 
     /**
