@@ -44,7 +44,6 @@ class ReturnTypeInferer {
     }
 
     private function getValueFromHint(Type $type) {
-        var_dump($type);
         if ($type instanceof IntegerType) {
             return 0;
         } else if ($type instanceof FloatType) {

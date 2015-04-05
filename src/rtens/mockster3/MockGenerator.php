@@ -124,7 +124,7 @@ class ' . $mockClassName . ' ' . $extends . ' {
 
     $docComment
     public function $methodName ( $paramsString ) {
-        \$stub = \$this->__stubs->add('$methodName', func_get_args());
+        \$stub = \$this->__stubs->find('$methodName', func_get_args());
 
         try {
             if (!\$stub->isStubbed()) {

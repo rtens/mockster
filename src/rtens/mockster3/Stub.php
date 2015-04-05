@@ -15,8 +15,8 @@ class Stub {
     /** @var array|Argument[] */
     private $arguments;
 
-    /** @var Behaviour[] */
-    private $behaviours = [];
+    /** @var Behaviour */
+    private $behaviour;
 
     /** @var string */
     private $class;
@@ -47,31 +47,24 @@ class Stub {
         $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
         $this->class = $class;
         $this->name = $name;
+        $this->arguments = $arguments;
         $this->factory = $factory;
-
-        $this->arguments = array_map(function ($arg) {
-            if (!($arg instanceof Argument)) {
-                return Argument::exact($arg);
-            } else {
-                return $arg;
-            }
-        }, $arguments);
     }
 
     /**
-     * @param Behaviour $behaviour
-     * @return Behaviour
+     * Sets the given Behaviour or returns a BehaviourFactory if non given
+     *
+     * @param behaviour\Behaviour $behaviour
+     * @return BehaviourFactory|Behaviour
      */
-    public function add(Behaviour $behaviour) {
-        $this->behaviours[] = $behaviour;
-        return $behaviour;
-    }
-
-    /**
-     * @return BehaviourFactory
-     */
-    public function will() {
-        return new BehaviourFactory($this);
+    public function will(Behaviour $behaviour = null) {
+        if ($behaviour) {
+            $this->behaviour = $behaviour;
+            return $behaviour;
+        }
+        return new BehaviourFactory(function (Behaviour $behaviour) {
+            $this->behaviour = $behaviour;
+        });
     }
 
     /**
@@ -80,10 +73,8 @@ class Stub {
      * @return mixed The return value of the first active Behaviour
      */
     public function invoke($arguments) {
-        foreach ($this->behaviours as $behaviour) {
-            if ($behaviour->isActive()) {
-                return $behaviour->invoke($this->named($arguments));
-            }
+        if ($this->behaviour && $this->behaviour->isActive()) {
+            return $this->behaviour->invoke($this->named($arguments));
         }
 
         try {
@@ -92,7 +83,6 @@ class Stub {
             throw new UndefinedBehaviourException("No active behaviour available for [$this->class::$this->name()] " .
                 "and none could be inferred from return type hint.", 0, $e);
         }
-
     }
 
     public function dontStub() {
@@ -139,5 +129,12 @@ class Stub {
             }
         }
         return $arguments;
+    }
+
+    /**
+     * @return array|arguments\Argument[]
+     */
+    public function arguments() {
+        return $this->arguments;
     }
 }

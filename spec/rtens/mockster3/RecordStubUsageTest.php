@@ -51,7 +51,7 @@ class RecordStubUsageTest extends Specification {
             Mockster::stub($this->foo->danger())->call(0)->thrownException());
     }
 
-    function testFindStubByArguments() {
+    function testFindStubByGeneralArguments() {
         $this->markTestIncomplete();
 
         $this->mock->foo('one');

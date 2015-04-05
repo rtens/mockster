@@ -1,15 +1,21 @@
 <?php
 namespace rtens\mockster3\behaviour;
 
-use rtens\mockster3\Stub;
-
 class BehaviourFactory {
 
-    /** @var Stub */
-    private $stub;
+    /** @var callable */
+    private $setter;
 
-    function __construct(Stub $stub) {
-        $this->stub = $stub;
+    /**
+     * @param callable $setter Invoked with the selected Behaviour
+     */
+    function __construct($setter) {
+        $this->setter = $setter;
+    }
+
+    private function set(Behaviour $behaviour) {
+        call_user_func($this->setter, $behaviour);
+        return $behaviour;
     }
 
     /**
@@ -17,7 +23,7 @@ class BehaviourFactory {
      * @return Behaviour
      */
     public function return_($value) {
-        return $this->stub->add(new ReturnValueBehaviour($value));
+        return $this->set(new ReturnValueBehaviour($value));
     }
 
     /**
@@ -25,14 +31,14 @@ class BehaviourFactory {
      * @return Behaviour
      */
     public function throw_($exception) {
-        return $this->stub->add(new ThrowExceptionBehaviour($exception));
+        return $this->set(new ThrowExceptionBehaviour($exception));
     }
 
     public function call($callback) {
-        return $this->stub->add(new CallbackBehaviour($callback));
+        return $this->set(new CallbackBehaviour($callback));
     }
 
     public function forwardTo($callbackWithArguments) {
-        return $this->stub->add(new CallbackWithArgumentsBehaviour($callbackWithArguments));
+        return $this->set(new CallbackWithArgumentsBehaviour($callbackWithArguments));
     }
 }

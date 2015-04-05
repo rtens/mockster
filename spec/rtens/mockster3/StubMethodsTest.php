@@ -2,6 +2,7 @@
 namespace spec\rtens\mockster3;
 
 use rtens\mockster3\arguments\Argument as Arg;
+use rtens\mockster3\arguments\Argument;
 use rtens\mockster3\exceptions\UndefinedBehaviourException;
 use rtens\mockster3\Mockster;
 use watoki\scrut\Specification;
@@ -25,7 +26,8 @@ class StubMethodsTest extends Specification {
         try {
             $this->mock->bar();
             $this->fail("Should have thrown an exception");
-        } catch (UndefinedBehaviourException $ignored) {}
+        } catch (UndefinedBehaviourException $ignored) {
+        }
     }
 
     function testReturnValue() {
@@ -36,8 +38,8 @@ class StubMethodsTest extends Specification {
     }
 
     function testReturnValueOnce() {
-        Mockster::stub($this->foo->bar())->will()->return_('foo')->once();
-        Mockster::stub($this->foo->bar())->will()->return_('bar');
+        Mockster::stub($this->foo->bar())->will()->return_('foo')->once()
+            ->then()->return_('bar');
 
         $this->assertEquals('foo', $this->mock->bar());
         $this->assertEquals('bar', $this->mock->bar());
@@ -76,13 +78,11 @@ class StubMethodsTest extends Specification {
     }
 
     function testMatchWithExactArguments() {
-        Mockster::stub($this->foo->bar("uno", "dos"))->will()->return_("foo")->once();
+        Mockster::stub($this->foo->bar("uno", "dos"))->will()->return_("foo");
         Mockster::stub($this->foo->bar("one", "two"))->will()->return_("bar");
-        Mockster::stub($this->foo->bar("uno", "dos"))->will()->return_("baz")->once();
 
         $this->assertEquals("bar", $this->mock->bar("one", "two"));
         $this->assertEquals("foo", $this->mock->bar("uno", "dos"));
-        $this->assertEquals("baz", $this->mock->bar("uno", "dos"));
 
         try {
             $this->mock->bar("not", "two");
@@ -96,6 +96,21 @@ class StubMethodsTest extends Specification {
 
         $this->assertEquals('foo', $this->mock->bar('one', 'two'));
         $this->assertEquals('foo', $this->mock->bar(null, true));
+    }
+
+    function testCanNotGetMoreSpecificWithArguments() {
+        Mockster::stub($this->foo->bar(Argument::any()))->will()->return_('foo');
+        Mockster::stub($this->foo->bar('one'))->will()->return_('bar');
+
+        $this->assertEquals('foo', $this->mock->bar('one'));
+    }
+
+    function testCanGetMoreGeneral() {
+        Mockster::stub($this->foo->bar('one'))->will()->return_('bar');
+        Mockster::stub($this->foo->bar(Argument::any()))->will()->return_('foo');
+
+        $this->assertEquals('bar', $this->mock->bar('one'));
+        $this->assertEquals('foo', $this->mock->bar('two'));
     }
 }
 
