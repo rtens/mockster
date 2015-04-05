@@ -55,9 +55,13 @@ class RecordStubUsageTest extends Specification {
         $this->mock->foo('one');
         $this->mock->foo('two');
         $this->mock->foo('three');
+
         $this->assertCount(1, Mockster::stub($this->foo->foo('one'))->calls());
         $this->assertCount(1, Mockster::stub($this->foo->foo('two'))->calls());
         $this->assertCount(3, Mockster::stub($this->foo->foo(Argument::any()))->calls());
+
+        $this->assertEquals('one', Mockster::stub($this->foo->foo(Argument::any()))->call(0)->argument(0));
+        $this->assertEquals('three', Mockster::stub($this->foo->foo(Argument::any()))->call(2)->argument(0));
     }
 }
 

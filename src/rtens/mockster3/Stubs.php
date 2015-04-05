@@ -29,29 +29,20 @@ class Stubs {
 
     public function add($name, $arguments) {
         $arguments = $this->normalize($arguments);
+        $collected = [];
 
         if (array_key_exists($name, $this->stubs)) {
-            $collected = false;
-            $collectStub = new CollectStub($this->class, $name, $arguments, $this->factory);
-            $collectStub->setStubbed($this->defaultStubbing);
-
             foreach ($this->stubs[$name] as $stub) {
                 /** @var Stub $stub */
                 if ($stub->arguments() == $arguments) {
                     return $stub;
                 } else if ($this->accept($arguments, $stub->arguments())) {
-                    $collected = true;
-                    $collectStub->add($stub);
+                    $collected[] = $stub;
                 }
-            }
-
-            if ($collected) {
-                $this->stubs[$name][] = $collectStub;
-                return $collectStub;
             }
         }
 
-        return $this->addStub($name, $arguments);
+        return $this->addStub($name, $arguments, $collected);
     }
 
     public function find($name, $arguments) {
@@ -69,8 +60,8 @@ class Stubs {
         return $this->addStub($name, $arguments);
     }
 
-    private function addStub($name, $arguments) {
-        $stub = new Stub($this->class, $name, $arguments, $this->factory);
+    private function addStub($name, $arguments, $collected = []) {
+        $stub = new Stub($this->factory, $this->class, $name, $arguments, $collected);
         $stub->setStubbed($this->defaultStubbing);
         $this->stubs[$name][] = $stub;
         return $stub;

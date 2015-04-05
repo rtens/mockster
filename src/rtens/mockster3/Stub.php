@@ -36,19 +36,25 @@ class Stub {
     /** @var Call[] */
     private $calls = [];
 
+    /** @var Stub[] */
+    private $collected;
+
     /**
+     * @param Factory $factory
      * @param string $class
      * @param string $name
-     * @param array $arguments
-     * @param Factory $factory
+     * @param array|Argument[] $arguments
+     * @param array|Stub[] $collected
      */
-    function __construct($class, $name, array $arguments, Factory $factory) {
-        $this->reflection = new \ReflectionMethod($class, $name);
-        $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
+    function __construct(Factory $factory, $class, $name, array $arguments = [], array $collected = []) {
+        $this->factory = $factory;
         $this->class = $class;
         $this->name = $name;
         $this->arguments = $arguments;
-        $this->factory = $factory;
+        $this->collected = $collected;
+
+        $this->reflection = new \ReflectionMethod($class, $name);
+        $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
     }
 
     /**
@@ -101,10 +107,21 @@ class Stub {
         $this->calls[] = new Call($this->named($arguments), $returnValue, $thrown);
     }
 
+    /**
+     * @return array|Call[]
+     */
     public function calls() {
-        return $this->calls;
+        $calls = $this->calls;
+        foreach ($this->collected as $collected) {
+            $calls = array_merge($calls, $collected->calls());
+        }
+        return $calls;
     }
 
+    /**
+     * @param int $index
+     * @return Call
+     */
     public function call($index) {
         return $this->calls()[$index];
     }
