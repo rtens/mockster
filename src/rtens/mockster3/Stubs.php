@@ -74,12 +74,19 @@ class Stubs {
     /**
      * @param $method
      * @param $arguments
+     * @throws \ReflectionException
      * @return array|Argument[]
      */
     private function normalize($method, $arguments) {
         $normalized = [];
 
         $reflection = new \ReflectionMethod($this->class, $method);
+        if ($reflection->isPrivate()) {
+            throw new \ReflectionException("Cannot stub private methods [$this->class::$method()]");
+        } else if ($reflection->isStatic()) {
+            throw new \ReflectionException("Cannot stub static methods [$this->class::$method()]");
+        }
+
         foreach ($reflection->getParameters() as $i => $parameter) {
             if (array_key_exists($i, $arguments)) {
                 $argument = $arguments[$i];
