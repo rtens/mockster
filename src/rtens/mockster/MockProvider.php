@@ -88,15 +88,26 @@ class MockProvider implements Provider {
             $params = array();
             $args = array();
 
-            foreach ($method->getParameters() as $param) {
+            $parameters = $method->getParameters();
+            foreach ($parameters as $param) {
                 $typeHint = '';
                 $default = '';
                 $reference = '';
+
+                if ($param->isDefaultValueAvailable()) {
+                    $value = $param->getDefaultValue();
+                    $default = ' = ' . var_export($value, true);
+                } else if ($param->isOptional()) {
+                    $default = ' = null';
+                }
 
                 if ($param->isArray()) {
                     $typeHint = 'array ';
                 } else if (method_exists($param, 'isCallable') && $param->isCallable()) {
                     $typeHint = 'callable ';
+                } else if ($param == $parameters[count($parameters) -1] && method_exists($method, 'isVariadic') && $method->isVariadic()) {
+                    $typeHint .= ' ...';
+                    $default = '';
                 } else {
                     try {
                         $class = $param->getClass();
@@ -107,13 +118,6 @@ class MockProvider implements Provider {
                     if ($class) {
                         $typeHint = $class->getName() . ' ';
                     }
-                }
-
-                if ($param->isDefaultValueAvailable()) {
-                    $value = $param->getDefaultValue();
-                    $default = ' = ' . var_export($value, true);
-                } else if ($param->isOptional()) {
-                    $default = ' = null';
                 }
 
                 if ($param->isPassedByReference()) {
