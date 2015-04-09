@@ -1,5 +1,5 @@
 <?php
-namespace spec\rtens\mockster;
+namespace spec\rtens\mockster3;
 
 use rtens\mockster3\Mockster;
 use watoki\scrut\Specification;
