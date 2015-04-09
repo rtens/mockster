@@ -5,7 +5,7 @@ use rtens\mockster3\arguments\Argument;
 use rtens\mockster3\Mockster;
 use watoki\scrut\Specification;
 
-class RecordStubUsageTest extends Specification {
+class RecordCallsTest extends Specification {
 
     /** @var Mockster|RecordStubUsageTest_FooClass $foo */
     public $foo;
