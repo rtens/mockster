@@ -243,6 +243,10 @@ class MockMethodsTest extends Specification {
     }
 
     public function testMockVariadicMethods() {
+        if (PHP_VERSION_ID < 50600) {
+            $this->markTestSkipped('Only in PHP >= 5.6');
+        }
+
         $this->fixture->givenTheClassDefinition('
             class MockVariadicMethod {
                 public function foo($a, ...$b) {
