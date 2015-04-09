@@ -67,14 +67,36 @@ class CreateMocksTest extends Specification {
         $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->bar);
     }
 
+    function testNotExistingProperty() {
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+
+        try {
+            /** @noinspection PhpUndefinedFieldInspection */
+            $injectable->notExisting;
+            $this->fail("Should have thrown an Exception");
+        } catch (\ReflectionException $e) {
+            $this->assertContains("InjectableClass::notExisting", $e->getMessage());
+        }
+    }
+
+    function testMocksDoNotInjectProperties() {
+        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        /** @var CreateMocksTest_InjectableClass $mock */
+        $mock = $injectable->mock();
+
+        $this->assertNull($mock->bar);
+        $this->assertInstanceOf(Mockster::class, $injectable->bar);
+    }
+
     function testStubMethodsOfInjectedMocks() {
         /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
         $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = $injectable->uut();
 
-        $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->bar);
-        $mock->bar->foo();
+        Mockster::stub($injectable->bar->foo())->will()->return_('foo');
+        $this->assertEquals('foo', $mock->bar->foo());
     }
 
     function testForceParameterCount() {

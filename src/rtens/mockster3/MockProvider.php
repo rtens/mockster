@@ -28,12 +28,7 @@ class MockProvider implements Provider {
             eval($code);
         }
 
-        $instance = $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array());
-        $this->injector->injectProperties($instance, function () {
-            return true;
-        });
-        $instance->__stubs = new Stubs($className, $this->factory);
-        return $instance;
+        return $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array());
     }
 
     private function makeMockClassName($classname, $callConstructor) {
