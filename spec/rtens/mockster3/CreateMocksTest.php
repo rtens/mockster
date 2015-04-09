@@ -197,5 +197,6 @@ class CreateMocksTest_Methods {
     }
 
     public function variadic(...$a) {
+        return $a;
     }
 }
