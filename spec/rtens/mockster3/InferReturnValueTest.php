@@ -26,6 +26,8 @@ class InferReturnValueTest extends Specification {
         $this->assertEquals(null, $this->mock->returnNull());
         $this->assertEquals("", $this->mock->returnMulti());
         $this->assertEquals(null, $this->mock->returnNullableObject());
+        /** @noinspection PhpVoidFunctionResultUsedInspection */
+        $this->assertEquals(null, $this->mock->returnVoid());
     }
 
     function testInferClass() {
@@ -76,6 +78,13 @@ class InferReturnValue_FooClass {
      */
     public function returnNull() {
         return "foo";
+    }
+
+    /**
+     * @return void
+     */
+    public function returnVoid() {
+        return null;
     }
 
     /**
