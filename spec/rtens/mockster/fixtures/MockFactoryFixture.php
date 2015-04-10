@@ -27,7 +27,6 @@ class MockFactoryFixture extends Fixture {
         include $file;
         $this->spec->undos[] = function () use ($file) {
             @unlink($file);
-            @rmdir(dirname($file));
         };
     }
 

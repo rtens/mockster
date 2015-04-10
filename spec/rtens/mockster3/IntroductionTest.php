@@ -19,7 +19,7 @@ class IntroductionTest extends Specification {
             class FooClass {
 
                 /**
-                 * @var Database <-
+                 * @var MyDatabase <-
                  */
                 public $database;
 
@@ -30,7 +30,7 @@ class IntroductionTest extends Specification {
                 }
             }
 
-            class DataBase {
+            class MyDatabase {
 
                 public function readUser($id) {
                     // [...]
@@ -42,7 +42,7 @@ class IntroductionTest extends Specification {
                 }
             }
 
-            class User {
+            class MyUser {
 
                 /** @return void */
                 public function setName($name) {
@@ -56,7 +56,7 @@ class IntroductionTest extends Specification {
          * First create `Mockster` instances of the classes we're gonna mock.
          */
         $foo = new Mockster('FooClass');
-        $user = new Mockster('User');
+        $user = new Mockster('MyUser');
 
         /*
          * Then configure the behaviour of the dependencies of our *Unit Under Test*.
