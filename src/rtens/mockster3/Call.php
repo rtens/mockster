@@ -16,11 +16,11 @@ class Call {
         return $this->arguments[$nameOrIndex];
     }
 
-    public function returnedValue() {
+    public function returned() {
         return $this->returnValue;
     }
 
-    public function thrownException() {
+    public function threw() {
         return $this->thrownException;
     }
 }

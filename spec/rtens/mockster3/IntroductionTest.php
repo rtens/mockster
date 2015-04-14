@@ -81,8 +81,8 @@ class IntroductionTest extends Specification {
          * There should have been one call to `User::setName()` with the argument
          * `'Bart'` and one call on `Database::update()` with the `User` mock instance.
          */
-        $this->assertCount(1, $user->setName('Bart')->calls());
-        $this->assertCount(1, $foo->database->update($userMock)->calls());
+        $this->assertTrue($user->setName('Bart')->has()->beenCalled());
+        $this->assertTrue($foo->database->update($userMock)->has()->beenCalled());
     }
 
     public function testFurtherDocumentation() {

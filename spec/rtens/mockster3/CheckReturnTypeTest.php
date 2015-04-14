@@ -34,7 +34,7 @@ class CheckReturnTypeTest extends Specification {
         } catch (\ReflectionException $e) {
             $this->assertContains("does not match the return type", $e->getMessage());
         }
-        $this->assertCount(1, Mockster::stub($this->foo->returnsString())->calls());
+        $this->assertTrue(Mockster::stub($this->foo->returnsString())->has()->beenCalled());
     }
 
     function testFailIfNonStubbedValueDoesNotMatch() {
@@ -45,7 +45,7 @@ class CheckReturnTypeTest extends Specification {
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
         }
-        $this->assertCount(1, Mockster::stub($this->foo->returnsString())->calls());
+        $this->assertTrue(Mockster::stub($this->foo->returnsString())->has()->beenCalled());
     }
 
     function testFailIfObjectDoesNotMatch() {

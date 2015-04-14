@@ -10,7 +10,13 @@ use watoki\factory\Factory;
 class Stub {
 
     /** @var string */
+    private $class;
+
+    /** @var string */
     private $name;
+
+    /** @var \ReflectionMethod */
+    private $reflection;
 
     /** @var array|Argument[] */
     private $arguments;
@@ -18,29 +24,17 @@ class Stub {
     /** @var Behaviour */
     private $behaviour;
 
-    /** @var string */
-    private $class;
+    /** @var ReturnTypeInferer */
+    private $typeHint;
 
     /** @var boolean */
     private $stubbed = true;
 
-    /** @var \ReflectionMethod */
-    private $reflection;
-
-    /** @var ReturnTypeInferer */
-    private $typeHint;
-
-    /** @var \watoki\factory\Factory */
-    private $factory;
-
-    /** @var Call[] */
-    private $calls = [];
-
-    /** @var Stub[] */
-    private $collected;
-
     /** @var boolean */
-    private $checkReturnType;
+    private $checkReturnType = true;
+
+    /** @var History */
+    private $history;
 
     /**
      * @param Factory $factory
@@ -51,16 +45,15 @@ class Stub {
      * @throws \ReflectionException If the method cannot be stubbed
      */
     function __construct(Factory $factory, $class, $name, array $arguments = [], array $collected = []) {
-        $this->factory = $factory;
         $this->class = $class;
         $this->name = $name;
         $this->arguments = $arguments;
-        $this->collected = $collected;
 
         $this->checkReturnType = Mockster::$enableReturnTypeChecking;
 
         $this->reflection = new \ReflectionMethod($class, $name);
         $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
+        $this->history = new History($collected);
 
         if ($this->reflection->isPrivate()) {
             throw new \ReflectionException("Cannot stub private methods [$this->class::$name()]");
@@ -84,6 +77,13 @@ class Stub {
             $this->setStubbed(true);
             $this->behaviour = $behaviour;
         });
+    }
+
+    /**
+     * @return History
+     */
+    public function has() {
+        return $this->history;
     }
 
     /**
@@ -117,7 +117,7 @@ class Stub {
     }
 
     public function record($arguments, $returnValue, \Exception $thrown = null) {
-        $this->calls[] = new Call($this->named($arguments), $returnValue, $thrown);
+        $this->history->add(new Call($this->named($arguments), $returnValue, $thrown));
         $this->checkReturnValue($returnValue);
     }
 
@@ -134,25 +134,6 @@ class Stub {
 
     public function enableReturnTypeChecking($enabled = true) {
         $this->checkReturnType = $enabled;
-    }
-
-    /**
-     * @return array|Call[]
-     */
-    public function calls() {
-        $calls = $this->calls;
-        foreach ($this->collected as $collected) {
-            $calls = array_merge($calls, $collected->calls());
-        }
-        return $calls;
-    }
-
-    /**
-     * @param int $index
-     * @return Call
-     */
-    public function call($index) {
-        return $this->calls()[$index];
     }
 
     private function named($arguments) {
