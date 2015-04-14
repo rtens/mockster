@@ -13,9 +13,16 @@ class MockProvider implements Provider {
 
     private $factory;
 
+    /** @var callable */
+    private $parameterFilter;
+
     public function __construct(MockFactory $factory) {
         $this->injector = new Injector($factory);
         $this->factory = $factory;
+
+        $this->parameterFilter = function () {
+            return true;
+        };
     }
 
     /**
@@ -36,9 +43,9 @@ class MockProvider implements Provider {
 
         $mockClassReflection = new \ReflectionClass($mockClassName);
         if ($callConstructor && $mockClassReflection->getConstructor()) {
-            $constructorArgs = $this->injector->injectMethodArguments($mockClassReflection->getConstructor(), $constructorArgs);
+            $constructorArgs = $this->injector->injectMethodArguments($mockClassReflection->getConstructor(), $constructorArgs, $this->parameterFilter);
         }
-        $instance = $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array());
+        $instance = $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array(), $this->parameterFilter);
 
         $mockster = new Mockster($this->factory, $classname, $instance, $constructorArgs, $code);
         $this->setMockster($instance, $mockster);
@@ -195,5 +202,12 @@ class ' . $mockClassName . ' ' . $extends . ' ' . $implements . ' {
 
     private function isMockable(\ReflectionMethod $method) {
         return !($method->isStatic() || $method->isPrivate() || $method->isFinal() || $method->isConstructor());
+    }
+
+    /**
+     * @param callable $filter Receives \ReflectionParameter as argument
+     */
+    public function setParameterFilter($filter) {
+        $this->parameterFilter = $filter;
     }
 }
