@@ -13,9 +13,16 @@ class MockProvider implements Provider {
     /** @var \watoki\factory\Factory */
     private $factory;
 
+    /** @var callable */
+    private $parameterFilter;
+
     public function __construct(Factory $factory) {
         $this->injector = new Injector($factory);
         $this->factory = $factory;
+
+        $this->parameterFilter = function () {
+            return true;
+        };
     }
 
     public function provide($className, array $constructorArgs = null) {
@@ -28,7 +35,7 @@ class MockProvider implements Provider {
             eval($code);
         }
 
-        return $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array());
+        return $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array(), $this->parameterFilter);
     }
 
     private function makeMockClassName($classname, $callConstructor) {
@@ -37,5 +44,12 @@ class MockProvider implements Provider {
             $mockClassName .= '_NoConstructor';
         }
         return $mockClassName;
+    }
+
+    /**
+     * @param callable $filter
+     */
+    public function setParameterFilter($filter) {
+        $this->parameterFilter = $filter;
     }
 }
