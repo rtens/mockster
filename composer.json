@@ -13,12 +13,12 @@
         }
     ],
     "require": {
-        "watoki/factory": "*",
-        "watoki/reflect": "*",
+        "watoki/factory": ">=0.4",
+        "watoki/reflect": ">=0.2",
         "php": ">=5.3.2"
     },
     "require-dev": {
-        "watoki/scrut": "*"
+        "watoki/scrut": ">=0.2"
     },
     "autoload": {
         "psr-0": {
