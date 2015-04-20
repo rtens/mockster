@@ -37,7 +37,7 @@ class Stubs {
                 if ($stub->arguments() == $arguments) {
                     return $stub;
                 } else if ($this->accept($arguments, $stub->arguments())) {
-                    $collected[] = $stub;
+                    $collected[] = $stub->has();
                 }
             }
         }

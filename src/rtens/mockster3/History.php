@@ -6,25 +6,33 @@ class History {
     /** @var Call[] */
     private $calls = [];
 
-    /** @var Stub[] */
+    /** @var History[] */
     private $collected;
 
-    function __construct($collectedStubs) {
-        $this->collected = $collectedStubs;
+    function __construct($collectedHistory) {
+        $this->collected = $collectedHistory;
     }
 
     public function add(Call $call) {
         $this->calls[] = $call;
     }
 
+    public function calls() {
+        $calls = $this->calls;
+        foreach ($this->collected as $history) {
+            $calls = array_merge($calls, $history->calls());
+        }
+        return $calls;
+    }
+
     public function beenCalled($times = null) {
         if (is_null($times)) {
-            return !empty($this->calls);
+            return !empty($this->calls());
         }
-        return count($this->calls) == $times;
+        return count($this->calls()) == $times;
     }
 
     public function call($int) {
-        return $this->calls[$int];
+        return $this->calls()[$int];
     }
 }

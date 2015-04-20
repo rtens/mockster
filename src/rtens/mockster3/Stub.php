@@ -41,7 +41,7 @@ class Stub {
      * @param string $class
      * @param string $name
      * @param array|Argument[] $arguments
-     * @param array|Stub[] $collected
+     * @param array|History[] $collected
      * @throws \ReflectionException If the method cannot be stubbed
      */
     function __construct(Factory $factory, $class, $name, array $arguments = [], array $collected = []) {
