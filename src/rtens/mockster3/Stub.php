@@ -140,6 +140,9 @@ class Stub {
         foreach ($this->reflection->getParameters() as $param) {
             if (array_key_exists($param->getPosition(), $arguments)) {
                 $arguments[$param->getName()] = $arguments[$param->getPosition()];
+            } elseif ($param->isDefaultValueAvailable()) {
+                $arguments[$param->getPosition()] = $param->getDefaultValue();
+                $arguments[$param->getName()] = $param->getDefaultValue();
             }
         }
         return $arguments;

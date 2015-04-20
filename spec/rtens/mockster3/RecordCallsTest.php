@@ -42,7 +42,7 @@ class RecordCallsTest extends Specification {
         Mockster::stub($this->foo->foo())->dontStub();
 
         $this->mock->foo();
-        $this->assertEquals('bar', Mockster::stub($this->foo->foo())->has()->call(0)->returned());
+        $this->assertEquals('foo', Mockster::stub($this->foo->foo())->has()->call(0)->returned());
     }
 
     function testRecordThrownException() {
@@ -72,6 +72,15 @@ class RecordCallsTest extends Specification {
     }
 
     function testFindStubByMoreSpecificArgument() {
+        Mockster::stub($this->foo->bar(Argument::any()))->will()->return_("foo");
+
+        $this->mock->bar("one");
+
+        $this->assertTrue(Mockster::stub($this->foo->bar("one"))->has()->beenCalled());
+        $this->assertFalse(Mockster::stub($this->foo->bar("two"))->has()->beenCalled());
+    }
+
+    function testFindStubByMoreSpecificArgumentsWithDefaultValue() {
         Mockster::stub($this->foo->foo(Argument::any()))->will()->return_("foo");
 
         $this->mock->foo("one");
@@ -89,7 +98,11 @@ class RecordStubUsageTest_FooClass {
      * @return null|mixed
      */
     public function foo($a = null, $b = null) {
-        return 'bar' . $a . $b;
+        return 'foo' . $a . $b;
+    }
+
+    public function bar($a) {
+        return 'bar' . $a;
     }
 
     /**

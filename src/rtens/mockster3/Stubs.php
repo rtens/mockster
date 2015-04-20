@@ -38,6 +38,8 @@ class Stubs {
                     return $stub;
                 } else if ($this->accept($arguments, $stub->arguments())) {
                     $collected[] = $stub->has();
+                } else if ($this->accept($stub->arguments(), $arguments)) {
+                    $collected[] = new SpecificHistory($stub, $arguments);
                 }
             }
         }

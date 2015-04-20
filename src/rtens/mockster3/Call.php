@@ -2,6 +2,7 @@
 namespace rtens\mockster3;
 
 class Call {
+
     private $arguments;
     private $returnValue;
     private $thrownException;
@@ -14,6 +15,10 @@ class Call {
 
     public function argument($nameOrIndex) {
         return $this->arguments[$nameOrIndex];
+    }
+
+    public function arguments() {
+        return $this->arguments;
     }
 
     public function returned() {
