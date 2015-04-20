@@ -242,6 +242,22 @@ class MockMethodsTest extends Specification {
         $this->fixture->thenNoExceptionShouldBeThrown();
     }
 
+    public function testMockVariadicMethods() {
+        if (PHP_VERSION_ID < 50600) {
+            $this->markTestSkipped('Only in PHP >= 5.6');
+        }
+
+        $this->fixture->givenTheClassDefinition('
+            class MockVariadicMethod {
+                public function foo($a, ...$b) {
+                }
+            }
+        ');
+
+        $this->fixture->whenITryToCreateTheMockOf('MockVariadicMethod');
+        $this->fixture->thenNoExceptionShouldBeThrown();
+    }
+
     public function testMockCallableTypeHint() {
         if (PHP_VERSION_ID < 50400) {
             $this->markTestSkipped('Only in PHP >= 5.4');

@@ -127,11 +127,17 @@ class Mockster {
      *
      * @param string $methodName
      * @param array $arguments Indexed by positions or parameter names
+     * @param null|callable $parameterFilter Is invoked with the \ReflectionParameter of each parameter
      * @return mixed The return value of the method
+     * @throws \watoki\factory\exception\InjectionException
      */
-    public function invoke($methodName, $arguments = array()) {
+    public function invoke($methodName, $arguments = array(), $parameterFilter = null) {
+        $parameterFilter = $parameterFilter ?: function () {
+            return true;
+        };
+
         $method = new \ReflectionMethod($this->classname, $methodName);
-        $arguments = $this->injector->injectMethodArguments($method, $arguments);
+        $arguments = $this->injector->injectMethodArguments($method, $arguments, $parameterFilter);
         return call_user_func_array(array($this->mock, $methodName), array_values($arguments));
     }
 
