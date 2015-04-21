@@ -25,15 +25,7 @@ class History {
         foreach ($this->collected as $history) {
             $calls = array_merge($calls, $history->calls());
         }
-        return $this->makeUnique($calls);
-    }
-
-    private function makeUnique($calls) {
-        $unique = [];
-        foreach ($calls as $call) {
-            $unique[spl_object_hash($call)] = $call;
-        }
-        return array_values($unique);
+        return $calls;
     }
 
     /**
@@ -51,7 +43,11 @@ class History {
      * @param int $index
      * @return Call
      */
-    public function call($index) {
-        return $this->calls()[$index];
+    public function inCall($index) {
+        $calls = $this->calls();
+        if (!array_key_exists($index, $calls)) {
+            throw new \InvalidArgumentException("No call [$index] recorded.");
+        }
+        return $calls[$index];
     }
 }

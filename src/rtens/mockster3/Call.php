@@ -25,7 +25,7 @@ class Call {
         return $this->returnValue;
     }
 
-    public function threw() {
+    public function thrown() {
         return $this->thrownException;
     }
 }

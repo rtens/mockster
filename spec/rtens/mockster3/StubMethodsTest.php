@@ -26,7 +26,10 @@ class StubMethodsTest extends Specification {
         try {
             $this->mock->bar();
             $this->fail("Should have thrown an exception");
-        } catch (UndefinedBehaviourException $ignored) {
+        } catch (UndefinedBehaviourException $e) {
+            $this->assertContains('No active behaviour available', $e->getMessage());
+            $this->assertContains('none could be inferred from return type hint', $e->getMessage());
+            $this->assertContains('FooClass::bar()', $e->getMessage());
         }
     }
 
