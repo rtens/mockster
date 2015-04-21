@@ -38,6 +38,18 @@ class RecordCallsTest extends Specification {
         $this->assertEquals('two', Mockster::stub($this->foo->foo('one', 'two'))->has()->call(0)->argument('b'));
     }
 
+    function testRecordDefaultParameters() {
+        $this->mock->foo('one');
+
+        $this->assertEquals(null, Mockster::stub($this->foo->foo('one'))->has()->call(0)->argument(1));
+        $this->assertEquals(null, Mockster::stub($this->foo->foo('one'))->has()->call(0)->argument('b'));
+
+        $this->assertTrue(Mockster::stub($this->foo->foo('one'))->has()->beenCalled());
+        $this->assertTrue(Mockster::stub($this->foo->foo('one', null))->has()->beenCalled());
+
+        $this->assertFalse(Mockster::stub($this->foo->foo(null, null))->has()->beenCalled());
+    }
+
     function testRecordReturnValue() {
         Mockster::stub($this->foo->foo())->dontStub();
 
@@ -72,15 +84,6 @@ class RecordCallsTest extends Specification {
     }
 
     function testFindStubByMoreSpecificArgument() {
-        Mockster::stub($this->foo->bar(Argument::any()))->will()->return_("foo");
-
-        $this->mock->bar("one");
-
-        $this->assertTrue(Mockster::stub($this->foo->bar("one"))->has()->beenCalled());
-        $this->assertFalse(Mockster::stub($this->foo->bar("two"))->has()->beenCalled());
-    }
-
-    function testFindStubByMoreSpecificArgumentsWithDefaultValue() {
         Mockster::stub($this->foo->foo(Argument::any()))->will()->return_("foo");
 
         $this->mock->foo("one");
@@ -99,10 +102,6 @@ class RecordStubUsageTest_FooClass {
      */
     public function foo($a = null, $b = null) {
         return 'foo' . $a . $b;
-    }
-
-    public function bar($a) {
-        return 'bar' . $a;
     }
 
     /**
