@@ -1,8 +1,9 @@
 <?php
 namespace rtens\mockster;
 
-use rtens\mockster\behaviour\ReturnValueBehaviour;
+use rtens\mockster\Behaviour;
 use rtens\mockster\behaviour\CallbackBehaviour;
+use rtens\mockster\behaviour\ReturnValueBehaviour;
 use rtens\mockster\behaviour\ThrowExceptionBehaviour;
 
 /**

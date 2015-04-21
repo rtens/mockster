@@ -4,6 +4,7 @@ namespace rtens\mockster;
 use ArrayIterator;
 use rtens\mockster\behaviour\CallbackBehaviour;
 use rtens\mockster\behaviour\ReturnValueBehaviour;
+use rtens\mockster\Behaviour;
 use rtens\mockster\behaviour\ThrowExceptionBehaviour;
 use rtens\mockster\filter\Filter;
 use Traversable;

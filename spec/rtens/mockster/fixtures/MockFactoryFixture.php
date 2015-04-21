@@ -1,7 +1,6 @@
 <?php
 namespace spec\rtens\mockster\fixtures;
 
-use rtens\mockster\Mock;
 use rtens\mockster\MockFactory;
 use rtens\mockster\Mockster;
 use watoki\scrut\Fixture;
@@ -13,7 +12,7 @@ class MockFactoryFixture extends Fixture {
     /** @var null|\Exception */
     private $caught;
 
-    /** @var Mock */
+    /** @var \rtens\mockster\Mock */
     private $mock;
 
     private $returnValue;
@@ -28,7 +27,6 @@ class MockFactoryFixture extends Fixture {
         include $file;
         $this->spec->undos[] = function () use ($file) {
             @unlink($file);
-            @rmdir(dirname($file));
         };
     }
 

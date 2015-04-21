@@ -5,7 +5,7 @@ use spec\rtens\mockster\fixtures\MockFactoryFixture;
 use watoki\scrut\Specification;
 
 /**
- * @property MockFactoryFixture fixture <-
+ * @property \spec\rtens\mockster\fixtures\MockFactoryFixture fixture <-
  */
 class MethodBehaviourTest extends Specification {
 

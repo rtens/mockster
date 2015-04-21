@@ -8,7 +8,7 @@ use watoki\scrut\Specification;
 
 /**
  * @property MockFactoryFixture fixture <-
- * @property FilterFixture filter <-
+ * @property \spec\rtens\mockster\fixtures\FilterFixture filter <-
  */
 class FilterTest extends Specification {
 
