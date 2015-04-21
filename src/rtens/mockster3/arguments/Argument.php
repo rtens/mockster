@@ -11,5 +11,13 @@ abstract class Argument {
         return new ExactArgument($value);
     }
 
+    public static function string() {
+        return new StringArgument();
+    }
+
+    public static function integer() {
+        return new IntegerArgument();
+    }
+
     abstract public function accepts(Argument $argument);
 }

@@ -10,10 +10,13 @@ class ExactArgument extends Argument {
     }
 
     public function accepts(Argument $argument) {
-        if ($argument instanceof ExactArgument) {
-            return $this->value === $argument->value;
-        } else {
-            return false;
-        }
+        return $argument instanceof ExactArgument && $this->value === $argument->value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function value() {
+        return $this->value;
     }
 }

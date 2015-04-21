@@ -27,6 +27,11 @@ class Stubs {
         $this->factory = $factory;
     }
 
+    /**
+     * @param string $name
+     * @param Argument[] $arguments
+     * @return Stub
+     */
     public function add($name, $arguments) {
         $arguments = $this->normalize($name, $arguments);
         $collected = [];
@@ -47,6 +52,11 @@ class Stubs {
         return $this->addStub($name, $arguments, $collected);
     }
 
+    /**
+     * @param string $name
+     * @param array|Argument[] $arguments
+     * @return Stub
+     */
     public function find($name, $arguments) {
         $arguments = $this->normalize($name, $arguments);
 

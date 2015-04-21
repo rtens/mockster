@@ -74,10 +74,10 @@ class RecordCallsTest extends Specification {
         $this->mock->foo('two');
         $this->mock->foo('three');
 
-        $this->assertFalse(Mockster::stub($this->foo->foo('foo'))->has()->beenCalled());
-        $this->assertTrue(Mockster::stub($this->foo->foo('one'))->has()->beenCalled());
-        $this->assertTrue(Mockster::stub($this->foo->foo('two'))->has()->beenCalled());
-        $this->assertTrue(Mockster::stub($this->foo->foo(Argument::any()))->has()->beenCalled());
+        $this->assertFalse(Mockster::stub($this->foo->foo('foo'))->has()->beenCalled(1));
+        $this->assertTrue(Mockster::stub($this->foo->foo('one'))->has()->beenCalled(1));
+        $this->assertTrue(Mockster::stub($this->foo->foo('two'))->has()->beenCalled(1));
+        $this->assertTrue(Mockster::stub($this->foo->foo(Argument::any()))->has()->beenCalled(3));
 
         $this->assertEquals('one', Mockster::stub($this->foo->foo(Argument::any()))->has()->call(0)->argument(0));
         $this->assertEquals('three', Mockster::stub($this->foo->foo(Argument::any()))->has()->call(2)->argument(0));
@@ -90,6 +90,19 @@ class RecordCallsTest extends Specification {
 
         $this->assertTrue(Mockster::stub($this->foo->foo("one"))->has()->beenCalled());
         $this->assertFalse(Mockster::stub($this->foo->foo("two"))->has()->beenCalled());
+    }
+
+    function testFindStubByInBetweenSpecificArgument() {
+        Mockster::stub($this->foo->foo('one'))->will()->return_('uno');
+        Mockster::stub($this->foo->foo(Argument::any()))->will()->return_('dos');
+
+        $this->mock->foo('one');
+        $this->mock->foo(1.0);
+        $this->mock->foo('two');
+        $this->mock->foo(1);
+
+        $this->assertCount(2, Mockster::stub($this->foo->foo(Argument::string()))->has()->calls());
+        $this->assertCount(1, Mockster::stub($this->foo->foo(Argument::integer()))->has()->calls());
     }
 }
 

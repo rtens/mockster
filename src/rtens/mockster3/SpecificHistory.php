@@ -17,6 +17,9 @@ class SpecificHistory extends History {
         $this->arguments = $arguments;
     }
 
+    /**
+     * @return array|Call[]
+     */
     public function calls() {
         return array_filter($this->stub->has()->calls(), function (Call $call) {
             foreach ($this->arguments as $i => $argument) {

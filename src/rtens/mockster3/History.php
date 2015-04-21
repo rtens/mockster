@@ -17,14 +17,29 @@ class History {
         $this->calls[] = $call;
     }
 
+    /**
+     * @return array|Call[]
+     */
     public function calls() {
         $calls = $this->calls;
         foreach ($this->collected as $history) {
             $calls = array_merge($calls, $history->calls());
         }
-        return $calls;
+        return $this->makeUnique($calls);
     }
 
+    private function makeUnique($calls) {
+        $unique = [];
+        foreach ($calls as $call) {
+            $unique[spl_object_hash($call)] = $call;
+        }
+        return array_values($unique);
+    }
+
+    /**
+     * @param null|int $times
+     * @return bool
+     */
     public function beenCalled($times = null) {
         if (is_null($times)) {
             return !empty($this->calls());
@@ -32,7 +47,11 @@ class History {
         return count($this->calls()) == $times;
     }
 
-    public function call($int) {
-        return $this->calls()[$int];
+    /**
+     * @param int $index
+     * @return Call
+     */
+    public function call($index) {
+        return $this->calls()[$index];
     }
 }
