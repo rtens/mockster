@@ -19,5 +19,21 @@ abstract class Argument {
         return new IntegerArgument();
     }
 
+    public static function boolean() {
+        return new BooleanArgument();
+    }
+
+    public static function object($class) {
+        return new ObjectArgument($class);
+    }
+
+    public static function regex($expression) {
+        return new RegularExpressionArgument($expression);
+    }
+
+    public static function callback(callable $accepts) {
+        return new CallbackArgument($accepts);
+    }
+
     abstract public function accepts(Argument $argument);
 }
