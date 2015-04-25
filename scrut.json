@@ -1,6 +1,6 @@
 {
     "suite": {
-        "directory": "spec/rtens/mockster3",
-        "filter": "/Spec$/"
+        "directory": "spec",
+        "filter": "/(Test|Spec)$/"
     }
 }

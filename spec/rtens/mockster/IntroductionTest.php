@@ -3,7 +3,7 @@ namespace spec\rtens\mockster;
 
 use rtens\mockster\MockFactory;
 use rtens\mockster\Mockster;
-use watoki\scrut\Specification;
+use spec\rtens\mockster\fixtures\Specification;
 
 class IntroductionTest extends Specification {
 

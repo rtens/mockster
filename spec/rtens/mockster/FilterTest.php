@@ -2,9 +2,8 @@
 namespace spec\rtens\mockster;
 
 use rtens\mockster\Mockster;
-use spec\rtens\mockster\fixtures\FilterFixture;
 use spec\rtens\mockster\fixtures\MockFactoryFixture;
-use watoki\scrut\Specification;
+use spec\rtens\mockster\fixtures\Specification;
 
 /**
  * @property MockFactoryFixture fixture <-

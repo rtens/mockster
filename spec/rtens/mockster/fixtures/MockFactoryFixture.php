@@ -3,9 +3,8 @@ namespace spec\rtens\mockster\fixtures;
 
 use rtens\mockster\MockFactory;
 use rtens\mockster\Mockster;
-use watoki\scrut\Fixture;
 
-class MockFactoryFixture extends Fixture {
+class MockFactoryFixture {
 
     public static $calledWith;
 
@@ -18,6 +17,13 @@ class MockFactoryFixture extends Fixture {
     private $returnValue;
 
     private static $counter = 0;
+
+    /**
+     * @param \PHPUnit_Framework_Assert|Specification $spec
+     */
+    function __construct($spec) {
+        $this->spec = $spec;
+    }
 
     public function givenTheClassDefinition($string) {
         $file = __DIR__ . '/tmp/class' . self::$counter++ . '.php';
