@@ -47,6 +47,10 @@ class ReturnTypeInferer {
         return $type->fromTypeHints(explode("|", $matches[1]));
     }
 
+    /**
+     * @param Type $type
+     * @return mixed
+     */
     private function getValueFromHint(Type $type) {
         if ($type instanceof IntegerType) {
             return 0;
@@ -68,6 +72,7 @@ class ReturnTypeInferer {
             return $this->factory->getInstance($type->getClass(), null);
         }
 
-        throw new \InvalidArgumentException("Cannot mock value for [$type].");
+        $typeName = get_class($type);
+        throw new \InvalidArgumentException("Cannot mock value for [$typeName].");
     }
 }
