@@ -2,9 +2,9 @@
 namespace spec\rtens\mockster3;
 
 use rtens\mockster3\Mockster;
-use watoki\scrut\Specification;
+use watoki\scrut\tests\StaticTestSuite;
 
-class CreateMocksTest extends Specification {
+class CreateMocksSpec extends StaticTestSuite {
 
     /** @var CreateMocksTest_FooClass|Mockster */
     private $foo;
@@ -12,41 +12,41 @@ class CreateMocksTest extends Specification {
     /** @var CreateMocksTest_FooClass */
     private $mock;
 
-    protected function setUp() {
-        parent::setUp();
+    protected function before() {
+        parent::before();
         $this->foo = new Mockster(CreateMocksTest_FooClass::class);
     }
 
     function testPlainMock() {
         $this->mock = $this->foo->mock();
-        $this->assertFalse($this->mock->constructorCalled);
-        $this->assertTrue(Mockster::stub($this->foo->foo())->isStubbed());
+        $this->assert(!$this->mock->constructorCalled);
+        $this->assert(Mockster::stub($this->foo->foo())->isStubbed());
     }
 
     function testMockAbstractClass() {
         $foo = new Mockster(CreateMocksTest_AbstractClass::class);
-        $this->assertInstanceOf(CreateMocksTest_AbstractClass::class, $foo->mock());
+        $this->assert->isInstanceOf($foo->mock(), CreateMocksTest_AbstractClass::class);
     }
 
     function testMockInterface() {
         $foo = new Mockster(CreateMocksTest_Interface::class);
-        $this->assertInstanceOf(CreateMocksTest_Interface::class, $foo->mock());
+        $this->assert->isInstanceOf($foo->mock(), CreateMocksTest_Interface::class);
     }
 
     function testUnitUnderTest() {
         $this->mock = $this->foo->uut();
-        $this->assertTrue($this->mock->constructorCalled);
-        $this->assertFalse(Mockster::stub($this->foo->foo())->isStubbed());
+        $this->assert($this->mock->constructorCalled);
+        $this->assert(!Mockster::stub($this->foo->foo())->isStubbed());
     }
 
     function testPassConstructorArgumentsToUut() {
         $this->mock = $this->foo->uut(['uno', 'dos']);
-        $this->assertEquals(['uno', 'dos'], $this->mock->constructorArguments);
+        $this->assert($this->mock->constructorArguments, ['uno', 'dos']);
     }
 
     function testPassConstructorArgumentsByName() {
         $this->mock = $this->foo->uut(['one' => 'uno', 'two' => 'dos']);
-        $this->assertEquals(['uno', 'dos'], $this->mock->constructorArguments);
+        $this->assert($this->mock->constructorArguments, ['uno', 'dos']);
     }
 
     function testMockInjectableConstructorArguments() {
@@ -55,7 +55,7 @@ class CreateMocksTest extends Specification {
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = $injectable->uut();
 
-        $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->foo);
+        $this->assert->isInstanceOf($mock->foo, CreateMocksTest_FooClass::class);
     }
 
     function testMockInjectableProperties() {
@@ -64,7 +64,7 @@ class CreateMocksTest extends Specification {
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = $injectable->uut();
 
-        $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->bar);
+        $this->assert->isInstanceOf($mock->bar, CreateMocksTest_FooClass::class);
     }
 
     function testNotExistingProperty() {
@@ -75,7 +75,7 @@ class CreateMocksTest extends Specification {
             $injectable->notExisting;
             $this->fail("Should have thrown an Exception");
         } catch (\ReflectionException $e) {
-            $this->assertContains("InjectableClass::notExisting", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "InjectableClass::notExisting");
         }
     }
 
@@ -85,8 +85,8 @@ class CreateMocksTest extends Specification {
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = $injectable->mock();
 
-        $this->assertNull($mock->bar);
-        $this->assertInstanceOf(Mockster::class, $injectable->bar);
+        $this->assert($mock->bar === null);
+        $this->assert->isInstanceOf($injectable->bar, Mockster::class);
     }
 
     function testStubMethodsOfInjectedMocks() {
@@ -96,7 +96,7 @@ class CreateMocksTest extends Specification {
         $mock = $injectable->uut();
 
         Mockster::stub($injectable->bar->foo())->will()->return_('foo');
-        $this->assertEquals('foo', $mock->bar->foo());
+        $this->assert($mock->bar->foo(), 'foo');
     }
 
     function testForceParameterCount() {
@@ -108,7 +108,7 @@ class CreateMocksTest extends Specification {
             $mock->twoParameters('one');
             $this->fail("Should have thrown an exception");
         } catch (\Exception $e) {
-            $this->assertContains("Missing argument 2", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "Missing argument 2");
         }
     }
 
@@ -122,7 +122,7 @@ class CreateMocksTest extends Specification {
             $mock->arrayHint('one');
             $this->fail("Should have thrown an exception");
         } catch (\Exception $e) {
-            $this->assertContains("must be of the type array", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "must be of the type array");
         }
     }
 
@@ -136,7 +136,7 @@ class CreateMocksTest extends Specification {
             $mock->callableHint('one');
             $this->fail("Should have thrown an exception");
         } catch (\Exception $e) {
-            $this->assertContains("must be callable", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "must be callable");
         }
     }
 
@@ -151,7 +151,7 @@ class CreateMocksTest extends Specification {
             $mock->classHint('one');
             $this->fail("Should have thrown an exception");
         } catch (\Exception $e) {
-            $this->assertContains("must be an instance of DateTime", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "must be an instance of DateTime");
         }
     }
 
@@ -165,7 +165,7 @@ class CreateMocksTest extends Specification {
             return json_encode($args);
         });
 
-        $this->assertContains('"0":"one","1":"two"', $mock->variadic('one', 'two'));
+        $this->assert->contains($mock->variadic('one', 'two'), '"0":"one","1":"two"');
     }
 }
 

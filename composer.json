@@ -18,7 +18,7 @@
         "php": ">=5.3.2"
     },
     "require-dev": {
-        "watoki/scrut": ">=0.2"
+        "watoki/scrut": "dev-test_runner"
     },
     "autoload": {
         "psr-0": {
@@ -28,5 +28,11 @@
             "spec\\rtens\\mockster3": ""
         }
     },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/watoki/scrut"
+        }
+    ],
     "minimum-stability": "dev"
 }

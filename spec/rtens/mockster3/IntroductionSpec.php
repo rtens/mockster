@@ -2,9 +2,9 @@
 namespace spec\rtens\mockster3;
 
 use rtens\mockster3\Mockster;
-use watoki\scrut\Specification;
+use watoki\scrut\tests\StaticTestSuite;
 
-class IntroductionTest extends Specification {
+class IntroductionSpec extends StaticTestSuite {
 
     /**
      * A typical test with *mockster* might look like this.
@@ -81,8 +81,8 @@ class IntroductionTest extends Specification {
          * There should have been one call to `User::setName()` with the argument
          * `'Bart'` and one call on `Database::update()` with the `User` mock instance.
          */
-        $this->assertTrue($user->setName('Bart')->has()->beenCalled());
-        $this->assertTrue($foo->database->update($userMock)->has()->beenCalled());
+        $this->assert($user->setName('Bart')->has()->beenCalled());
+        $this->assert($foo->database->update($userMock)->has()->beenCalled());
     }
 
     public function testFurtherDocumentation() {
@@ -100,7 +100,7 @@ class IntroductionTest extends Specification {
          * [bdd]: http://dannorth.net/introducing-bdd/
          * [spec]: https://github.com/rtens/mockster/tree/master/spec/rtens/mockster
          */
-        null;
+        $this->pass();
     }
 
 }

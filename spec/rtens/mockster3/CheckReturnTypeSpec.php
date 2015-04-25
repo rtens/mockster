@@ -2,9 +2,9 @@
 namespace spec\rtens\mockster3;
 
 use rtens\mockster3\Mockster;
-use watoki\scrut\Specification;
+use watoki\scrut\tests\StaticTestSuite;
 
-class CheckReturnTypeTest extends Specification {
+class CheckReturnTypeSpec extends StaticTestSuite {
 
     /** @var CheckReturnTypeTest_FooClass $mock */
     private $mock;
@@ -12,8 +12,8 @@ class CheckReturnTypeTest extends Specification {
     /** @var CheckReturnTypeTest_FooClass|Mockster $foo */
     private $foo;
 
-    protected function setUp() {
-        parent::setUp();
+    protected function before() {
+        parent::before();
 
         $this->foo = new Mockster(CheckReturnTypeTest_FooClass::class);
         $this->mock = $this->foo->mock();
@@ -23,6 +23,7 @@ class CheckReturnTypeTest extends Specification {
         Mockster::stub($this->foo->noHint())->will()->return_("foo");
         Mockster::stub($this->foo->noHint())->will()->return_(42);
         $this->mock->noHint();
+        $this->pass();
     }
 
     function testFailIfPrimitiveValueDoesNotMatch() {
@@ -32,9 +33,9 @@ class CheckReturnTypeTest extends Specification {
             $this->mock->returnsString();
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
-            $this->assertContains("does not match the return type", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "does not match the return type");
         }
-        $this->assertTrue(Mockster::stub($this->foo->returnsString())->has()->beenCalled());
+        $this->assert(Mockster::stub($this->foo->returnsString())->has()->beenCalled());
     }
 
     function testFailIfNonStubbedValueDoesNotMatch() {
@@ -45,7 +46,7 @@ class CheckReturnTypeTest extends Specification {
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
         }
-        $this->assertTrue(Mockster::stub($this->foo->returnsString())->has()->beenCalled());
+        $this->assert(Mockster::stub($this->foo->returnsString())->has()->beenCalled());
     }
 
     function testFailIfObjectDoesNotMatch() {
@@ -55,6 +56,7 @@ class CheckReturnTypeTest extends Specification {
             $this->mock->returnsDateTime();
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
+            $this->pass();
         }
     }
 
@@ -62,12 +64,14 @@ class CheckReturnTypeTest extends Specification {
         Mockster::stub($this->foo->returnsString())->will()->return_(null);
         Mockster::stub($this->foo->returnsString())->enableReturnTypeChecking(false);
         $this->mock->returnsString();
+        $this->pass();
     }
 
     function testDisableCheckingGlobally() {
         Mockster::$enableReturnTypeChecking = false;
         Mockster::stub($this->foo->returnsString())->will()->return_(null);
         $this->mock->returnsString();
+        $this->pass();
     }
 }
 

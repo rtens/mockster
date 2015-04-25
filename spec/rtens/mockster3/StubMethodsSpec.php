@@ -1,13 +1,13 @@
 <?php
 namespace spec\rtens\mockster3;
 
-use rtens\mockster3\arguments\Argument as Arg;
 use rtens\mockster3\arguments\Argument;
+use rtens\mockster3\arguments\Argument as Arg;
 use rtens\mockster3\exceptions\UndefinedBehaviourException;
 use rtens\mockster3\Mockster;
-use watoki\scrut\Specification;
+use watoki\scrut\tests\StaticTestSuite;
 
-class StubMethodsTest extends Specification {
+class StubMethodsSpec extends StaticTestSuite {
 
     /** @var StubMethodsTest_FooClass $mock */
     private $mock;
@@ -15,9 +15,7 @@ class StubMethodsTest extends Specification {
     /** @var StubMethodsTest_FooClass|Mockster $foo */
     private $foo;
 
-    protected function setUp() {
-        parent::setUp();
-
+    protected function before() {
         $this->foo = new Mockster(StubMethodsTest_FooClass::class);
         $this->mock = $this->foo->mock();
     }
@@ -27,25 +25,25 @@ class StubMethodsTest extends Specification {
             $this->mock->bar();
             $this->fail("Should have thrown an exception");
         } catch (UndefinedBehaviourException $e) {
-            $this->assertContains('No active behaviour available', $e->getMessage());
-            $this->assertContains('none could be inferred from return type hint', $e->getMessage());
-            $this->assertContains('FooClass::bar()', $e->getMessage());
+            $this->assert->contains($e->getMessage(), 'No active behaviour available');
+            $this->assert->contains($e->getMessage(), 'none could be inferred from return type hint');
+            $this->assert->contains($e->getMessage(), 'FooClass::bar()');
         }
     }
 
     function testReturnValue() {
         Mockster::stub($this->foo->bar())->will()->return_('foobar');
 
-        $this->assertEquals('foobar', $this->mock->bar());
-        $this->assertEquals('foobar', $this->mock->bar());
+        $this->assert($this->mock->bar(), 'foobar');
+        $this->assert($this->mock->bar(), 'foobar');
     }
 
     function testReturnValueOnce() {
         Mockster::stub($this->foo->bar())->will()->return_('foo')->once()
             ->then()->return_('bar');
 
-        $this->assertEquals('foo', $this->mock->bar());
-        $this->assertEquals('bar', $this->mock->bar());
+        $this->assert($this->mock->bar(), 'foo');
+        $this->assert($this->mock->bar(), 'bar');
     }
 
     function testThrowException() {
@@ -55,6 +53,7 @@ class StubMethodsTest extends Specification {
             $this->mock->bar();
             $this->fail("Should have thrown an exception");
         } catch (\InvalidArgumentException $ignored) {
+            $this->pass();
         }
     }
 
@@ -63,7 +62,7 @@ class StubMethodsTest extends Specification {
             return $args[0] . $args['b'];
         });
 
-        $this->assertEquals('onetwo', $this->mock->bar('one', 'two'));
+        $this->assert($this->mock->bar('one', 'two'), 'onetwo');
     }
 
     function testCallCallbackWithArguments() {
@@ -71,26 +70,26 @@ class StubMethodsTest extends Specification {
             return $a . $b;
         });
 
-        $this->assertEquals('unodos', $this->mock->bar('uno', 'dos'));
+        $this->assert($this->mock->bar('uno', 'dos'), 'unodos');
     }
 
     function testDisableStubbing() {
         Mockster::stub($this->foo->bar())->dontStub();
-        $this->assertEquals('original', $this->mock->bar());
+        $this->assert($this->mock->bar(), 'original');
     }
 
     function testEnableStubbingWhenSettingBehaviour() {
         Mockster::stub($this->foo->bar())->dontStub();
         Mockster::stub($this->foo->bar())->will()->return_('bar');
-        $this->assertEquals("bar", $this->mock->bar());
+        $this->assert($this->mock->bar(), "bar");
     }
 
     function testMatchWithExactArguments() {
         Mockster::stub($this->foo->bar("uno", "dos"))->will()->return_("foo");
         Mockster::stub($this->foo->bar("one", "two"))->will()->return_("bar");
 
-        $this->assertEquals("bar", $this->mock->bar("one", "two"));
-        $this->assertEquals("foo", $this->mock->bar("uno", "dos"));
+        $this->assert($this->mock->bar("one", "two"), "bar");
+        $this->assert($this->mock->bar("uno", "dos"), "foo");
 
         try {
             $this->mock->bar("not", "two");
@@ -102,30 +101,30 @@ class StubMethodsTest extends Specification {
     function testMatchWithAnyArgument() {
         Mockster::stub($this->foo->bar(Arg::any(), Arg::any()))->will()->return_('foo');
 
-        $this->assertEquals('foo', $this->mock->bar('one', 'two'));
-        $this->assertEquals('foo', $this->mock->bar(null, true));
+        $this->assert($this->mock->bar('one', 'two'), 'foo');
+        $this->assert($this->mock->bar(null, true), 'foo');
     }
 
     function testMatchWithDefaultArguments() {
         Mockster::stub($this->foo->bar())->will()->return_('foo');
 
-        $this->assertEquals('foo', $this->mock->bar(null));
-        $this->assertEquals('foo', $this->mock->bar(null, null));
+        $this->assert($this->mock->bar(null), 'foo');
+        $this->assert($this->mock->bar(null, null), 'foo');
     }
 
     function testCanNotGetMoreSpecificWithArguments() {
         Mockster::stub($this->foo->bar(Argument::any()))->will()->return_('foo');
         Mockster::stub($this->foo->bar('one'))->will()->return_('bar');
 
-        $this->assertEquals('foo', $this->mock->bar('one'));
+        $this->assert($this->mock->bar('one'), 'foo');
     }
 
     function testCanGetMoreGeneral() {
         Mockster::stub($this->foo->bar('one'))->will()->return_('bar');
         Mockster::stub($this->foo->bar(Argument::any()))->will()->return_('foo');
 
-        $this->assertEquals('bar', $this->mock->bar('one'));
-        $this->assertEquals('foo', $this->mock->bar('two'));
+        $this->assert($this->mock->bar('one'), 'bar');
+        $this->assert($this->mock->bar('two'), 'foo');
     }
 
     function testInheritedMethod() {
@@ -136,7 +135,7 @@ class StubMethodsTest extends Specification {
 
         /** @var StubMethodsTest_FooChild $mock */
         $mock = $child->mock();
-        $this->assertEquals("foo", $mock->bar());
+        $this->assert($mock->bar(), "foo");
     }
 
     function testNonExistingMethod() {
@@ -145,7 +144,7 @@ class StubMethodsTest extends Specification {
             Mockster::stub($this->foo->nonExisting());
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
-            $this->assertContains("does not exist", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "does not exist");
         }
     }
 
@@ -158,7 +157,7 @@ class StubMethodsTest extends Specification {
 
         /** @var StubMethodsTest_FooClass $mock */
         $mock = $foo->mock();
-        $this->assertEquals("bar", $mock->proxyMethod());
+        $this->assert($mock->proxyMethod(), "bar");
     }
 
     function testDoNotStubPrivateMethods() {
@@ -168,8 +167,8 @@ class StubMethodsTest extends Specification {
             Mockster::stub($foo->privateMethod());
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
-            $this->assertContains('private methods', $e->getMessage());
-            $this->assertContains('FooClass::privateMethod', $e->getMessage());
+            $this->assert->contains($e->getMessage(), 'private methods');
+            $this->assert->contains($e->getMessage(), 'FooClass::privateMethod');
         }
     }
 
@@ -180,8 +179,8 @@ class StubMethodsTest extends Specification {
             Mockster::stub($foo->staticMethod());
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
-            $this->assertContains('static methods', $e->getMessage());
-            $this->assertContains('FooClass::staticMethod', $e->getMessage());
+            $this->assert->contains($e->getMessage(), 'static methods');
+            $this->assert->contains($e->getMessage(), 'FooClass::staticMethod');
         }
     }
 }
