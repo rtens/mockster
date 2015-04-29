@@ -1,6 +1,6 @@
 {
     "suite": {
-        "directory": "spec",
+        "file": "spec",
         "filter": "/(Test|Spec)$/"
     }
 }
