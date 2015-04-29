@@ -1,13 +1,13 @@
 <?php
 namespace spec\rtens\mockster\fixtures;
 
-use watoki\scrut\tests\PhpUnitCompatibleTestSuite;
+use watoki\scrut\tests\migration\PhpUnitTestSuite;
 
 /**
  * @property MockFactoryFixture fixture <-
  * @property \spec\rtens\mockster\fixtures\FilterFixture filter <-
  */
-class Specification extends PhpUnitCompatibleTestSuite {
+class Specification extends PhpUnitTestSuite {
 
     public $undos = [];
 

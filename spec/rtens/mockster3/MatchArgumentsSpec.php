@@ -8,7 +8,7 @@ use rtens\mockster3\arguments\IntegerArgument;
 use rtens\mockster3\arguments\ObjectArgument;
 use rtens\mockster3\arguments\RegularExpressionArgument;
 use rtens\mockster3\arguments\StringArgument;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class MatchArgumentsSpec extends StaticTestSuite {
 

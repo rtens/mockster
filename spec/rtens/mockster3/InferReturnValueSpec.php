@@ -2,7 +2,7 @@
 namespace spec\rtens\mockster3;
 
 use rtens\mockster3\Mockster;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class InferReturnValueSpec extends StaticTestSuite {
 
