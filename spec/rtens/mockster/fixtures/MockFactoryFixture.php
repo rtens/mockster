@@ -18,8 +18,11 @@ class MockFactoryFixture {
 
     private static $counter = 0;
 
+    /** @var \PHPUnit_Framework_Assert|Specification */
+    private $spec;
+
     /**
-     * @param \PHPUnit_Framework_Assert|Specification $spec
+     * @param Specification $spec <-
      */
     function __construct($spec) {
         $this->spec = $spec;

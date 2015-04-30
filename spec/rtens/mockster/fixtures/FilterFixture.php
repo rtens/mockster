@@ -15,8 +15,11 @@ class FilterFixture {
      */
     private $filterOutput = array();
 
+    /** @var \PHPUnit_Framework_Assert|Specification */
+    private $spec;
+
     /**
-     * @param \PHPUnit_Framework_Assert|Specification $spec
+     * @param Specification $spec <-
      */
     function __construct($spec) {
         $this->spec = $spec;

@@ -1,20 +1,22 @@
 <?php
 namespace spec\rtens\mockster\fixtures;
 
+use watoki\factory\Factory;
+use watoki\scrut\TestName;
 use watoki\scrut\tests\migration\PhpUnitTestSuite;
 
-/**
- * @property MockFactoryFixture fixture <-
- * @property \spec\rtens\mockster\fixtures\FilterFixture filter <-
- */
 class Specification extends PhpUnitTestSuite {
 
     public $undos = [];
 
-    protected function before() {
-        parent::before();
-        $this->fixture = new MockFactoryFixture($this);
-        $this->filter = new FilterFixture($this);
+    /**
+     * @param Factory $factory <-
+     * @param TestName $parent
+     * @throws \Exception
+     */
+    function __construct(Factory $factory, TestName $parent = null) {
+        parent::__construct($factory, $parent);
+        $factory->setSingleton(__CLASS__, $this);
     }
 
     protected function after() {
