@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\mockster;
 
-use spec\rtens\mockster\fixtures\Specification;
+use watoki\scrut\tests\migration\Specification;
 
 /**
  * @property \spec\rtens\mockster\fixtures\MockFactoryFixture fixture <-

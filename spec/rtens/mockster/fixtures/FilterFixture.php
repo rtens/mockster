@@ -2,8 +2,13 @@
 namespace spec\rtens\mockster\fixtures;
 
 use rtens\mockster\filter\Filter;
+use watoki\scrut\tests\migration\Fixture;
+use watoki\scrut\tests\migration\Specification;
 
-class FilterFixture {
+/**
+ * @property \PHPUnit_Framework_Assert|Specification spec
+ */
+class FilterFixture extends Fixture {
 
     /**
      * @var Filter
@@ -14,16 +19,6 @@ class FilterFixture {
      * @var array|\ReflectionMethod[]
      */
     private $filterOutput = array();
-
-    /** @var \PHPUnit_Framework_Assert|Specification */
-    private $spec;
-
-    /**
-     * @param Specification $spec <-
-     */
-    function __construct($spec) {
-        $this->spec = $spec;
-    }
 
     public function givenTheFilterWithTheBitMask($bitmask) {
         $this->filter = new Filter($bitmask);

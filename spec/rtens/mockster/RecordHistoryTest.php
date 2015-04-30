@@ -2,7 +2,7 @@
 namespace spec\rtens\mockster;
 
 use spec\rtens\mockster\fixtures\MockFactoryFixture;
-use spec\rtens\mockster\fixtures\Specification;
+use watoki\scrut\tests\migration\Specification;
 
 /**
  * @property MockFactoryFixture fixture <-

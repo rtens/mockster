@@ -2,7 +2,7 @@
 namespace spec\rtens\mockster;
 
 use rtens\mockster\Mockster;
-use spec\rtens\mockster\fixtures\Specification;
+use watoki\scrut\tests\migration\Specification;
 
 /**
  * @property \spec\rtens\mockster\fixtures\MockFactoryFixture fixture <-
@@ -242,8 +242,8 @@ class MockMethodsTest extends Specification {
     }
 
     public function testMockVariadicMethods() {
-        /** @var \PHPUnit_Framework_Assert|Specification $this */
         if (PHP_VERSION_ID < 50600) {
+            /** @var \PHPUnit_Framework_Assert|MockMethodsTest $this */
             $this->markTestSkipped('Only in PHP >= 5.6');
         }
 
@@ -259,8 +259,8 @@ class MockMethodsTest extends Specification {
     }
 
     public function testMockCallableTypeHint() {
-        /** @var \PHPUnit_Framework_Assert|Specification $this */
         if (PHP_VERSION_ID < 50400) {
+            /** @var \PHPUnit_Framework_Assert|MockMethodsTest $this */
             $this->markTestSkipped('Only in PHP >= 5.4');
         }
 
