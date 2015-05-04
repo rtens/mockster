@@ -5,7 +5,7 @@ use rtens\mockster3\arguments\Argument;
 use rtens\mockster3\arguments\Argument as Arg;
 use rtens\mockster3\exceptions\UndefinedBehaviourException;
 use rtens\mockster3\Mockster;
-use watoki\scrut\tests\statics\StaticTestSuite;
+use rtens\scrut\tests\statics\StaticTestSuite;
 
 class StubMethodsSpec extends StaticTestSuite {
 

@@ -2,11 +2,10 @@
 namespace spec\rtens\mockster\fixtures;
 
 use rtens\mockster\filter\Filter;
-use watoki\scrut\tests\migration\Fixture;
-use watoki\scrut\tests\migration\Specification;
+use rtens\scrut\Assert;
 
 /**
- * @property \PHPUnit_Framework_Assert|Specification spec
+ * @property Assert $assert <-
  */
 class FilterFixture extends Fixture {
 
@@ -33,15 +32,15 @@ class FilterFixture extends Fixture {
     }
 
     public function thenTheFilterMatched_Methods($count) {
-        $this->spec->assertEquals($count, count($this->filterOutput));
+        $this->assert->size($this->filterOutput, $count);
     }
 
     public function thenFilterMatchesContainTheMethod($methodName) {
-        $this->spec->assertNotNull($this->getFilteredMethod($methodName));
+        $this->assert->not()->isNull($this->getFilteredMethod($methodName));
     }
 
     public function thenFilterMatchesDoesNotContainTheMethod($methodName) {
-        $this->spec->assertNull($this->getFilteredMethod($methodName));
+        $this->assert->isNull($this->getFilteredMethod($methodName));
     }
 
     /**

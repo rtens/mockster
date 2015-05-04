@@ -1,6 +1,6 @@
 {
-    "suite": {
-        "file": "spec",
-        "filter": "/(Test|Spec)$/"
+  "filter": "/(Test|Spec)$/",
+  "suite": {
+      "file": "spec"
     }
 }

@@ -3,11 +3,10 @@ namespace spec\rtens\mockster\fixtures;
 
 use rtens\mockster\MockFactory;
 use rtens\mockster\Mockster;
-use watoki\scrut\tests\migration\Fixture;
-use watoki\scrut\tests\migration\Specification;
+use rtens\scrut\Assert;
 
 /**
- * @property \PHPUnit_Framework_Assert|Specification spec
+ * @property Assert $assert <-
  */
 class MockFactoryFixture extends Fixture {
 
@@ -27,9 +26,11 @@ class MockFactoryFixture extends Fixture {
         $file = __DIR__ . '/tmp/class' . self::$counter++ . '.php';
         @mkdir(dirname($file));
         file_put_contents($file, "<?php $string");
+
         /** @noinspection PhpIncludeInspection */
         include $file;
-        $this->spec->undos[] = function () use ($file) {
+
+        $this->undos[] = function () use ($file) {
             @unlink($file);
         };
     }
@@ -81,31 +82,31 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function thenItShouldReturn($string) {
-        $this->spec->assertEquals($string, $this->returnValue);
+        $this->assert->equals($this->returnValue, $string);
     }
 
     public function thenItsProperty_ShouldBe($property, $value) {
-        $this->spec->assertEquals($value, @$this->mock->$property);
+        $this->assert->equals(@$this->mock->$property, $value);
     }
 
     public function thenItsProperty_ShouldBeAnInstanceOf($property, $class) {
-        $this->spec->assertInstanceOf($class, $this->mock->__mock()->get($property));
+        $this->assert->isInstanceOf($this->mock->__mock()->get($property), $class);
     }
 
     public function thenItsProperty_ShouldNotBeAnInstanceOf($property, $class) {
-        $this->spec->assertNotInstanceOf($class, $this->mock->__mock()->get($property));
+        $this->assert->not()->isInstanceOf($this->mock->__mock()->get($property), $class);
     }
 
     public function thenItsProperty_OfProperty_ShouldBe($innerProperty, $property, $class) {
-        $this->spec->assertEquals($class, $this->mock->__mock()->get($property)->__mock()->get($innerProperty));
+        $this->assert->equals($this->mock->__mock()->get($property)->__mock()->get($innerProperty), $class);
     }
 
     public function thenTheConstructorArgument_ShouldBe($name, $value) {
-        $this->spec->assertEquals($value, $this->mock->__mock()->getConstructorArgument($name));
+        $this->assert->equals($this->mock->__mock()->getConstructorArgument($name), $value);
     }
 
     public function thenTheMockShouldBeAnInstanceOf($class) {
-        $this->spec->assertInstanceOf($class, $this->mock);
+        $this->assert->isInstanceOf($this->mock, $class);
     }
 
     public function whenIUnMockTheMethod($method) {
@@ -121,12 +122,12 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function thenAnExceptionShouldBeThrownContaining($message) {
-        $this->spec->assertNotNull($this->caught, "No exception containing [$message] was caught.");
-        $this->spec->assertContains($message, $this->caught->getMessage());
+        $this->assert->not()->isNull($this->caught, "No exception containing [$message] was caught.");
+        $this->assert->contains($this->caught->getMessage(), $message);
     }
 
     public function thenNoExceptionShouldBeThrown() {
-        $this->spec->assertTrue($this->caught === null, "Caught something: "
+        $this->assert->isTrue($this->caught === null, "Caught something: "
             . (is_object($this->caught) ? $this->caught->getMessage() : print_r($this->caught, true)));
     }
 
@@ -177,7 +178,7 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function thenTheCallbackShouldBeCalledWith($string) {
-        $this->spec->assertEquals($string, self::$calledWith);
+        $this->assert->equals(self::$calledWith, $string);
     }
 
     public function whenIConfigureTheMethod_ToThrowAnExceptionWithTheMessage($method, $message) {
@@ -185,24 +186,24 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function thenTheCallCountOf_ShouldBe($method, $count) {
-        $this->spec->assertEquals($count, $this->mock->__mock()->method($method)->getHistory()->getCalledCount());
+        $this->assert->equals($this->mock->__mock()->method($method)->getHistory()->getCalledCount(), $count);
     }
 
     public function thenTheArgumentsOfCallIndex_OfMethod_ShouldBe($index, $method, $args) {
-        $this->spec->assertEquals($args, $this->mock->__mock()->method($method)->getHistory()->getCalledArgumentsAt($index));
+        $this->assert->equals($this->mock->__mock()->method($method)->getHistory()->getCalledArgumentsAt($index), $args);
     }
 
     public function thenTheArgument_OfCallIndex_OfMethod_ShouldBe($argIndex, $methodIndex, $method, $value) {
-        $this->spec->assertEquals($value, $this->mock->__mock()->method($method)->getHistory()
-            ->getCalledArgumentAt($methodIndex, $argIndex));
+        $this->assert->equals($this->mock->__mock()->method($method)->getHistory()
+            ->getCalledArgumentAt($methodIndex, $argIndex), $value);
     }
 
     public function thenTheCalledArgumentsOf_ShouldBe($method, $array) {
-        $this->spec->assertEquals($array, $this->mock->__mock()->method($method)->getHistory()->getCalledArguments());
+        $this->assert->equals($this->mock->__mock()->method($method)->getHistory()->getCalledArguments(), $array);
     }
 
     public function thenTheMethod_WasCalledWith($method, $array) {
-        $this->spec->assertTrue($this->mock->__mock()->method($method)->getHistory()->wasCalledWith($array),
+        $this->assert->isTrue($this->mock->__mock()->method($method)->getHistory()->wasCalledWith($array),
             "Not called with " . json_encode($array));
     }
 
@@ -215,12 +216,11 @@ class MockFactoryFixture extends Fixture {
     }
 
     private function then_ShouldBe($string1, $string2) {
-        $this->spec->assertEquals(str_replace(array("  ", "\t", "\r"), array(' ', ' ', ''), $string1),
-            str_replace(array("  ", "\t", "\r"), array(' ', ' ', ''), $string2));
+        $this->assert->equals(str_replace(array("  ", "\t", "\r"), array(' ', ' ', ''), $string2), str_replace(array("  ", "\t", "\r"), array(' ', ' ', ''), $string1));
     }
 
     public function thenTheInjectedArgument_ShouldBeAnInstanceOf($arg, $class) {
-        $this->spec->assertInstanceOf($class, $this->mock->__mock()->getConstructorArgument($arg));
+        $this->assert->isInstanceOf($this->mock->__mock()->getConstructorArgument($arg), $class);
     }
 
     public function whenIMockAllMarkedProperties() {
@@ -248,7 +248,7 @@ class MockFactoryFixture extends Fixture {
     }
 
     public function thenItShouldReturnAnInstanceOf($string) {
-        $this->spec->assertInstanceOf($string, $this->returnValue);
+        $this->assert->isInstanceOf($this->returnValue, $string);
     }
 
     public function whenIInvokeTheChain($chain) {
@@ -261,7 +261,7 @@ class MockFactoryFixture extends Fixture {
 
     public function thenItsStaticProperty_ShouldBe($property, $value) {
         $mockClass = get_class($this->mock);
-        $this->spec->assertEquals($value, $mockClass::${$property});
+        $this->assert->equals($mockClass::${$property}, $value);
     }
 
     public function whenITryToMockAllMarkedProperties() {

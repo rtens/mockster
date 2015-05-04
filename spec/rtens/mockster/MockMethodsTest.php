@@ -2,7 +2,7 @@
 namespace spec\rtens\mockster;
 
 use rtens\mockster\Mockster;
-use watoki\scrut\tests\migration\Specification;
+use spec\rtens\mockster\fixtures\Specification;
 
 /**
  * @property \spec\rtens\mockster\fixtures\MockFactoryFixture fixture <-
@@ -210,6 +210,8 @@ class MockMethodsTest extends Specification {
 
         $this->fixture->whenICreateTheMockOf('DefaultValues');
         $this->fixture->whenIInvoke('myFunction');
+
+        $this->pass();
     }
 
     public function testMethodIterator() {

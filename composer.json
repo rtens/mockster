@@ -18,7 +18,7 @@
         "php": ">=5.3.2"
     },
     "require-dev": {
-        "watoki/scrut": "dev-test_runner",
+        "rtens/scrut": "*",
         "phpunit/phpunit": "4.5"
     },
     "autoload": {
@@ -32,7 +32,7 @@
     "repositories": [
         {
             "type": "git",
-            "url": "https://github.com/watoki/scrut"
+            "url": "https://github.com/rtens/scrut"
         }
     ],
     "minimum-stability": "dev"

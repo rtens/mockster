@@ -3,7 +3,7 @@ namespace spec\rtens\mockster3;
 
 use rtens\mockster3\arguments\Argument;
 use rtens\mockster3\Mockster;
-use watoki\scrut\tests\statics\StaticTestSuite;
+use rtens\scrut\tests\statics\StaticTestSuite;
 
 class RecordCallsSpec extends StaticTestSuite {
 

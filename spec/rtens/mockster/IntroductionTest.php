@@ -3,7 +3,7 @@ namespace spec\rtens\mockster;
 
 use rtens\mockster\MockFactory;
 use rtens\mockster\Mockster;
-use watoki\scrut\tests\migration\Specification;
+use spec\rtens\mockster\fixtures\Specification;
 
 class IntroductionTest extends Specification {
 
@@ -71,8 +71,8 @@ class IntroductionTest extends Specification {
         $uut->setUserName(1, 'Bart');
 
         // Last, asserts the expected behaviour
-        $this->assertEquals('Bart', $user->__mock()->method('setName')->getHistory()->getCalledArgumentAt(0, 'name'));
-        $this->assertTrue($dbMock->__mock()->method('update')->getHistory()->wasCalledWith(array('object' => $user)));
+        $this->assert('Bart', $user->__mock()->method('setName')->getHistory()->getCalledArgumentAt(0, 'name'));
+        $this->assert($dbMock->__mock()->method('update')->getHistory()->wasCalledWith(array('object' => $user)));
     }
 
     /**
@@ -205,6 +205,8 @@ class IntroductionTest extends Specification {
         $foo->getHistory()->wasCalledWith(array('foo'));
         $foo->getHistory()->getCalledCount();
         $foo->getHistory()->getCalledArguments();
+
+        $this->pass();
     }
 
     public function testFurtherDocumentation() {
@@ -222,7 +224,7 @@ class IntroductionTest extends Specification {
          * [bdd]: http://dannorth.net/introducing-bdd/
          * [spec]: https://github.com/rtens/mockster/tree/master/spec/rtens/mockster
          */
-        null;
+        $this->pass();
     }
 
 }
