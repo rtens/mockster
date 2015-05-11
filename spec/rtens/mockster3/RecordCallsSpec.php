@@ -28,7 +28,7 @@ class RecordCallsSpec extends StaticTestSuite {
     }
 
     function testRecordInvocations() {
-        $this->assert(!Mockster::stub($this->foo->foo())->has()->beenCalled());
+        $this->assert->not(Mockster::stub($this->foo->foo())->has()->beenCalled());
 
         $this->mock->foo();
         $this->assert(Mockster::stub($this->foo->foo())->has()->beenCalled());
@@ -59,7 +59,7 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->assert(Mockster::stub($this->foo->foo(Argument::any()))->has()->beenCalled());
         $this->assert(Mockster::stub($this->foo->foo(Argument::any(), Argument::any()))->has()->beenCalled());
 
-        $this->assert(!Mockster::stub($this->foo->foo(null, null))->has()->beenCalled());
+        $this->assert->not(Mockster::stub($this->foo->foo(null, null))->has()->beenCalled());
     }
 
     function testRecordReturnValue() {
@@ -85,7 +85,7 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->mock->foo('two');
         $this->mock->foo('three');
 
-        $this->assert(!Mockster::stub($this->foo->foo('foo'))->has()->beenCalled(1));
+        $this->assert->not(Mockster::stub($this->foo->foo('foo'))->has()->beenCalled(1));
         $this->assert(Mockster::stub($this->foo->foo('one'))->has()->beenCalled(1));
         $this->assert(Mockster::stub($this->foo->foo('two'))->has()->beenCalled(1));
         $this->assert(Mockster::stub($this->foo->foo(Argument::any()))->has()->beenCalled(3));
@@ -100,7 +100,7 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->mock->foo("one");
 
         $this->assert(Mockster::stub($this->foo->foo("one"))->has()->beenCalled());
-        $this->assert(!Mockster::stub($this->foo->foo("two"))->has()->beenCalled());
+        $this->assert->not(Mockster::stub($this->foo->foo("two"))->has()->beenCalled());
     }
 
     function testFindStubByInBetweenSpecificArgument() {

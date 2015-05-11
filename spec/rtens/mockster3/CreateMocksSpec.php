@@ -19,7 +19,7 @@ class CreateMocksSpec extends StaticTestSuite {
 
     function testPlainMock() {
         $this->mock = $this->foo->mock();
-        $this->assert(!$this->mock->constructorCalled);
+        $this->assert->not($this->mock->constructorCalled);
         $this->assert(Mockster::stub($this->foo->foo())->isStubbed());
     }
 
@@ -36,7 +36,7 @@ class CreateMocksSpec extends StaticTestSuite {
     function testUnitUnderTest() {
         $this->mock = $this->foo->uut();
         $this->assert($this->mock->constructorCalled);
-        $this->assert(!Mockster::stub($this->foo->foo())->isStubbed());
+        $this->assert->not(Mockster::stub($this->foo->foo())->isStubbed());
     }
 
     function testPassConstructorArgumentsToUut() {
