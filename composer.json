@@ -18,8 +18,7 @@
         "php": ">=5.3.2"
     },
     "require-dev": {
-        "rtens/scrut": "*",
-        "phpunit/phpunit": "4.5"
+        "rtens/scrut": "*"
     },
     "autoload": {
         "psr-0": {
@@ -29,11 +28,5 @@
             "spec\\rtens\\mockster3": ""
         }
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/rtens/scrut"
-        }
-    ],
     "minimum-stability": "dev"
 }
