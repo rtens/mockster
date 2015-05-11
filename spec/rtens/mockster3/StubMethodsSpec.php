@@ -108,6 +108,7 @@ class StubMethodsSpec extends StaticTestSuite {
     function testMatchWithDefaultArguments() {
         Mockster::stub($this->foo->bar())->will()->return_('foo');
 
+        $this->assert($this->mock->bar(), 'foo');
         $this->assert($this->mock->bar(null), 'foo');
         $this->assert($this->mock->bar(null, null), 'foo');
     }

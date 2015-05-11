@@ -56,6 +56,9 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->assert(Mockster::stub($this->foo->foo('one'))->has()->beenCalled());
         $this->assert(Mockster::stub($this->foo->foo('one', null))->has()->beenCalled());
 
+        $this->assert(Mockster::stub($this->foo->foo(Argument::any()))->has()->beenCalled());
+        $this->assert(Mockster::stub($this->foo->foo(Argument::any(), Argument::any()))->has()->beenCalled());
+
         $this->assert(!Mockster::stub($this->foo->foo(null, null))->has()->beenCalled());
     }
 
