@@ -34,6 +34,10 @@ class InferReturnValueSpec extends StaticTestSuite {
         $this->assert->isInstanceOf($this->mock->fullClassName(), Mockster::class);
         $this->assert->isInstanceOf($this->mock->importedClass(), Mockster::class);
     }
+
+    function testRecursiveFaking() {
+        $this->assert->isInstanceOf($this->mock->recursive()->recursive()->recursive(), InferReturnValue_FooClass::class);
+    }
 }
 
 class InferReturnValue_FooClass {
@@ -112,6 +116,13 @@ class InferReturnValue_FooClass {
      * @return Mockster
      */
     public function importedClass() {
+        return null;
+    }
+
+    /**
+     * @return InferReturnValue_FooClass
+     */
+    public function recursive() {
         return null;
     }
 }

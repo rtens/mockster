@@ -32,8 +32,8 @@ class Mockster {
     function __construct($class) {
         $this->class = $class;
         $this->factory = new Factory();
-        $this->factory->setProvider('StdClass', new MockProvider($this->factory));
         $this->stubs = new Stubs($class, $this->factory);
+        $this->factory->setProvider('StdClass', new MockProvider($this->factory, $this->stubs));
         $this->properties = (new PropertyReader($this->class))->readState();
     }
 
@@ -84,18 +84,13 @@ class Mockster {
      * @return object A mock-instance of the class
      */
     public function mock() {
-        return $this->injectStubs($this->factory->getInstance($this->class, null));
+        return $this->factory->getInstance($this->class, null);
     }
 
     public function uut($constructorArguments = []) {
         $this->stubs->stubbedByDefault(false);
-        $instance = $this->injectStubs($this->factory->getInstance($this->class, $constructorArguments));
+        $instance = $this->factory->getInstance($this->class, $constructorArguments);
         $this->injectProperties($instance);
-        return $instance;
-    }
-
-    private function injectStubs($instance) {
-        $instance->__stubs = $this->stubs;
         return $instance;
     }
 
