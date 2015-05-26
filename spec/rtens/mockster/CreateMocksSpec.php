@@ -3,6 +3,7 @@ namespace spec\rtens\mockster;
 
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
+use watoki\factory\Factory;
 
 class CreateMocksSpec extends StaticTestSuite {
 
@@ -97,6 +98,16 @@ class CreateMocksSpec extends StaticTestSuite {
 
         Mockster::stub($injectable->bar->foo())->will()->return_('foo');
         $this->assert($mock->bar->foo(), 'foo');
+    }
+
+    function testInjectFactory() {
+        $factory = new Factory();
+        $factory->setSingleton(new \DateTime(), CreateMocksTest_FooClass::class);
+
+        /** @var CreateMocksTest_InjectableClass $mock */
+        $mock = (new Mockster(CreateMocksTest_InjectableClass::class, $factory))->uut();
+
+        $this->assert($mock->bar, new \DateTime());
     }
 
     function testForceParameterCount() {

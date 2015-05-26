@@ -7,6 +7,8 @@ use watoki\factory\Provider;
 
 class MockProvider implements Provider {
 
+    const NO_CONSTRUCTOR = ['NO_CONSTRUCTOR'];
+
     /** @var Injector */
     protected $injector;
 
@@ -16,11 +18,7 @@ class MockProvider implements Provider {
     /** @var callable */
     private $parameterFilter;
 
-    /** @var Stubs */
-    private $stubs;
-
-    public function __construct(Factory $factory, Stubs $stubs) {
-        $this->stubs = $stubs;
+    public function __construct(Factory $factory) {
         $this->factory = $factory;
         $this->injector = new Injector($factory);
 
@@ -29,8 +27,8 @@ class MockProvider implements Provider {
         };
     }
 
-    public function provide($className, array $constructorArgs = null) {
-        $callConstructor = $constructorArgs !== null;
+    public function provide($className, array $constructorArgs = []) {
+        $callConstructor = $constructorArgs != self::NO_CONSTRUCTOR;
         $mockClassName = $this->makeMockClassName($className, $callConstructor);
 
         if (!class_exists($mockClassName)) {
@@ -39,9 +37,7 @@ class MockProvider implements Provider {
             eval($code);
         }
 
-        $instance = $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array(), $this->parameterFilter);
-        $instance->__stubs = $this->stubs;
-        return $instance;
+        return $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array(), $this->parameterFilter);
     }
 
     private function makeMockClassName($classname, $callConstructor) {

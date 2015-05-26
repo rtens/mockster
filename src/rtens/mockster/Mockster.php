@@ -28,12 +28,13 @@ class Mockster {
 
     /**
      * @param string $class The FQN of the class to mock
+     * @param null|Factory $factory
      */
-    function __construct($class) {
+    function __construct($class, Factory $factory = null) {
         $this->class = $class;
-        $this->factory = new Factory();
+        $this->factory = $factory ?: new Factory();
+        $this->factory->setProvider('StdClass', new MockProvider($this->factory));
         $this->stubs = new Stubs($class, $this->factory);
-        $this->factory->setProvider('StdClass', new MockProvider($this->factory, $this->stubs));
         $this->properties = (new PropertyReader($this->class))->readState();
     }
 
@@ -75,22 +76,33 @@ class Mockster {
 
             /** @var ClassType $type */
             $type = $this->properties[$name]->type();
-            $this->propertyMocksters[$name] = new Mockster($type->getClass());
+            $this->propertyMocksters[$name] = new Mockster($type->getClass(), $this->factory);
         }
         return $this->propertyMocksters[$name];
     }
 
     /**
-     * @return object A mock-instance of the class
+     * @return object A mocked instance of the class, with all methods stubbed and created without invoking
+     * the parent constructor
      */
     public function mock() {
-        return $this->factory->getInstance($this->class, null);
+        return $this->injectStubs($this->factory->getInstance($this->class, MockProvider::NO_CONSTRUCTOR));
     }
 
+    /**
+     * @param array $constructorArguments
+     * @return object The Unit Under Test - an instance of the class, methods are not stubbed and the parent
+     * constructor is called, mocks of dependencies are injected
+     */
     public function uut($constructorArguments = []) {
         $this->stubs->stubbedByDefault(false);
-        $instance = $this->factory->getInstance($this->class, $constructorArguments);
+        $instance = $this->injectStubs($this->factory->getInstance($this->class, $constructorArguments));
         $this->injectProperties($instance);
+        return $instance;
+    }
+
+    private function injectStubs($instance) {
+        $instance->__stubs = $this->stubs;
         return $instance;
     }
 
