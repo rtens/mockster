@@ -65,7 +65,7 @@ class ReturnTypeInferer {
         } else if ($type instanceof MultiType) {
             return $this->getValueFromHint($type->getTypes()[0]);
         } else if ($type instanceof ClassType) {
-            return $this->factory->getInstance($type->getClass(), null);
+            return (new Mockster($type->getClass(), $this->factory))->mock();
         }
 
         throw new \InvalidArgumentException("Cannot mock value for [$type].");

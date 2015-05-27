@@ -28,10 +28,11 @@ class Mockster {
 
     /**
      * @param string $class The FQN of the class to mock
+     * @param null|Factory $factory
      */
-    function __construct($class) {
+    function __construct($class, Factory $factory = null) {
         $this->class = $class;
-        $this->factory = new Factory();
+        $this->factory = $factory ?: new Factory();
         $this->factory->setProvider('StdClass', new MockProvider($this->factory));
         $this->stubs = new Stubs($class, $this->factory);
         $this->properties = (new PropertyReader($this->class))->readState();
@@ -75,7 +76,7 @@ class Mockster {
 
             /** @var ClassType $type */
             $type = $this->properties[$name]->type();
-            $this->propertyMocksters[$name] = new Mockster($type->getClass());
+            $this->propertyMocksters[$name] = new Mockster($type->getClass(), $this->factory);
         }
         return $this->propertyMocksters[$name];
     }
@@ -84,7 +85,7 @@ class Mockster {
      * @return object A mock-instance of the class
      */
     public function mock() {
-        return $this->injectStubs($this->factory->getInstance($this->class, null));
+        return $this->injectStubs($this->factory->getInstance($this->class, MockProvider::NO_CONSTRUCTOR));
     }
 
     public function uut($constructorArguments = []) {

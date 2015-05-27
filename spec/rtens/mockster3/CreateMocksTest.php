@@ -2,6 +2,7 @@
 namespace spec\rtens\mockster3;
 
 use rtens\mockster3\Mockster;
+use watoki\factory\Factory;
 use watoki\scrut\Specification;
 
 class CreateMocksTest extends Specification {
@@ -97,6 +98,18 @@ class CreateMocksTest extends Specification {
 
         Mockster::stub($injectable->bar->foo())->will()->return_('foo');
         $this->assertEquals('foo', $mock->bar->foo());
+    }
+
+    function testInjectFactory() {
+        $singleton = new \DateTime();
+
+        $factory = new Factory();
+        $factory->setSingleton($singleton, CreateMocksTest_FooClass::class);
+
+        /** @var CreateMocksTest_InjectableClass $mock */
+        $mock = (new Mockster(CreateMocksTest_InjectableClass::class, $factory))->uut();
+
+        $this->assertEquals($singleton, $mock->bar);
     }
 
     function testForceParameterCount() {

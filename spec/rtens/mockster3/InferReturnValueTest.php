@@ -34,6 +34,10 @@ class InferReturnValueTest extends Specification {
         $this->assertInstanceOf(Mockster::class, $this->mock->fullClassName());
         $this->assertInstanceOf(Mockster::class, $this->mock->importedClass());
     }
+
+    function testRecursiveFaking() {
+        $this->assertInstanceOf(InferReturnValue_FooClass::class, $this->mock->recursive()->recursive()->recursive());
+    }
 }
 
 class InferReturnValue_FooClass {
@@ -112,6 +116,13 @@ class InferReturnValue_FooClass {
      * @return Mockster
      */
     public function importedClass() {
+        return null;
+    }
+
+    /**
+     * @return InferReturnValue_FooClass
+     */
+    public function recursive() {
         return null;
     }
 }
