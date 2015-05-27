@@ -121,7 +121,19 @@ class Stub {
 
         $type = $this->typeHint->getType();
         if (!$type->is($returnValue)) {
-            throw new \ReflectionException("The returned value does not match the return type hint of [$this->class::$this->name()]");
+            $returned = $this->toString($returnValue);
+            throw new \ReflectionException("The returned value [$returned] does not match the " .
+                "return type hint of [{$this->class}::{$this->name}()]");
+        }
+    }
+
+    private function toString($value) {
+        if (is_object($value)) {
+            return get_class($value);
+        } else if (is_array($value)) {
+            return 'array';
+        } else {
+            return print_r($value, true);
         }
     }
 

@@ -27,13 +27,14 @@ class CheckReturnTypeSpec extends StaticTestSuite {
     }
 
     function testFailIfPrimitiveValueDoesNotMatch() {
-        Mockster::stub($this->foo->returnsString())->will()->return_(42);
+        Mockster::stub($this->foo->returnsString())->will()->return_(new \DateTime());
 
         try {
             $this->mock->returnsString();
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
-            $this->assert->contains($e->getMessage(), "does not match the return type");
+            $this->assert($e->getMessage(), "The returned value [DateTime] does not match the return type hint of [" .
+                CheckReturnTypeTest_FooClass::class . "::returnsString()]");
         }
         $this->assert(Mockster::stub($this->foo->returnsString())->has()->beenCalled());
     }
