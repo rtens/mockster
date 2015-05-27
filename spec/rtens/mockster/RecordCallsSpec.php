@@ -147,8 +147,6 @@ class RecordCallsSpec extends StaticTestSuite {
             "  foo('One', 'Two') -> array\n" .
             "  foo('Three', NULL) -> DateTime\n" .
             "  foo('Four', NULL) !! InvalidArgumentException('Oh no')");
-
-        echo Mockster::stub($this->foo->foo(Argument::any(), Argument::any()))->has()->printedHistory();
     }
 }
 
