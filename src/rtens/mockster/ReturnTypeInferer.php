@@ -9,8 +9,6 @@ use watoki\reflect\type\ClassType;
 use watoki\reflect\type\FloatType;
 use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\MultiType;
-use watoki\reflect\type\NullableType;
-use watoki\reflect\type\NullType;
 use watoki\reflect\type\StringType;
 use watoki\reflect\type\UnknownType;
 use watoki\reflect\TypeFactory;
@@ -29,7 +27,7 @@ class ReturnTypeInferer {
     }
 
     public function mockValue() {
-        return $this->getValueFromHint($this->getType());
+        return $this->getValueForType($this->getType());
     }
 
     /**
@@ -49,9 +47,9 @@ class ReturnTypeInferer {
 
     /**
      * @param Type $type
-     * @return mixed
+     * @return int|float|bool|string|array|object|null
      */
-    private function getValueFromHint(Type $type) {
+    private function getValueForType(Type $type) {
         if ($type instanceof IntegerType) {
             return 0;
         } else if ($type instanceof FloatType) {
@@ -62,17 +60,12 @@ class ReturnTypeInferer {
             return '';
         } else if ($type instanceof ArrayType) {
             return array();
-        } else if ($type instanceof NullType
-            || $type instanceof NullableType
-        ) {
-            return null;
         } else if ($type instanceof MultiType) {
-            return $this->getValueFromHint($type->getTypes()[0]);
+            return $this->getValueForType($type->getTypes()[0]);
         } else if ($type instanceof ClassType) {
             return (new Mockster($type->getClass(), $this->factory))->mock();
+        } else {
+            return null;
         }
-
-        $typeName = get_class($type);
-        throw new \InvalidArgumentException("Cannot mock value for [$typeName].");
     }
 }

@@ -4,7 +4,6 @@ namespace rtens\mockster;
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\behaviour\Behaviour;
 use rtens\mockster\behaviour\BehaviourFactory;
-use rtens\mockster\exceptions\UndefinedBehaviourException;
 use watoki\factory\Factory;
 
 class Stub {
@@ -88,19 +87,13 @@ class Stub {
 
     /**
      * @param array $arguments Indexed by position and name
-     * @throws exceptions\UndefinedBehaviourException
      * @return mixed The return value of the first active Behaviour
      */
     public function invoke($arguments) {
         if ($this->behaviour && $this->behaviour->isActive()) {
             return $this->behaviour->invoke($this->named($arguments));
-        }
-
-        try {
+        } else {
             return $this->typeHint->mockValue();
-        } catch (\Exception $e) {
-            throw new UndefinedBehaviourException("No active behaviour available for [$this->class::$this->name()] " .
-                "and none could be inferred from return type hint.", 0, $e);
         }
     }
 

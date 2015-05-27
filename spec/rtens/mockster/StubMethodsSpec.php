@@ -3,7 +3,6 @@ namespace spec\rtens\mockster;
 
 use rtens\mockster\arguments\Argument;
 use rtens\mockster\arguments\Argument as Arg;
-use rtens\mockster\exceptions\UndefinedBehaviourException;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
@@ -21,14 +20,7 @@ class StubMethodsSpec extends StaticTestSuite {
     }
 
     function testNoStubDefined() {
-        try {
-            $this->mock->bar();
-            $this->fail("Should have thrown an exception");
-        } catch (UndefinedBehaviourException $e) {
-            $this->assert->contains($e->getMessage(), 'No active behaviour available');
-            $this->assert->contains($e->getMessage(), 'none could be inferred from return type hint');
-            $this->assert->contains($e->getMessage(), 'FooClass::bar()');
-        }
+        $this->assert($this->mock->bar(), null);
     }
 
     function testReturnValue() {
@@ -91,11 +83,7 @@ class StubMethodsSpec extends StaticTestSuite {
         $this->assert($this->mock->bar("one", "two"), "bar");
         $this->assert($this->mock->bar("uno", "dos"), "foo");
 
-        try {
-            $this->mock->bar("not", "two");
-            $this->fail("Should have thrown an execption");
-        } catch (UndefinedBehaviourException $ignored) {
-        }
+        $this->assert($this->mock->bar("not", "two"), null);
     }
 
     function testMatchWithAnyArgument() {
