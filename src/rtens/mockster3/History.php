@@ -33,10 +33,11 @@ class History {
      * @return bool
      */
     public function beenCalled($times = null) {
+        $calls = $this->calls();
         if (is_null($times)) {
-            return !empty($this->calls());
+            return !empty($calls);
         }
-        return count($this->calls()) == $times;
+        return count($calls) == $times;
     }
 
     /**

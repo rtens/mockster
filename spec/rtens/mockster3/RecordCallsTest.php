@@ -15,7 +15,7 @@ class RecordCallsTest extends Specification {
 
     protected function setUp() {
         parent::setUp();
-        $this->foo = new Mockster(RecordStubUsageTest_FooClass::class);
+        $this->foo = new Mockster(RecordStubUsageTest_FooClass::$class);
         $this->mock = $this->foo->mock();
     }
 
@@ -75,7 +75,7 @@ class RecordCallsTest extends Specification {
         } catch (\InvalidArgumentException $ignored) {
         }
 
-        $this->assertInstanceOf(\InvalidArgumentException::class,
+        $this->assertInstanceOf('InvalidArgumentException',
             Mockster::stub($this->foo->danger())->has()->inCall(0)->thrown());
     }
 
@@ -120,6 +120,7 @@ class RecordCallsTest extends Specification {
 }
 
 class RecordStubUsageTest_FooClass {
+    public static $class = __CLASS__;
 
     /**
      * @param null $a

@@ -15,7 +15,7 @@ class CheckReturnTypeTest extends Specification {
     protected function setUp() {
         parent::setUp();
 
-        $this->foo = new Mockster(CheckReturnTypeTest_FooClass::class);
+        $this->foo = new Mockster(CheckReturnTypeTest_FooClass::$class);
         $this->mock = $this->foo->mock();
     }
 
@@ -72,6 +72,8 @@ class CheckReturnTypeTest extends Specification {
 }
 
 class CheckReturnTypeTest_FooClass {
+
+    public static $class = __CLASS__;
 
     public function noHint() {
         return null;

@@ -15,7 +15,7 @@ class CreateMocksTest extends Specification {
 
     protected function setUp() {
         parent::setUp();
-        $this->foo = new Mockster(CreateMocksTest_FooClass::class);
+        $this->foo = new Mockster(CreateMocksTest_FooClass::$class);
     }
 
     function testPlainMock() {
@@ -25,13 +25,13 @@ class CreateMocksTest extends Specification {
     }
 
     function testMockAbstractClass() {
-        $foo = new Mockster(CreateMocksTest_AbstractClass::class);
-        $this->assertInstanceOf(CreateMocksTest_AbstractClass::class, $foo->mock());
+        $foo = new Mockster(CreateMocksTest_AbstractClass::$class);
+        $this->assertInstanceOf(CreateMocksTest_AbstractClass::$class, $foo->mock());
     }
 
     function testMockInterface() {
-        $foo = new Mockster(CreateMocksTest_Interface::class);
-        $this->assertInstanceOf(CreateMocksTest_Interface::class, $foo->mock());
+        $foo = new Mockster(CreateMocksTest_Interface::CreateMocksTest_Interface);
+        $this->assertInstanceOf(CreateMocksTest_Interface::CreateMocksTest_Interface, $foo->mock());
     }
 
     function testUnitUnderTest() {
@@ -52,24 +52,24 @@ class CreateMocksTest extends Specification {
 
     function testMockInjectableConstructorArguments() {
         /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = $injectable->uut();
 
-        $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->foo);
+        $this->assertInstanceOf(CreateMocksTest_FooClass::$class, $mock->foo);
     }
 
     function testMockInjectableProperties() {
         /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = $injectable->uut();
 
-        $this->assertInstanceOf(CreateMocksTest_FooClass::class, $mock->bar);
+        $this->assertInstanceOf(CreateMocksTest_FooClass::$class, $mock->bar);
     }
 
     function testNotExistingProperty() {
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
 
         try {
             /** @noinspection PhpUndefinedFieldInspection */
@@ -82,17 +82,17 @@ class CreateMocksTest extends Specification {
 
     function testMocksDoNotInjectProperties() {
         /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = $injectable->mock();
 
         $this->assertNull($mock->bar);
-        $this->assertInstanceOf(Mockster::class, $injectable->bar);
+        $this->assertInstanceOf(get_class($injectable), $injectable->bar);
     }
 
     function testStubMethodsOfInjectedMocks() {
         /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = $injectable->uut();
 
@@ -104,17 +104,17 @@ class CreateMocksTest extends Specification {
         $singleton = new \DateTime();
 
         $factory = new Factory();
-        $factory->setSingleton($singleton, CreateMocksTest_FooClass::class);
+        $factory->setSingleton($singleton, CreateMocksTest_FooClass::$class);
 
         /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(CreateMocksTest_InjectableClass::class, $factory))->uut();
+        $mock = (new Mockster(CreateMocksTest_InjectableClass::$class, $factory))->uut();
 
         $this->assertEquals($singleton, $mock->bar);
     }
 
     function testForceParameterCount() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::class);
+        $methods = new Mockster(CreateMocksTest_Methods::$class);
         $mock = $methods->mock();
 
         try {
@@ -127,7 +127,7 @@ class CreateMocksTest extends Specification {
 
     function testKeepArrayTypeHint() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::class);
+        $methods = new Mockster(CreateMocksTest_Methods::$class);
         /** @var CreateMocksTest_Methods $mock */
         $mock = $methods->mock();
 
@@ -141,7 +141,7 @@ class CreateMocksTest extends Specification {
 
     function testKeepCallableTypeHint() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::class);
+        $methods = new Mockster(CreateMocksTest_Methods::$class);
         /** @var CreateMocksTest_Methods $mock */
         $mock = $methods->mock();
 
@@ -155,7 +155,7 @@ class CreateMocksTest extends Specification {
 
     function testKeepClassTypeHint() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::class);
+        $methods = new Mockster(CreateMocksTest_Methods::$class);
         /** @var CreateMocksTest_Methods $mock */
         $mock = $methods->mock();
 
@@ -170,7 +170,7 @@ class CreateMocksTest extends Specification {
 
     function testKeepVariadicMethod() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::class);
+        $methods = new Mockster(CreateMocksTest_Methods::$class);
         /** @var CreateMocksTest_Methods $mock */
         $mock = $methods->mock();
 
@@ -183,6 +183,8 @@ class CreateMocksTest extends Specification {
 }
 
 class CreateMocksTest_FooClass {
+    public static $class = __CLASS__;
+
     public $constructorCalled = false;
     public $constructorArguments = null;
 
@@ -200,12 +202,15 @@ class CreateMocksTest_FooClass {
 }
 
 abstract class CreateMocksTest_AbstractClass {
+    public static $class = __CLASS__;
 }
 
 interface CreateMocksTest_Interface {
+    const CreateMocksTest_Interface = __CLASS__;
 }
 
 class CreateMocksTest_InjectableClass {
+    public static $class = __CLASS__;
 
     /** @var CreateMocksTest_FooClass */
     public $bar;
@@ -219,6 +224,8 @@ class CreateMocksTest_InjectableClass {
 }
 
 class CreateMocksTest_Methods {
+    public static $class = __CLASS__;
+
     public function twoParameters($a, $b) {
     }
 

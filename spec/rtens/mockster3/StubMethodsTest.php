@@ -18,7 +18,7 @@ class StubMethodsTest extends Specification {
     protected function setUp() {
         parent::setUp();
 
-        $this->foo = new Mockster(StubMethodsTest_FooClass::class);
+        $this->foo = new Mockster(StubMethodsTest_FooClass::$class);
         $this->mock = $this->foo->mock();
     }
 
@@ -130,7 +130,7 @@ class StubMethodsTest extends Specification {
 
     function testInheritedMethod() {
         /** @var Mockster|StubMethodsTest_FooChild $child */
-        $child = new Mockster(StubMethodsTest_FooChild::class);
+        $child = new Mockster(StubMethodsTest_FooChild::$class);
 
         Mockster::stub($child->bar())->will()->return_("foo");
 
@@ -150,7 +150,7 @@ class StubMethodsTest extends Specification {
     }
 
     function testProtectedMethods() {
-        $foo = new Mockster(StubMethodsTest_FooClass::class);
+        $foo = new Mockster(StubMethodsTest_FooClass::$class);
         /** @noinspection PhpUndefinedMethodInspection */
         Mockster::stub($foo->protectedMethod())->will()->return_('bar');
         /** @noinspection PhpUndefinedMethodInspection */
@@ -163,7 +163,7 @@ class StubMethodsTest extends Specification {
 
     function testDoNotStubPrivateMethods() {
         try {
-            $foo = new Mockster(StubMethodsTest_FooClass::class);
+            $foo = new Mockster(StubMethodsTest_FooClass::$class);
             /** @noinspection PhpUndefinedMethodInspection */
             Mockster::stub($foo->privateMethod());
             $this->fail("Should have thrown an exception");
@@ -175,7 +175,7 @@ class StubMethodsTest extends Specification {
 
     function testDoNotStubStaticMethods() {
         try {
-            $foo = new Mockster(StubMethodsTest_FooClass::class);
+            $foo = new Mockster(StubMethodsTest_FooClass::$class);
             /** @noinspection PhpUndefinedMethodInspection */
             Mockster::stub($foo->staticMethod());
             $this->fail("Should have thrown an exception");
@@ -187,6 +187,7 @@ class StubMethodsTest extends Specification {
 }
 
 class StubMethodsTest_FooClass {
+    public static $class = __CLASS__;
 
     public function bar($a = null, $b = null) {
         return "original" . $a . $b;
@@ -211,4 +212,5 @@ class StubMethodsTest_FooClass {
 }
 
 class StubMethodsTest_FooChild extends StubMethodsTest_FooClass {
+    public static $class = __CLASS__;
 }

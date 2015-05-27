@@ -13,7 +13,7 @@ class InferReturnValueTest extends Specification {
 
     protected function setUp() {
         parent::setUp();
-        $this->foo = new Mockster(InferReturnValue_FooClass::class);
+        $this->foo = new Mockster(InferReturnValue_FooClass::$class);
         $this->mock = $this->foo->mock();
     }
 
@@ -31,16 +31,17 @@ class InferReturnValueTest extends Specification {
     }
 
     function testInferClass() {
-        $this->assertInstanceOf(Mockster::class, $this->mock->fullClassName());
-        $this->assertInstanceOf(Mockster::class, $this->mock->importedClass());
+        $this->assertInstanceOf(get_class($this->foo), $this->mock->fullClassName());
+        $this->assertInstanceOf(get_class($this->foo), $this->mock->importedClass());
     }
 
     function testRecursiveFaking() {
-        $this->assertInstanceOf(InferReturnValue_FooClass::class, $this->mock->recursive()->recursive()->recursive());
+        $this->assertInstanceOf(InferReturnValue_FooClass::$class, $this->mock->recursive()->recursive()->recursive());
     }
 }
 
 class InferReturnValue_FooClass {
+    public static $class = __CLASS__;
 
     /**
      * @return int

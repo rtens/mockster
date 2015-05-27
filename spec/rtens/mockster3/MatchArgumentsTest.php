@@ -31,10 +31,10 @@ class MatchArgumentsTest extends Specification {
     }
 
     function testObject() {
-        $this->assertTrue(Argument::object(\DateTime::class)->accepts(new ExactArgument(new \DateTime())));
-        $this->assertTrue(Argument::object(\DateTime::class)->accepts(new ObjectArgument(\DateTime::class)));
-        $this->assertTrue(Argument::object(\DateTimeInterface::class)->accepts(new ObjectArgument(\DateTime::class)));
-        $this->assertFalse(Argument::object(\DateTime::class)->accepts(new ObjectArgument(\DateTimeInterface::class)));
+        $this->assertTrue(Argument::object('DateTime')->accepts(new ExactArgument(new \DateTime())));
+        $this->assertTrue(Argument::object('DateTime')->accepts(new ObjectArgument('DateTime')));
+        $this->assertTrue(Argument::object('DateTimeInterface')->accepts(new ObjectArgument('DateTime')));
+        $this->assertFalse(Argument::object('DateTime')->accepts(new ObjectArgument('DateTimeInterface')));
     }
 
     function testRegularExpression() {

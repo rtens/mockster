@@ -85,7 +85,7 @@ class Mockster {
      * @return object A mock-instance of the class
      */
     public function mock() {
-        return $this->injectStubs($this->factory->getInstance($this->class, MockProvider::NO_CONSTRUCTOR));
+        return $this->injectStubs($this->factory->getInstance($this->class, MockProvider::$NO_CONSTRUCTOR));
     }
 
     public function uut($constructorArguments = []) {
