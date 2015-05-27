@@ -118,6 +118,38 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->assert->size(Mockster::stub($this->foo->foo(Argument::string()))->has()->calls(), 3);
         $this->assert->size(Mockster::stub($this->foo->foo(Argument::integer()))->has()->calls(), 1);
     }
+
+    function testGetHistory() {
+        Mockster::stub($this->foo->foo(Argument::any(), Argument::any()))
+            ->will()->return_('foo')->once()
+            ->then()->return_(['foo'])->once()
+            ->then()->return_(new \DateTime())->once()
+            ->then()->throw_(new \InvalidArgumentException("Oh no"));
+
+        $this->mock->foo(4, 2);
+        $this->mock->foo('One', 'Two');
+        $this->mock->foo('Three');
+
+        try {
+            $this->mock->foo('Four');
+        } catch (\InvalidArgumentException $ignored) {
+        }
+
+        $this->assert(Mockster::stub($this->foo->foo())->has()->printedHistory(),
+            "No calls recorded for [" . RecordStubUsageTest_FooClass::class . "::foo()]");
+
+        $this->assert(Mockster::stub($this->foo->foo(Argument::integer(), Argument::integer()))->has()->printedHistory(),
+            "History of [" . RecordStubUsageTest_FooClass::class . "::foo()]\n" .
+            "  foo(4, 2) -> 'foo'");
+
+        $this->assert(Mockster::stub($this->foo->foo(Argument::string(), Argument::any()))->has()->printedHistory(),
+            "History of [" . RecordStubUsageTest_FooClass::class . "::foo()]\n" .
+            "  foo('One', 'Two') -> array\n" .
+            "  foo('Three', NULL) -> DateTime\n" .
+            "  foo('Four', NULL) !! InvalidArgumentException('Oh no')");
+
+        echo Mockster::stub($this->foo->foo(Argument::any(), Argument::any()))->has()->printedHistory();
+    }
 }
 
 class RecordStubUsageTest_FooClass {
