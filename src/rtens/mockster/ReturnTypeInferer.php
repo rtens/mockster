@@ -31,14 +31,25 @@ class ReturnTypeInferer {
     }
 
     /**
-     * @return Type
+     * @return Type|UnknownType
      */
     public function getType() {
+        return $this->getAnnotationType('return');
+    }
+
+    /**
+     * @return Type|UnknownType
+     */
+    public function getExceptionType() {
+        return $this->getAnnotationType('throws');
+    }
+
+    private function getAnnotationType($annotation) {
         $matches = array();
-        $found = preg_match('/@return\s+(\S+)/', $this->reflection->getDocComment(), $matches);
+        $found = preg_match('/@' . $annotation . '\s+(\S+)/', $this->reflection->getDocComment(), $matches);
 
         if (!$found) {
-            return new UnknownType('');
+            return new UnknownType();
         }
 
         $type = new TypeFactory($this->reflection->getDeclaringClass());

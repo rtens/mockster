@@ -176,6 +176,12 @@ class StubMethodsSpec extends StaticTestSuite {
 
 class StubMethodsTest_FooClass {
 
+    /**
+     * @param null|string $a
+     * @param null|string $b
+     * @return mixed
+     * @throws \Exception
+     */
     public function bar($a = null, $b = null) {
         return "original" . $a . $b;
     }

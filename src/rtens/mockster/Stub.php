@@ -5,6 +5,7 @@ use rtens\mockster\arguments\Argument;
 use rtens\mockster\behaviour\Behaviour;
 use rtens\mockster\behaviour\BehaviourFactory;
 use watoki\factory\Factory;
+use watoki\reflect\type\UnknownType;
 
 class Stub {
 
@@ -111,19 +112,30 @@ class Stub {
 
     public function record($arguments, $returnValue, \Exception $thrown = null) {
         $this->history->add(new Call($this->named($arguments), $returnValue, $thrown));
-        $this->checkReturnValue($returnValue);
+
+        if ($this->checkReturnType && $thrown) {
+            $this->checkException($thrown);
+        } else if ($this->checkReturnType) {
+            $this->checkReturnValue($returnValue);
+        }
     }
 
     private function checkReturnValue($returnValue) {
-        if (!$this->checkReturnType) {
-            return;
-        }
-
         $type = $this->typeHint->getType();
         if (!$type->is($returnValue)) {
             $returned = $this->toString($returnValue);
-            throw new \ReflectionException("The returned value [$returned] does not match the " .
-                "return type hint of [{$this->class}::{$this->name}()]");
+            throw new \ReflectionException("[{$this->class}::{$this->name}()] returned [$returned] " .
+                "which does not match its return type");
+        }
+    }
+
+    private function checkException(\Exception $exception) {
+        $type = $this->typeHint->getExceptionType();
+
+        if ($type instanceof UnknownType || !$type->is($exception)) {
+            throw new \ReflectionException("[{$this->class}::{$this->name}()] threw "
+                . get_class($exception) . '(' . $exception->getMessage() . ') '
+                . "without proper annotation");
         }
     }
 

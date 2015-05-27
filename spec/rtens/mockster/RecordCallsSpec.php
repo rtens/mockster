@@ -156,6 +156,7 @@ class RecordStubUsageTest_FooClass {
      * @param null $a
      * @param null $b
      * @return null|mixed
+     * @throws \Exception
      */
     public function foo($a = null, $b = null) {
         return 'foo' . $a . $b;
