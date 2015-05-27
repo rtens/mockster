@@ -31,10 +31,10 @@ class MatchArgumentsTest extends Specification {
     }
 
     function testObject() {
-        $this->assertTrue(Argument::object('DateTime')->accepts(new ExactArgument(new \DateTime())));
-        $this->assertTrue(Argument::object('DateTime')->accepts(new ObjectArgument('DateTime')));
-        $this->assertTrue(Argument::object('DateTimeInterface')->accepts(new ObjectArgument('DateTime')));
-        $this->assertFalse(Argument::object('DateTime')->accepts(new ObjectArgument('DateTimeInterface')));
+        $this->assertTrue(Argument::object(MatchArgumentsTest_Sub::$class)->accepts(new ExactArgument(new MatchArgumentsTest_Sub())));
+        $this->assertTrue(Argument::object(MatchArgumentsTest_Sub::$class)->accepts(new ObjectArgument(MatchArgumentsTest_Sub::$class)));
+        $this->assertTrue(Argument::object(MatchArgumentsTest_Base::$class)->accepts(new ObjectArgument(MatchArgumentsTest_Sub::$class)));
+        $this->assertFalse(Argument::object(MatchArgumentsTest_Sub::$class)->accepts(new ObjectArgument(MatchArgumentsTest_Base::$class)));
     }
 
     function testRegularExpression() {
@@ -52,4 +52,12 @@ class MatchArgumentsTest extends Specification {
         $this->assertTrue(Argument::callback($callback)->accepts(new ExactArgument('foo')));
         $this->assertFalse(Argument::callback($callback)->accepts(new ExactArgument('bar')));
     }
+}
+
+class MatchArgumentsTest_Base {
+    public static $class = __CLASS__;
+}
+
+class MatchArgumentsTest_Sub extends MatchArgumentsTest_Base {
+    public static $class = __CLASS__;
 }

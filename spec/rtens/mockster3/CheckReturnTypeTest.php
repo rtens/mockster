@@ -49,7 +49,7 @@ class CheckReturnTypeTest extends Specification {
     }
 
     function testFailIfObjectDoesNotMatch() {
-        Mockster::stub($this->foo->returnsDateTime())->will()->return_(new \DateTimeImmutable());
+        Mockster::stub($this->foo->returnsDateTime())->will()->return_(new CheckReturnTypeTest_NotADateTime());
 
         try {
             $this->mock->returnsDateTime();
@@ -93,3 +93,5 @@ class CheckReturnTypeTest_FooClass {
         return null;
     }
 }
+
+class CheckReturnTypeTest_NotADateTime {}
