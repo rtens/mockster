@@ -14,6 +14,12 @@ class CallbackWithArgumentsBehaviour extends Behaviour{
     }
 
     protected function doInvoke($args) {
-        return call_user_func_array($this->callbackWithArguments, $args);
+        $arguments = [];
+        foreach ($args as $i => $arg) {
+            if (is_numeric($i)) {
+                $arguments[] = $arg;
+            }
+        }
+        return call_user_func_array($this->callbackWithArguments, $arguments);
     }
 }

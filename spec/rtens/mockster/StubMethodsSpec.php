@@ -65,6 +65,14 @@ class StubMethodsSpec extends StaticTestSuite {
         $this->assert($this->mock->bar('uno', 'dos'), 'unodos');
     }
 
+    function testCallCallbackWithDefaultArguments() {
+        Mockster::stub($this->foo->bar(Argument::any(), Argument::any()))->will()->forwardTo(function ($a, $b) {
+            return $a . $b;
+        });
+
+        $this->assert($this->mock->bar('uno'), 'uno');
+    }
+
     function testDisableStubbing() {
         Mockster::stub($this->foo->bar())->dontStub();
         $this->assert($this->mock->bar(), 'original');
