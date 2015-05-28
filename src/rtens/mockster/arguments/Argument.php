@@ -35,5 +35,9 @@ abstract class Argument {
         return new CallbackArgument($accepts);
     }
 
+    public static function contains($needle) {
+        return new ContainingArgument($needle);
+    }
+
     abstract public function accepts(Argument $argument);
 }

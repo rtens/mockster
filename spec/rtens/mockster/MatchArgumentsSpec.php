@@ -44,6 +44,16 @@ class MatchArgumentsSpec extends StaticTestSuite {
         $this->assert->not(Argument::regex('/[a-z]+/')->accepts(new ExactArgument('HELLO WORLD')));
     }
 
+    function testContaining() {
+        $this->assert(Argument::contains('bar')->accepts(new ExactArgument('foo bar bas')));
+        $this->assert(Argument::contains('bar')->accepts(new ExactArgument(['foo', 'bar', 'bas'])));
+        $this->assert(Argument::contains('bar')->accepts(new ExactArgument($this->stack(['foo', 'bar', 'bas']))));
+        $this->assert(Argument::contains('bar')->accepts(new ExactArgument($this->object(['foo' => 'bar']))));
+
+        $this->assert->not(Argument::contains('bar')->accepts(new ExactArgument('foo')));
+        $this->assert->not(Argument::contains('bar')->accepts(new IntegerArgument()));
+    }
+
     function testCallback() {
         $callback = function (ExactArgument $argument) {
             return $argument->value() == 'foo';
@@ -51,5 +61,17 @@ class MatchArgumentsSpec extends StaticTestSuite {
 
         $this->assert(Argument::callback($callback)->accepts(new ExactArgument('foo')));
         $this->assert->not(Argument::callback($callback)->accepts(new ExactArgument('bar')));
+    }
+
+    private function stack($items) {
+        $stack = new \SplStack();
+        foreach ($items as $item) {
+            $stack->push($item);
+        }
+        return $stack;
+    }
+
+    private function object($properties) {
+        return json_decode(json_encode($properties));
     }
 }
