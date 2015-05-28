@@ -10,7 +10,7 @@ use rtens\mockster\arguments\RegularExpressionArgument;
 use rtens\mockster\arguments\StringArgument;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
-class MatchArgumentsSpec extends StaticTestSuite {
+class MatchArgumentsTest extends StaticTestSuite {
 
     function testInteger() {
         $this->assert(Argument::integer()->accepts(new IntegerArgument()));

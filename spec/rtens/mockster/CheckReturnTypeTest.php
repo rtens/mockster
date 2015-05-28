@@ -4,7 +4,7 @@ namespace spec\rtens\mockster;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
-class CheckReturnTypeSpec extends StaticTestSuite {
+class CheckReturnTypeTest extends StaticTestSuite {
 
     /** @var CheckReturnTypeTest_FooClass */
     private $mock;
@@ -15,9 +15,7 @@ class CheckReturnTypeSpec extends StaticTestSuite {
     /** @var CheckReturnTypeTest_FooClass|Mockster */
     private $foo;
 
-    protected function before() {
-        parent::before();
-
+    public function before() {
         $this->foo = new Mockster(CheckReturnTypeTest_FooClass::class);
         $this->mock = $this->foo->mock();
         $this->uut = $this->foo->uut();

@@ -5,7 +5,7 @@ use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\factory\Factory;
 
-class CreateMocksSpec extends StaticTestSuite {
+class CreateMocksTest extends StaticTestSuite {
 
     /** @var CreateMocksTest_FooClass|Mockster */
     private $foo;
@@ -13,8 +13,7 @@ class CreateMocksSpec extends StaticTestSuite {
     /** @var CreateMocksTest_FooClass */
     private $mock;
 
-    protected function before() {
-        parent::before();
+    public function before() {
         $this->foo = new Mockster(CreateMocksTest_FooClass::class);
     }
 

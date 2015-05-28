@@ -5,7 +5,7 @@ use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
-class RecordCallsSpec extends StaticTestSuite {
+class RecordCallsTest extends StaticTestSuite {
 
     /** @var Mockster|RecordStubUsageTest_FooClass $foo */
     public $foo;
@@ -13,7 +13,7 @@ class RecordCallsSpec extends StaticTestSuite {
     /** @var RecordStubUsageTest_FooClass $mock */
     public $mock;
 
-    protected function before() {
+    public function before() {
         $this->foo = new Mockster(RecordStubUsageTest_FooClass::class);
         $this->mock = $this->foo->mock();
     }

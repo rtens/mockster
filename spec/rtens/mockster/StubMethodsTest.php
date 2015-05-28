@@ -6,7 +6,7 @@ use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
-class StubMethodsSpec extends StaticTestSuite {
+class StubMethodsTest extends StaticTestSuite {
 
     /** @var StubMethodsTest_FooClass $mock */
     private $mock;
@@ -14,7 +14,7 @@ class StubMethodsSpec extends StaticTestSuite {
     /** @var StubMethodsTest_FooClass|Mockster $foo */
     private $foo;
 
-    protected function before() {
+    public function before() {
         $this->foo = new Mockster(StubMethodsTest_FooClass::class);
         $this->mock = $this->foo->mock();
     }

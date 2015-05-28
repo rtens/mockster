@@ -4,7 +4,7 @@ namespace spec\rtens\mockster;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
-class IntroductionSpec extends StaticTestSuite {
+class IntroductionTest extends StaticTestSuite {
 
     /**
      * A typical test with *mockster* might look like this.

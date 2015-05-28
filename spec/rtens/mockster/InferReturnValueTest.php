@@ -4,15 +4,14 @@ namespace spec\rtens\mockster;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
-class InferReturnValueSpec extends StaticTestSuite {
+class InferReturnValueTest extends StaticTestSuite {
 
     private $foo;
 
     /** @var InferReturnValue_FooClass $mock */
     private $mock;
 
-    protected function before() {
-        parent::before();
+    public function before() {
         $this->foo = new Mockster(InferReturnValue_FooClass::class);
         $this->mock = $this->foo->mock();
     }
