@@ -18,16 +18,16 @@ To use *mockster* in your project, require it with [Composer]
 
     composer require "rtens/mockster"
     
-To download *mockster* as a project itself, use [Composer]
+If you would like to develop on *mockster*, clone it with [git], download its dependencies with [Composer] and execute the specification with [scrut]
 
-    composer create-project rtens/mockster
-    
-and run the test suite with [scrut]
-
+    git clone https://github.com/rtens/mockster.git
+    cd mockster
+    composer update
     vendor/bin/scrut
 
 [Composer]: http://getcomposer.org/download/
 [scrut]: https://github.com/rtens/scrut
+[git]: https://git-scm.com/
 
 ## Documentation ##
 
