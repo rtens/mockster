@@ -132,7 +132,7 @@ class RecordCallsSpec extends StaticTestSuite {
         Mockster::stub($this->foo->foo(Arg::any(), Arg::any()))
             ->will()->return_('foo')->once()
             ->then()->return_(['foo'])->once()
-            ->then()->return_(new \DateTime())->once()
+            ->then()->return_(new \DateTime('2011-12-13 14:15:16 UTC'))->once()
             ->then()->throw_(new \InvalidArgumentException("Oh no"));
 
         $this->mock->foo(4, 2);
@@ -153,9 +153,9 @@ class RecordCallsSpec extends StaticTestSuite {
 
         $this->assert(Mockster::stub($this->foo->foo(Arg::string(), Arg::any()))->has()->printedHistory(),
             "History of [" . RecordStubUsageTest_FooClass::class . "::foo()]\n" .
-            "  foo('One', 'Two') -> array\n" .
-            "  foo('Three', NULL) -> DateTime\n" .
-            "  foo('Four', " . RecordStubUsageTest_ToString::class . "[foo]) !! InvalidArgumentException('Oh no')");
+            "  foo('One', 'Two') -> ['foo']\n" .
+            "  foo('Three', NULL) -> <DateTime>(2011-12-13T14:15:16+00:00)\n" .
+            "  foo('Four', <" . RecordStubUsageTest_ToString::class . ">('foo')) !! InvalidArgumentException('Oh no')");
     }
 }
 

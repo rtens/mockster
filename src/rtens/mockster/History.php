@@ -1,6 +1,8 @@
 <?php
 namespace rtens\mockster;
 
+use watoki\reflect\ValuePrinter;
+
 class History {
 
     /** @var Call[] */
@@ -76,16 +78,7 @@ class History {
     }
 
     private function toString($value) {
-        if (is_object($value)) {
-            if (method_exists($value, '__toString')) {
-                return get_class($value) . '[' . $value->__toString() . ']';
-            }
-            return get_class($value);
-        } else if (is_array($value)) {
-            return 'array';
-        } else {
-            return var_export($value, true);
-        }
+        return ValuePrinter::serialize($value);
     }
 
     private function printCall(Call $call) {
