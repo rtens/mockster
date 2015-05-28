@@ -77,6 +77,9 @@ class History {
 
     private function toString($value) {
         if (is_object($value)) {
+            if (method_exists($value, '__toString')) {
+                return get_class($value) . '[' . $value->__toString() . ']';
+            }
             return get_class($value);
         } else if (is_array($value)) {
             return 'array';

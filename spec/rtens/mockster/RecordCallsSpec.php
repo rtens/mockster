@@ -140,7 +140,7 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->mock->foo('Three');
 
         try {
-            $this->mock->foo('Four');
+            $this->mock->foo('Four', new RecordStubUsageTest_ToString());
         } catch (\InvalidArgumentException $ignored) {
         }
 
@@ -155,7 +155,7 @@ class RecordCallsSpec extends StaticTestSuite {
             "History of [" . RecordStubUsageTest_FooClass::class . "::foo()]\n" .
             "  foo('One', 'Two') -> array\n" .
             "  foo('Three', NULL) -> DateTime\n" .
-            "  foo('Four', NULL) !! InvalidArgumentException('Oh no')");
+            "  foo('Four', " . RecordStubUsageTest_ToString::class . "[foo]) !! InvalidArgumentException('Oh no')");
     }
 }
 
@@ -177,5 +177,11 @@ class RecordStubUsageTest_FooClass {
      */
     public function danger() {
         throw new \InvalidArgumentException;
+    }
+}
+
+class RecordStubUsageTest_ToString {
+    function __toString() {
+        return 'foo';
     }
 }
