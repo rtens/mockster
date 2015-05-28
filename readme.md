@@ -14,22 +14,20 @@
 
 ## Installation ##
 
-You will need [Composer], [PHP] and [git] to download the project
+To use *mockster* in your project, require it with [Composer]
 
-    php composer.phar create-project rtens/mockster
+    composer require "rtens/mockster"
+    
+To download *mockster* as a project itself, use [Composer]
 
-or add it as a requirement to your projects `composer.json`
+    composer create-project rtens/mockster
+    
+and run the test suite with [scrut]
 
-    "rtens/mockster": "*"
-
-To run the test suite just execute `phpunit` in the base folder of mockster.
-
-    cd mockster
-    phpunit
+    vendor/bin/scrut
 
 [Composer]: http://getcomposer.org/download/
-[PHP]: http://php.net/downloads.php
-[git]: http://git-scm.com/downloads
+[scrut]: https://github.com/rtens/scrut
 
 ## Documentation ##
 
