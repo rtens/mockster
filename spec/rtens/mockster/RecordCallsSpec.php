@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\mockster;
 
-use rtens\mockster\arguments\Argument;
+use rtens\mockster\arguments\Argument as Arg;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
@@ -56,10 +56,19 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->assert(Mockster::stub($this->foo->foo('one'))->has()->beenCalled());
         $this->assert(Mockster::stub($this->foo->foo('one', null))->has()->beenCalled());
 
-        $this->assert(Mockster::stub($this->foo->foo(Argument::any()))->has()->beenCalled());
-        $this->assert(Mockster::stub($this->foo->foo(Argument::any(), Argument::any()))->has()->beenCalled());
+        $this->assert(Mockster::stub($this->foo->foo(Arg::any()))->has()->beenCalled());
+        $this->assert(Mockster::stub($this->foo->foo(Arg::any(), Arg::any()))->has()->beenCalled());
 
         $this->assert->not(Mockster::stub($this->foo->foo(null, null))->has()->beenCalled());
+    }
+
+    function testReplayCall() {
+        $this->mock->foo('one');
+
+        Mockster::stub($this->foo->foo(Arg::any()))->has()->inCall(0)->recorded(function ($a, $b) {
+            $this->assert($a, 'one');
+            $this->assert($b, null);
+        });
     }
 
     function testRecordReturnValue() {
@@ -88,14 +97,14 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->assert->not(Mockster::stub($this->foo->foo('foo'))->has()->beenCalled(1));
         $this->assert(Mockster::stub($this->foo->foo('one'))->has()->beenCalled(1));
         $this->assert(Mockster::stub($this->foo->foo('two'))->has()->beenCalled(1));
-        $this->assert(Mockster::stub($this->foo->foo(Argument::any()))->has()->beenCalled(3));
+        $this->assert(Mockster::stub($this->foo->foo(Arg::any()))->has()->beenCalled(3));
 
-        $this->assert(Mockster::stub($this->foo->foo(Argument::any()))->has()->inCall(0)->argument(0), 'one');
-        $this->assert(Mockster::stub($this->foo->foo(Argument::any()))->has()->inCall(2)->argument(0), 'three');
+        $this->assert(Mockster::stub($this->foo->foo(Arg::any()))->has()->inCall(0)->argument(0), 'one');
+        $this->assert(Mockster::stub($this->foo->foo(Arg::any()))->has()->inCall(2)->argument(0), 'three');
     }
 
     function testFindStubByMoreSpecificArgument() {
-        Mockster::stub($this->foo->foo(Argument::any()))->will()->return_("foo");
+        Mockster::stub($this->foo->foo(Arg::any()))->will()->return_("foo");
 
         $this->mock->foo("one");
 
@@ -107,7 +116,7 @@ class RecordCallsSpec extends StaticTestSuite {
         Mockster::stub($this->foo->foo('one'))->will()->return_('uno');
         Mockster::stub($this->foo->foo('two'))->will()->return_('uno');
         Mockster::stub($this->foo->foo('three'))->will()->return_('uno');
-        Mockster::stub($this->foo->foo(Argument::any()))->will()->return_('dos');
+        Mockster::stub($this->foo->foo(Arg::any()))->will()->return_('dos');
 
         $this->mock->foo('one');
         $this->mock->foo(1.0);
@@ -115,12 +124,12 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->mock->foo(1);
         $this->mock->foo('three');
 
-        $this->assert->size(Mockster::stub($this->foo->foo(Argument::string()))->has()->calls(), 3);
-        $this->assert->size(Mockster::stub($this->foo->foo(Argument::integer()))->has()->calls(), 1);
+        $this->assert->size(Mockster::stub($this->foo->foo(Arg::string()))->has()->calls(), 3);
+        $this->assert->size(Mockster::stub($this->foo->foo(Arg::integer()))->has()->calls(), 1);
     }
 
     function testGetHistory() {
-        Mockster::stub($this->foo->foo(Argument::any(), Argument::any()))
+        Mockster::stub($this->foo->foo(Arg::any(), Arg::any()))
             ->will()->return_('foo')->once()
             ->then()->return_(['foo'])->once()
             ->then()->return_(new \DateTime())->once()
@@ -138,11 +147,11 @@ class RecordCallsSpec extends StaticTestSuite {
         $this->assert(Mockster::stub($this->foo->foo())->has()->printedHistory(),
             "No calls recorded for [" . RecordStubUsageTest_FooClass::class . "::foo()]");
 
-        $this->assert(Mockster::stub($this->foo->foo(Argument::integer(), Argument::integer()))->has()->printedHistory(),
+        $this->assert(Mockster::stub($this->foo->foo(Arg::integer(), Arg::integer()))->has()->printedHistory(),
             "History of [" . RecordStubUsageTest_FooClass::class . "::foo()]\n" .
             "  foo(4, 2) -> 'foo'");
 
-        $this->assert(Mockster::stub($this->foo->foo(Argument::string(), Argument::any()))->has()->printedHistory(),
+        $this->assert(Mockster::stub($this->foo->foo(Arg::string(), Arg::any()))->has()->printedHistory(),
             "History of [" . RecordStubUsageTest_FooClass::class . "::foo()]\n" .
             "  foo('One', 'Two') -> array\n" .
             "  foo('Three', NULL) -> DateTime\n" .
