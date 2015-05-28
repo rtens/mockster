@@ -11,8 +11,8 @@ class SpecificHistory extends History {
     /** @var \rtens\mockster\arguments\Argument[] */
     private $arguments;
 
-    function __construct(Stub $stub, $arguments, $class, $methodName) {
-        parent::__construct([], $class, $methodName);
+    function __construct(Stub $stub, $arguments) {
+        parent::__construct([]);
         $this->stub = $stub;
         $this->arguments = $arguments;
     }

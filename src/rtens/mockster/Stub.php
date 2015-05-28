@@ -53,7 +53,7 @@ class Stub {
 
         $this->reflection = new \ReflectionMethod($class, $name);
         $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
-        $this->history = new History($collected, $class, $name);
+        $this->history = new History($collected);
 
         if ($this->reflection->isPrivate()) {
             throw new \ReflectionException("Cannot stub private methods [$this->class::$name()]");
@@ -170,5 +170,13 @@ class Stub {
      */
     public function arguments() {
         return $this->arguments;
+    }
+
+    public function className() {
+        return $this->class;
+    }
+
+    public function methodName() {
+        return $this->name;
     }
 }

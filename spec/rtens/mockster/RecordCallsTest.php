@@ -2,6 +2,7 @@
 namespace spec\rtens\mockster;
 
 use rtens\mockster\arguments\Argument as Arg;
+use rtens\mockster\HistoryPrinter;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
@@ -128,7 +129,7 @@ class RecordCallsTest extends StaticTestSuite {
         $this->assert->size(Mockster::stub($this->foo->foo(Arg::integer()))->has()->calls(), 1);
     }
 
-    function testGetHistory() {
+    function testPrintStubHistory() {
         Mockster::stub($this->foo->foo(Arg::any(), Arg::any()))
             ->will()->return_('foo')->once()
             ->then()->return_(['foo'])->once()
@@ -144,18 +145,29 @@ class RecordCallsTest extends StaticTestSuite {
         } catch (\InvalidArgumentException $ignored) {
         }
 
-        $this->assert(Mockster::stub($this->foo->foo())->has()->printedHistory(),
+        $this->assert((new HistoryPrinter())->printStub($this->foo->foo()),
             "No calls recorded for [" . RecordStubUsageTest_FooClass::class . "::foo()]");
 
-        $this->assert(Mockster::stub($this->foo->foo(Arg::integer(), Arg::integer()))->has()->printedHistory(),
+        $this->assert((new HistoryPrinter())->printStub($this->foo->foo(Arg::integer(), Arg::integer())),
             "History of [" . RecordStubUsageTest_FooClass::class . "::foo()]\n" .
             "  foo(4, 2) -> 'foo'");
 
-        $this->assert(Mockster::stub($this->foo->foo(Arg::string(), Arg::any()))->has()->printedHistory(),
+        $this->assert((new HistoryPrinter())->printStub($this->foo->foo(Arg::string(), Arg::any())),
             "History of [" . RecordStubUsageTest_FooClass::class . "::foo()]\n" .
             "  foo('One', 'Two') -> ['foo']\n" .
             "  foo('Three', NULL) -> <DateTime>(2011-12-13T14:15:16+00:00)\n" .
             "  foo('Four', <" . RecordStubUsageTest_ToString::class . ">('foo')) !! InvalidArgumentException('Oh no')");
+    }
+
+    function testPrintHistoryOfAllStubs() {
+        $this->mock->foo('one');
+        $this->mock->danger('meh');
+        $this->mock->foo('two', 2);
+
+        $this->assert((new HistoryPrinter())->printAll($this->foo), "History of [spec\\rtens\\mockster\\RecordStubUsageTest_FooClass]\n" .
+            "  foo('one', NULL) -> NULL\n" .
+            "  foo('two', 2) -> NULL\n" .
+            "  danger('meh') -> NULL");
     }
 }
 
@@ -177,6 +189,9 @@ class RecordStubUsageTest_FooClass {
      */
     public function danger() {
         throw new \InvalidArgumentException;
+    }
+
+    public function notCalled() {
     }
 }
 
