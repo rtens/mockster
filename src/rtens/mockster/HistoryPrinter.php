@@ -72,8 +72,7 @@ class HistoryPrinter {
 
     private function printResult(Call $call) {
         if ($call->thrown()) {
-            $result = '!! ' . get_class($call->thrown())
-                . '(' . $this->toString($call->thrown()->getMessage()) . ')';
+            $result = '!! ' . $this->toString($call->thrown());
             return $result;
         } else {
             $result = '-> ' . $this->toString($call->returned());

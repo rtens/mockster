@@ -156,7 +156,7 @@ class RecordCallsTest extends StaticTestSuite {
             "History of [" . RecordStubUsageTest_FooClass::class . "::foo()]\n" .
             "  foo('One', 'Two') -> ['foo']\n" .
             "  foo('Three', NULL) -> <DateTime>(2011-12-13T14:15:16+00:00)\n" .
-            "  foo('Four', <" . RecordStubUsageTest_ToString::class . ">('foo')) !! InvalidArgumentException('Oh no')");
+            "  foo('Four', <" . RecordStubUsageTest_ToString::class . ">('foo')) !! <InvalidArgumentException>('Oh no')");
     }
 
     function testPrintHistoryOfAllStubs() {
