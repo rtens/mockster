@@ -90,7 +90,7 @@ class CreateMocksTest extends StaticTestSuite {
         $this->assert->isInstanceOf($injectable->bar, Mockster::class);
     }
 
-    function testStubMethodsOfInjectedMocks() {
+    function testStubMethodsOfPropertyInjectedMocks() {
         /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
         $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
         /** @var CreateMocksTest_InjectableClass $mock */
@@ -98,6 +98,16 @@ class CreateMocksTest extends StaticTestSuite {
 
         Mockster::stub($injectable->bar->foo())->will()->return_('foo');
         $this->assert($mock->bar->foo(), 'foo');
+    }
+
+    function testStubMethodsOfConstructorInjectedMocks() {
+        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
+        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
+        /** @var CreateMocksTest_InjectableClass $mock */
+        $mock = $injectable->uut();
+
+        Mockster::stub($injectable->bas->foo())->will()->return_('foo');
+        $this->assert($mock->bas->foo(), 'foo');
     }
 
     function testInjectFactory() {
@@ -208,11 +218,16 @@ class CreateMocksTest_InjectableClass {
     /** @var CreateMocksTest_FooClass */
     public $bar;
 
+    /** @var CreateMocksTest_FooClass */
+    public $bas;
+
     /**
      * @param CreateMocksTest_FooClass $foo <-
+     * @param CreateMocksTest_FooClass $bas <-
      */
-    function __construct($foo) {
+    function __construct($foo, $bas) {
         $this->foo = $foo;
+        $this->bas = $bas;
     }
 }
 
