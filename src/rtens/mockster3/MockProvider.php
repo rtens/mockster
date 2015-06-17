@@ -19,8 +19,10 @@ class MockProvider implements Provider {
     private $parameterFilter;
 
     public function __construct(Factory $factory) {
-        $this->injector = new Injector($factory);
         $this->factory = $factory;
+        $this->injector = new Injector($factory, function ($class) {
+            return (new Mockster($class))->mock();
+        });
 
         $this->parameterFilter = function () {
             return true;

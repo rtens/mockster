@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "watoki/factory": ">=0.4",
+        "watoki/factory": ">=0.5",
         "watoki/reflect": ">=0.2",
         "php": ">=5.4"
     },

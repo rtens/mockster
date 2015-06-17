@@ -56,7 +56,10 @@ class CreateMocksTest extends Specification {
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = $injectable->uut();
 
+        $mock->foo->foo();
+
         $this->assertInstanceOf(CreateMocksTest_FooClass::$class, $mock->foo);
+        $this->assertFalse($mock->foo->constructorCalled);
     }
 
     function testMockInjectableProperties() {
