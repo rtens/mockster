@@ -20,7 +20,9 @@ class MockProvider implements Provider {
 
     public function __construct(Factory $factory) {
         $this->factory = $factory;
-        $this->injector = new Injector($factory);
+        $this->injector = new Injector($factory, function ($class) {
+            return (new Mockster($class))->mock();
+        });
 
         $this->parameterFilter = function () {
             return true;
@@ -37,7 +39,10 @@ class MockProvider implements Provider {
             eval($code);
         }
 
-        return $this->injector->injectConstructor($mockClassName, $callConstructor ? $constructorArgs : array(), $this->parameterFilter);
+        if (!$callConstructor) {
+            $constructorArgs = [];
+        }
+        return $this->injector->injectConstructor($mockClassName, $constructorArgs, $this->parameterFilter);
     }
 
     private function makeMockClassName($classname, $callConstructor) {

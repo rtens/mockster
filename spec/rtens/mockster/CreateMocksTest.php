@@ -50,19 +50,20 @@ class CreateMocksTest extends StaticTestSuite {
     }
 
     function testMockInjectableConstructorArguments() {
-        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
         /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
+        $mock = (new Mockster(CreateMocksTest_InjectableClass::class))->uut();
+
+        $mock->foo->foo();
 
         $this->assert->isInstanceOf($mock->foo, CreateMocksTest_FooClass::class);
+        $this->assert->not($mock->foo->constructorCalled);
     }
 
     function testMockInjectableProperties() {
-        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
         /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
+        $mock = (new Mockster(CreateMocksTest_InjectableClass::class))->uut();
+
+        $mock->bar->foo();
 
         $this->assert->isInstanceOf($mock->bar, CreateMocksTest_FooClass::class);
     }
