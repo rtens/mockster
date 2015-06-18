@@ -3,7 +3,6 @@ namespace spec\rtens\mockster;
 
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\factory\Factory;
 
 class CreateMocksTest extends StaticTestSuite {
 
@@ -47,86 +46,6 @@ class CreateMocksTest extends StaticTestSuite {
     function testPassConstructorArgumentsByName() {
         $this->mock = $this->foo->uut(['one' => 'uno', 'two' => 'dos']);
         $this->assert($this->mock->constructorArguments, ['uno', 'dos']);
-    }
-
-    function testMockInjectableConstructorArguments() {
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(CreateMocksTest_InjectableClass::class))->uut();
-
-        $this->assert->isInstanceOf($mock->foo, CreateMocksTest_FooClass::class);
-        $this->assert->not($mock->foo->constructorCalled);
-        $mock->foo->foo();
-    }
-
-    function testMockInjectableProperties() {
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(CreateMocksTest_InjectableClass::class))->uut();
-
-        $this->assert->isInstanceOf($mock->bar, CreateMocksTest_FooClass::class);
-        $mock->bar->foo();
-        $this->assert->isInstanceOf($mock->multi, CreateMocksTest_FooClass::class);
-        $this->assert->isInstanceOf($mock->nullable, CreateMocksTest_FooClass::class);
-        $this->assert->isNull($mock->invalid);
-    }
-
-    function testNotExistingProperty() {
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
-
-        try {
-            /** @noinspection PhpUndefinedFieldInspection */
-            $injectable->notExisting;
-            $this->fail("Should have thrown an Exception");
-        } catch (\ReflectionException $e) {
-            $this->assert->contains($e->getMessage(), "InjectableClass::notExisting");
-        }
-    }
-
-    function testMocksDoNotInjectProperties() {
-        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = $injectable->mock();
-
-        $this->assert($mock->bar === null);
-        $this->assert->isInstanceOf($injectable->bar, Mockster::class);
-    }
-
-    function testStubMethodsOfPropertyInjectedMocks() {
-        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
-
-        Mockster::stub($injectable->bar->foo())->will()->return_('foo');
-        $this->assert($mock->bar->foo(), 'foo');
-
-        try {
-            $injectable->invalid;
-            $this->fail('Should have thrown an exception');
-        } catch (\ReflectionException $e) {
-            $this->assert($e->getMessage(), "Property [" . CreateMocksTest_InjectableClass::class . "::invalid] " .
-                "cannot be mocked since it's type hint is not a class.");
-        }
-    }
-
-    function testStubMethodsOfConstructorInjectedMocks() {
-        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::class);
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
-
-        Mockster::stub($injectable->bas->foo())->will()->return_('foo');
-        $this->assert($mock->bas->foo(), 'foo');
-    }
-
-    function testInjectFactory() {
-        $factory = new Factory();
-        $factory->setSingleton(new \DateTime(), CreateMocksTest_FooClass::class);
-
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(CreateMocksTest_InjectableClass::class, $factory))->uut();
-
-        $this->assert($mock->bar, new \DateTime());
     }
 
     function testForceParameterCount() {
@@ -220,33 +139,6 @@ abstract class CreateMocksTest_AbstractClass {
 }
 
 interface CreateMocksTest_Interface {
-}
-
-class CreateMocksTest_InjectableClass {
-
-    /** @var CreateMocksTest_FooClass */
-    public $bar;
-
-    /** @var string|CreateMocksTest_FooClass|mixed */
-    public $multi;
-
-    /** @var null|CreateMocksTest_FooClass */
-    public $nullable;
-
-    /** @var null|string */
-    public $invalid;
-
-    /** @var CreateMocksTest_FooClass */
-    public $bas;
-
-    /**
-     * @param CreateMocksTest_FooClass $foo <-
-     * @param CreateMocksTest_FooClass $bas <-
-     */
-    function __construct($foo, $bas) {
-        $this->foo = $foo;
-        $this->bas = $bas;
-    }
 }
 
 class CreateMocksTest_Methods {
