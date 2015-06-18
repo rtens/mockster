@@ -164,7 +164,7 @@ class RecordCallsTest extends StaticTestSuite {
         $this->mock->danger('meh');
         $this->mock->foo('two', 2);
 
-        $this->assert((new HistoryPrinter())->printAll($this->foo), "History of [spec\\rtens\\mockster\\RecordStubUsageTest_FooClass]\n" .
+        $this->assert((new HistoryPrinter())->printAll($this->foo), "History of [" . RecordStubUsageTest_FooClass::class . "]\n" .
             "  foo('one', NULL) -> NULL\n" .
             "  foo('two', 2) -> NULL\n" .
             "  danger('meh') -> NULL");
