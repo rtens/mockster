@@ -4,8 +4,8 @@ namespace rtens\mockster3;
 use rtens\mockster3\arguments\Argument;
 use rtens\mockster3\behaviour\Behaviour;
 use rtens\mockster3\behaviour\BehaviourFactory;
-use rtens\mockster3\exceptions\UndefinedBehaviourException;
 use watoki\factory\Factory;
+use watoki\reflect\type\UnknownType;
 
 class Stub {
 
@@ -88,19 +88,13 @@ class Stub {
 
     /**
      * @param array $arguments Indexed by position and name
-     * @throws exceptions\UndefinedBehaviourException
      * @return mixed The return value of the first active Behaviour
      */
     public function invoke($arguments) {
         if ($this->behaviour && $this->behaviour->isActive()) {
             return $this->behaviour->invoke($this->named($arguments));
-        }
-
-        try {
+        } else {
             return $this->typeHint->mockValue();
-        } catch (\Exception $e) {
-            throw new UndefinedBehaviourException("No active behaviour available for [$this->class::$this->name()] " .
-                "and none could be inferred from return type hint.", 0, $e);
         }
     }
 
@@ -118,17 +112,40 @@ class Stub {
 
     public function record($arguments, $returnValue, \Exception $thrown = null) {
         $this->history->add(new Call($this->named($arguments), $returnValue, $thrown));
-        $this->checkReturnValue($returnValue);
+
+        if ($this->checkReturnType && $thrown) {
+            $this->checkException($thrown);
+        } else if ($this->checkReturnType) {
+            $this->checkReturnValue($returnValue);
+        }
     }
 
     private function checkReturnValue($returnValue) {
-        if (!$this->checkReturnType) {
-            return;
-        }
-
         $type = $this->typeHint->getType();
         if (!$type->is($returnValue)) {
-            throw new \ReflectionException("The returned value does not match the return type hint of [$this->class::$this->name()]");
+            $returned = $this->toString($returnValue);
+            throw new \ReflectionException("[{$this->class}::{$this->name}()] returned [$returned] " .
+                "which does not match its return type");
+        }
+    }
+
+    private function checkException(\Exception $exception) {
+        $type = $this->typeHint->getExceptionType();
+
+        if ($type instanceof UnknownType || !$type->is($exception)) {
+            throw new \ReflectionException("[{$this->class}::{$this->name}()] threw "
+                . get_class($exception) . '(' . $exception->getMessage() . ') '
+                . "without proper annotation");
+        }
+    }
+
+    private function toString($value) {
+        if (is_object($value)) {
+            return get_class($value);
+        } else if (is_array($value)) {
+            return 'array';
+        } else {
+            return print_r($value, true);
         }
     }
 
@@ -153,5 +170,13 @@ class Stub {
      */
     public function arguments() {
         return $this->arguments;
+    }
+
+    public function className() {
+        return $this->class;
+    }
+
+    public function methodName() {
+        return $this->name;
     }
 }

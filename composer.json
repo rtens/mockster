@@ -15,10 +15,11 @@
     "require": {
         "watoki/factory": ">=0.5",
         "watoki/reflect": ">=0.2",
-        "php": ">=5.4"
+        "php": ">=5.6"
     },
     "require-dev": {
-        "watoki/scrut": ">=0.2"
+        "watoki/scrut": ">=0.2",
+        "rtens/scrut": "dev-master"
     },
     "autoload": {
         "psr-0": {

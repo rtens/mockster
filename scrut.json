@@ -1,0 +1,6 @@
+{
+  "filter": "/Test$/",
+  "suite": {
+      "file": "spec/rtens/mockster3"
+    }
+}

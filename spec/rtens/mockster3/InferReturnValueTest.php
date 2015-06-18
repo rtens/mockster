@@ -2,46 +2,44 @@
 namespace spec\rtens\mockster3;
 
 use rtens\mockster3\Mockster;
-use watoki\scrut\Specification;
+use rtens\scrut\tests\statics\StaticTestSuite;
 
-class InferReturnValueTest extends Specification {
+class InferReturnValueTest extends StaticTestSuite {
 
     private $foo;
 
     /** @var InferReturnValue_FooClass $mock */
     private $mock;
 
-    protected function setUp() {
-        parent::setUp();
-        $this->foo = new Mockster(InferReturnValue_FooClass::$class);
+    public function before() {
+        $this->foo = new Mockster(InferReturnValue_FooClass::class);
         $this->mock = $this->foo->mock();
     }
 
     function testInferPrimitive() {
-        $this->assertEquals(0, $this->mock->returnInt());
-        $this->assertEquals(0.0, $this->mock->returnFloat());
-        $this->assertEquals(false, $this->mock->returnBoolean());
-        $this->assertEquals("", $this->mock->returnString());
-        $this->assertEquals([], $this->mock->returnArray());
-        $this->assertEquals(null, $this->mock->returnNull());
-        $this->assertEquals("", $this->mock->returnMulti());
-        $this->assertEquals(null, $this->mock->returnNullableObject());
+        $this->assert($this->mock->returnInt(), 0);
+        $this->assert($this->mock->returnFloat(), 0.0);
+        $this->assert($this->mock->returnBoolean(), false);
+        $this->assert($this->mock->returnString(), "");
+        $this->assert($this->mock->returnArray(), []);
+        $this->assert($this->mock->returnNull(), null);
+        $this->assert($this->mock->returnMulti(), "");
+        $this->assert($this->mock->returnNullableObject(), null);
         /** @noinspection PhpVoidFunctionResultUsedInspection */
-        $this->assertEquals(null, $this->mock->returnVoid());
+        $this->assert($this->mock->returnVoid(), null);
     }
 
     function testInferClass() {
-        $this->assertInstanceOf(get_class($this->foo), $this->mock->fullClassName());
-        $this->assertInstanceOf(get_class($this->foo), $this->mock->importedClass());
+        $this->assert->isInstanceOf($this->mock->fullClassName(), Mockster::class);
+        $this->assert->isInstanceOf($this->mock->importedClass(), Mockster::class);
     }
 
     function testRecursiveFaking() {
-        $this->assertInstanceOf(InferReturnValue_FooClass::$class, $this->mock->recursive()->recursive()->recursive());
+        $this->assert->isInstanceOf($this->mock->recursive()->recursive()->recursive(), InferReturnValue_FooClass::class);
     }
 }
 
 class InferReturnValue_FooClass {
-    public static $class = __CLASS__;
 
     /**
      * @return int

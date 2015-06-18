@@ -2,9 +2,9 @@
 namespace spec\rtens\mockster3;
 
 use rtens\mockster3\Mockster;
-use watoki\scrut\Specification;
+use rtens\scrut\tests\statics\StaticTestSuite;
 
-class IntroductionTest extends Specification {
+class IntroductionTest extends StaticTestSuite {
 
     /**
      * A typical test with *mockster* might look like this.
@@ -18,10 +18,8 @@ class IntroductionTest extends Specification {
         eval('
             class FooClass {
 
-                /**
-                 * @var MyDatabase <-
-                 */
-                public $database;
+                /** @var MyDatabase <- */
+                protected $database;
 
                 public function setUserName($id, $name) {
                     $user = $this->database->readUser($id);
@@ -36,7 +34,6 @@ class IntroductionTest extends Specification {
                     // [...]
                 }
 
-                /** @return void */
                 public function update($object) {
                     // [...]
                 }
@@ -44,7 +41,6 @@ class IntroductionTest extends Specification {
 
             class MyUser {
 
-                /** @return void */
                 public function setName($name) {
                     // [...]
                 }
@@ -72,8 +68,7 @@ class IntroductionTest extends Specification {
          * The `uut()` method will create an instance of the `FooClass` with
          * all it's dependencies replaced by mocks and none of it's methods stubbed.
          */
-        $uut = $foo->uut();
-        $uut->setUserName(1, 'Bart');
+        $foo->uut()->setUserName(1, 'Bart');
 
         /*
          * Last, assert the expected behaviour.
@@ -81,8 +76,8 @@ class IntroductionTest extends Specification {
          * There should have been one call to `User::setName()` with the argument
          * `'Bart'` and one call on `Database::update()` with the `User` mock instance.
          */
-        $this->assertTrue($user->setName('Bart')->has()->beenCalled());
-        $this->assertTrue($foo->database->update($userMock)->has()->beenCalled());
+        $this->assert($user->setName('Bart')->has()->beenCalled());
+        $this->assert($foo->database->update($userMock)->has()->beenCalled());
     }
 
     public function testFurtherDocumentation() {
@@ -100,7 +95,7 @@ class IntroductionTest extends Specification {
          * [bdd]: http://dannorth.net/introducing-bdd/
          * [spec]: https://github.com/rtens/mockster/tree/master/spec/rtens/mockster
          */
-        null;
+        $this->pass();
     }
 
 }

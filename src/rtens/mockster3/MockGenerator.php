@@ -72,7 +72,7 @@ class MockGenerator {
             $typeHint = $this->generateTypeHint($param);
             $defaultValue = $this->generateDefaultValue($param);
 
-            if (PHP_VERSION_ID >= 50600 && $i + 1 == count($parameters) && $method->isVariadic()) {
+            if ($i + 1 == count($parameters) && $method->isVariadic()) {
                 $typeHint .= ' ...';
                 $defaultValue = '';
             }

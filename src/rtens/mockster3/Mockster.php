@@ -6,6 +6,8 @@ use watoki\factory\Factory;
 use watoki\reflect\Property;
 use watoki\reflect\PropertyReader;
 use watoki\reflect\type\ClassType;
+use watoki\reflect\type\MultiType;
+use watoki\reflect\type\NullableType;
 
 class Mockster {
 
@@ -26,14 +28,20 @@ class Mockster {
     /** @var Mockster[] */
     private $propertyMocksters = [];
 
+    /** @var array|object[] */
+    private $uuts = [];
+
     /**
      * @param string $class The FQN of the class to mock
      * @param null|Factory $factory
      */
     function __construct($class, Factory $factory = null) {
+        if (!$factory) {
+            $factory = new Factory();
+            $factory->setProvider('StdClass', new MockProvider($factory));
+        }
         $this->class = $class;
-        $this->factory = $factory ?: new Factory();
-        $this->factory->setProvider('StdClass', new MockProvider($this->factory));
+        $this->factory = $factory;
         $this->stubs = new Stubs($class, $this->factory);
         $this->properties = (new PropertyReader($this->class))->readState();
     }
@@ -70,45 +78,67 @@ class Mockster {
             if (!$this->properties->has($name)) {
                 throw new \ReflectionException("The property [$this->class::$name] does not exist");
             }
-            if (!$this->isMockable($this->properties[$name])) {
-                throw new \ReflectionException("Property [$name] cannot be mocked since it's type hint is not a class");
+
+            if ($this->uuts) {
+                $mockster = $this->properties[$name]->get($this->uuts[0])->__mockster;
+            } else {
+                $mockster = new Mockster($this->getTypeHint($name), $this->factory);
             }
 
-            /** @var ClassType $type */
-            $type = $this->properties[$name]->type();
-            $this->propertyMocksters[$name] = new Mockster($type->getClass(), $this->factory);
+            $this->propertyMocksters[$name] = $mockster;
         }
         return $this->propertyMocksters[$name];
     }
 
     /**
-     * @return object A mock-instance of the class
+     * @return object A mocked instance of the class, with all methods stubbed and created without invoking
+     * the parent constructor
      */
     public function mock() {
-        return $this->injectStubs($this->factory->getInstance($this->class, MockProvider::$NO_CONSTRUCTOR));
+        return $this->prepMock($this->factory->getInstance($this->class, MockProvider::NO_CONSTRUCTOR));
     }
 
+    /**
+     * @param array $constructorArguments
+     * @return object The Unit Under Test - an instance of the class, methods are not stubbed and the parent
+     * constructor is called, mocks of dependencies are injected
+     */
     public function uut($constructorArguments = []) {
         $this->stubs->stubbedByDefault(false);
-        $instance = $this->injectStubs($this->factory->getInstance($this->class, $constructorArguments));
-        $this->injectProperties($instance);
+        $instance = $this->prepMock($this->factory->getInstance($this->class, $constructorArguments));
+
+        $this->uuts[] = $instance;
+        foreach ($this->propertyMocksters as $property => $mockster) {
+            $this->properties[$property]->set($instance, $mockster->mock());
+        }
+
         return $instance;
     }
 
-    private function injectStubs($instance) {
+    private function prepMock($instance) {
         $instance->__stubs = $this->stubs;
+        $instance->__mockster = $this;
         return $instance;
     }
 
-    private function injectProperties($instance) {
-        foreach ($this->properties as $property) {
-            if ($this->isMockable($property)) {
-                $property->set($instance, $this->__get($property->name())->mock());
+    private function getTypeHint($propertyName) {
+        $type = $this->properties[$propertyName]->type();
+
+        if ($type instanceof NullableType) {
+            $type = $type->getType();
+        }
+
+        if ($type instanceof ClassType) {
+            return $type->getClass();
+        } else if ($type instanceof MultiType) {
+            foreach ($type->getTypes() as $aType) {
+                if ($aType instanceof ClassType) {
+                    return $aType->getClass();
+                }
             }
         }
-    }
 
-    private function isMockable(Property $property) {
-        return $property->type() instanceof ClassType;
+        throw new \ReflectionException("Property [{$this->class}::$propertyName] " .
+            "cannot be mocked since it's type hint is not a class.");
     }
 }

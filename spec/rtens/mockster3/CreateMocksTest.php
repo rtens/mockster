@@ -2,10 +2,9 @@
 namespace spec\rtens\mockster3;
 
 use rtens\mockster3\Mockster;
-use watoki\factory\Factory;
-use watoki\scrut\Specification;
+use rtens\scrut\tests\statics\StaticTestSuite;
 
-class CreateMocksTest extends Specification {
+class CreateMocksTest extends StaticTestSuite {
 
     /** @var CreateMocksTest_FooClass|Mockster */
     private $foo;
@@ -13,124 +12,58 @@ class CreateMocksTest extends Specification {
     /** @var CreateMocksTest_FooClass */
     private $mock;
 
-    protected function setUp() {
-        parent::setUp();
-        $this->foo = new Mockster(CreateMocksTest_FooClass::$class);
+    public function before() {
+        $this->foo = new Mockster(CreateMocksTest_FooClass::class);
     }
 
     function testPlainMock() {
         $this->mock = $this->foo->mock();
-        $this->assertFalse($this->mock->constructorCalled);
-        $this->assertTrue(Mockster::stub($this->foo->foo())->isStubbed());
+        $this->assert->not($this->mock->constructorCalled);
+        $this->assert(Mockster::stub($this->foo->foo())->isStubbed());
     }
 
     function testMockAbstractClass() {
-        $foo = new Mockster(CreateMocksTest_AbstractClass::$class);
-        $this->assertInstanceOf(CreateMocksTest_AbstractClass::$class, $foo->mock());
+        $foo = new Mockster(CreateMocksTest_AbstractClass::class);
+        $this->assert->isInstanceOf($foo->mock(), CreateMocksTest_AbstractClass::class);
     }
 
     function testMockInterface() {
-        $foo = new Mockster(CreateMocksTest_Interface::CreateMocksTest_Interface);
-        $this->assertInstanceOf(CreateMocksTest_Interface::CreateMocksTest_Interface, $foo->mock());
+        $foo = new Mockster(CreateMocksTest_Interface::class);
+        $this->assert->isInstanceOf($foo->mock(), CreateMocksTest_Interface::class);
     }
 
     function testUnitUnderTest() {
         $this->mock = $this->foo->uut();
-        $this->assertTrue($this->mock->constructorCalled);
-        $this->assertFalse(Mockster::stub($this->foo->foo())->isStubbed());
+        $this->assert($this->mock->constructorCalled);
+        $this->assert->not(Mockster::stub($this->foo->foo())->isStubbed());
     }
 
     function testPassConstructorArgumentsToUut() {
         $this->mock = $this->foo->uut(['uno', 'dos']);
-        $this->assertEquals(['uno', 'dos'], $this->mock->constructorArguments);
+        $this->assert($this->mock->constructorArguments, ['uno', 'dos']);
     }
 
     function testPassConstructorArgumentsByName() {
         $this->mock = $this->foo->uut(['one' => 'uno', 'two' => 'dos']);
-        $this->assertEquals(['uno', 'dos'], $this->mock->constructorArguments);
-    }
-
-    function testMockInjectableConstructorArguments() {
-        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
-
-        $mock->foo->foo();
-
-        $this->assertInstanceOf(CreateMocksTest_FooClass::$class, $mock->foo);
-        $this->assertFalse($mock->foo->constructorCalled);
-    }
-
-    function testMockInjectableProperties() {
-        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
-
-        $this->assertInstanceOf(CreateMocksTest_FooClass::$class, $mock->bar);
-    }
-
-    function testNotExistingProperty() {
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
-
-        try {
-            /** @noinspection PhpUndefinedFieldInspection */
-            $injectable->notExisting;
-            $this->fail("Should have thrown an Exception");
-        } catch (\ReflectionException $e) {
-            $this->assertContains("InjectableClass::notExisting", $e->getMessage());
-        }
-    }
-
-    function testMocksDoNotInjectProperties() {
-        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = $injectable->mock();
-
-        $this->assertNull($mock->bar);
-        $this->assertInstanceOf(get_class($injectable), $injectable->bar);
-    }
-
-    function testStubMethodsOfInjectedMocks() {
-        /** @var Mockster|CreateMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(CreateMocksTest_InjectableClass::$class);
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
-
-        Mockster::stub($injectable->bar->foo())->will()->return_('foo');
-        $this->assertEquals('foo', $mock->bar->foo());
-    }
-
-    function testInjectFactory() {
-        $singleton = new \DateTime();
-
-        $factory = new Factory();
-        $factory->setSingleton($singleton, CreateMocksTest_FooClass::$class);
-
-        /** @var CreateMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(CreateMocksTest_InjectableClass::$class, $factory))->uut();
-
-        $this->assertEquals($singleton, $mock->bar);
+        $this->assert($this->mock->constructorArguments, ['uno', 'dos']);
     }
 
     function testForceParameterCount() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::$class);
+        $methods = new Mockster(CreateMocksTest_Methods::class);
         $mock = $methods->mock();
 
         try {
             $mock->twoParameters('one');
             $this->fail("Should have thrown an exception");
         } catch (\Exception $e) {
-            $this->assertContains("Missing argument 2", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "Missing argument 2");
         }
     }
 
     function testKeepArrayTypeHint() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::$class);
+        $methods = new Mockster(CreateMocksTest_Methods::class);
         /** @var CreateMocksTest_Methods $mock */
         $mock = $methods->mock();
 
@@ -138,13 +71,13 @@ class CreateMocksTest extends Specification {
             $mock->arrayHint('one');
             $this->fail("Should have thrown an exception");
         } catch (\Exception $e) {
-            $this->assertContains("must be of the type array", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "must be of the type array");
         }
     }
 
     function testKeepCallableTypeHint() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::$class);
+        $methods = new Mockster(CreateMocksTest_Methods::class);
         /** @var CreateMocksTest_Methods $mock */
         $mock = $methods->mock();
 
@@ -152,13 +85,13 @@ class CreateMocksTest extends Specification {
             $mock->callableHint('one');
             $this->fail("Should have thrown an exception");
         } catch (\Exception $e) {
-            $this->assertContains("must be callable", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "must be callable");
         }
     }
 
     function testKeepClassTypeHint() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::$class);
+        $methods = new Mockster(CreateMocksTest_Methods::class);
         /** @var CreateMocksTest_Methods $mock */
         $mock = $methods->mock();
 
@@ -167,39 +100,25 @@ class CreateMocksTest extends Specification {
             $mock->classHint('one');
             $this->fail("Should have thrown an exception");
         } catch (\Exception $e) {
-            $this->assertContains("must be an instance of DateTime", $e->getMessage());
+            $this->assert->contains($e->getMessage(), "must be an instance of DateTime");
         }
     }
 
     function testKeepVariadicMethod() {
-        if (PHP_VERSION_ID < 50600) {
-            $this->markTestSkipped('Only in PHP >= 5.6');
-        }
-
-        eval('
-            class CreateMocksTest_VariadicMethod {
-                public function variadic(...$a) {
-                    return $a;
-                }
-            }
-        ');
-
-        /** @var object|Mockster $methods */
-        $methods = new Mockster('CreateMocksTest_VariadicMethod');
-        /** @var object $mock */
+        /** @var Mockster|CreateMocksTest_Methods $methods */
+        $methods = new Mockster(CreateMocksTest_Methods::class);
+        /** @var CreateMocksTest_Methods $mock */
         $mock = $methods->mock();
 
         Mockster::stub($methods->variadic('one', 'two'))->will()->call(function ($args) {
             return json_encode($args);
         });
 
-        $this->assertContains('"0":"one","1":"two"', $mock->variadic('one', 'two'));
+        $this->assert->contains($mock->variadic('one', 'two'), '"0":"one","1":"two"');
     }
 }
 
 class CreateMocksTest_FooClass {
-    public static $class = __CLASS__;
-
     public $constructorCalled = false;
     public $constructorArguments = null;
 
@@ -217,30 +136,12 @@ class CreateMocksTest_FooClass {
 }
 
 abstract class CreateMocksTest_AbstractClass {
-    public static $class = __CLASS__;
 }
 
 interface CreateMocksTest_Interface {
-    const CreateMocksTest_Interface = __CLASS__;
-}
-
-class CreateMocksTest_InjectableClass {
-    public static $class = __CLASS__;
-
-    /** @var CreateMocksTest_FooClass */
-    public $bar;
-
-    /**
-     * @param CreateMocksTest_FooClass $foo <-
-     */
-    function __construct($foo) {
-        $this->foo = $foo;
-    }
 }
 
 class CreateMocksTest_Methods {
-    public static $class = __CLASS__;
-
     public function twoParameters($a, $b) {
     }
 
@@ -251,5 +152,9 @@ class CreateMocksTest_Methods {
     }
 
     public function classHint(\DateTime $date) {
+    }
+
+    public function variadic(...$a) {
+        return $a;
     }
 }
