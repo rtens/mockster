@@ -53,19 +53,20 @@ class CreateMocksTest extends StaticTestSuite {
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = (new Mockster(CreateMocksTest_InjectableClass::class))->uut();
 
-        $mock->foo->foo();
-
         $this->assert->isInstanceOf($mock->foo, CreateMocksTest_FooClass::class);
         $this->assert->not($mock->foo->constructorCalled);
+        $mock->foo->foo();
     }
 
     function testMockInjectableProperties() {
         /** @var CreateMocksTest_InjectableClass $mock */
         $mock = (new Mockster(CreateMocksTest_InjectableClass::class))->uut();
 
-        $mock->bar->foo();
-
         $this->assert->isInstanceOf($mock->bar, CreateMocksTest_FooClass::class);
+        $mock->bar->foo();
+        $this->assert->isInstanceOf($mock->multi, CreateMocksTest_FooClass::class);
+        $this->assert->isInstanceOf($mock->nullable, CreateMocksTest_FooClass::class);
+        $this->assert->isNull($mock->invalid);
     }
 
     function testNotExistingProperty() {
@@ -98,6 +99,14 @@ class CreateMocksTest extends StaticTestSuite {
 
         Mockster::stub($injectable->bar->foo())->will()->return_('foo');
         $this->assert($mock->bar->foo(), 'foo');
+
+        try {
+            $injectable->invalid;
+            $this->fail('Should have thrown an exception');
+        } catch (\ReflectionException $e) {
+            $this->assert($e->getMessage(), "Property [" . CreateMocksTest_InjectableClass::class . "::invalid] " .
+                "cannot be mocked since it's type hint is not a class.");
+        }
     }
 
     function testStubMethodsOfConstructorInjectedMocks() {
@@ -217,6 +226,15 @@ class CreateMocksTest_InjectableClass {
 
     /** @var CreateMocksTest_FooClass */
     public $bar;
+
+    /** @var string|CreateMocksTest_FooClass|mixed */
+    public $multi;
+
+    /** @var null|CreateMocksTest_FooClass */
+    public $nullable;
+
+    /** @var null|string */
+    public $invalid;
 
     /** @var CreateMocksTest_FooClass */
     public $bas;

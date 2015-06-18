@@ -6,6 +6,8 @@ use watoki\factory\Factory;
 use watoki\reflect\Property;
 use watoki\reflect\PropertyReader;
 use watoki\reflect\type\ClassType;
+use watoki\reflect\type\MultiType;
+use watoki\reflect\type\NullableType;
 
 class Mockster {
 
@@ -70,13 +72,9 @@ class Mockster {
             if (!$this->properties->has($name)) {
                 throw new \ReflectionException("The property [$this->class::$name] does not exist");
             }
-            if (!$this->isMockable($this->properties[$name])) {
-                throw new \ReflectionException("Property [$name] cannot be mocked since it's type hint is not a class");
-            }
 
-            /** @var ClassType $type */
-            $type = $this->properties[$name]->type();
-            $this->propertyMocksters[$name] = new Mockster($type->getClass(), $this->factory);
+            $class = $this->getTypeHint($name);
+            $this->propertyMocksters[$name] = new Mockster($class, $this->factory);
         }
         return $this->propertyMocksters[$name];
     }
@@ -108,13 +106,31 @@ class Mockster {
 
     private function injectProperties($instance) {
         foreach ($this->properties as $property) {
-            if ($this->isMockable($property)) {
+            try {
                 $property->set($instance, $this->__get($property->name())->mock());
+            } catch (\ReflectionException $ignored) {
             }
         }
     }
 
-    private function isMockable(Property $property) {
-        return $property->type() instanceof ClassType;
+    private function getTypeHint($propertyName) {
+        $type = $this->properties[$propertyName]->type();
+
+        if ($type instanceof NullableType) {
+            $type = $type->getType();
+        }
+
+        if ($type instanceof ClassType) {
+            return $type->getClass();
+        } else if ($type instanceof MultiType) {
+            foreach ($type->getTypes() as $aType) {
+                if ($aType instanceof ClassType) {
+                    return $aType->getClass();
+                }
+            }
+        }
+
+        throw new \ReflectionException("Property [{$this->class}::$propertyName] " .
+            "cannot be mocked since it's type hint is not a class.");
     }
 }
