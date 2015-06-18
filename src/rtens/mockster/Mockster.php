@@ -76,13 +76,13 @@ class Mockster {
                 throw new \ReflectionException("The property [$this->class::$name] does not exist");
             }
 
-            $class = $this->getTypeHint($name);
-            $mockster = new Mockster($class, $this->factory);
-            $this->propertyMocksters[$name] = $mockster;
-
-            foreach ($this->uuts as $uut) {
-                $this->properties[$name]->set($uut, $mockster->mock());
+            if ($this->uuts) {
+                $mockster = $this->properties[$name]->get($this->uuts[0])->__mockster;
+            } else {
+                $mockster = new Mockster($this->getTypeHint($name), $this->factory);
             }
+
+            $this->propertyMocksters[$name] = $mockster;
         }
         return $this->propertyMocksters[$name];
     }
@@ -92,7 +92,7 @@ class Mockster {
      * the parent constructor
      */
     public function mock() {
-        return $this->injectStubs($this->factory->getInstance($this->class, MockProvider::NO_CONSTRUCTOR));
+        return $this->prepMock($this->factory->getInstance($this->class, MockProvider::NO_CONSTRUCTOR));
     }
 
     /**
@@ -102,7 +102,7 @@ class Mockster {
      */
     public function uut($constructorArguments = []) {
         $this->stubs->stubbedByDefault(false);
-        $instance = $this->injectStubs($this->factory->getInstance($this->class, $constructorArguments));
+        $instance = $this->prepMock($this->factory->getInstance($this->class, $constructorArguments));
 
         $this->uuts[] = $instance;
         foreach ($this->propertyMocksters as $property => $mockster) {
@@ -112,8 +112,9 @@ class Mockster {
         return $instance;
     }
 
-    private function injectStubs($instance) {
+    private function prepMock($instance) {
         $instance->__stubs = $this->stubs;
+        $instance->__mockster = $this;
         return $instance;
     }
 

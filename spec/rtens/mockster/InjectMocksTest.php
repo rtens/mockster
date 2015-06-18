@@ -101,6 +101,19 @@ class InjectMocksTest extends StaticTestSuite {
         $this->assert($mock->bas->foo(), 'bar');
     }
 
+    function testInspectHistoryOfInjectedMocks() {
+        /** @var Mockster|InjectMocksTest_InjectableClass $injectable */
+        $injectable = new Mockster(InjectMocksTest_InjectableClass::class);
+
+        /** @var InjectMocksTest_InjectableClass $mock */
+        $mock = $injectable->uut();
+        $mock->bar->foo();
+        $mock->bas->foo();
+
+        $this->assert(Mockster::stub($injectable->bas->foo())->has()->beenCalled());
+        $this->assert(Mockster::stub($injectable->bar->foo())->has()->beenCalled());
+    }
+
     function testPropertyStubbingOverwritesArgumentsStubbing() {
         /** @var Mockster|InjectMocksTest_InjectableClass $injectable */
         $injectable = new Mockster(InjectMocksTest_InjectableClass::class);
