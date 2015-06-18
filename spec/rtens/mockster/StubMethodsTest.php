@@ -21,6 +21,7 @@ class StubMethodsTest extends StaticTestSuite {
 
     function testNoStubDefined() {
         $this->assert($this->mock->bar(), null);
+        $this->assert($this->mock->foo(), null);
     }
 
     function testReturnValue() {
@@ -183,6 +184,10 @@ class StubMethodsTest extends StaticTestSuite {
 }
 
 class StubMethodsTest_FooClass {
+
+    public function foo() {
+        return null;
+    }
 
     /**
      * @param null|string $a
