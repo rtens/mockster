@@ -22,6 +22,7 @@ class InjectMocksTest extends StaticTestSuite {
 
         $this->assert->isInstanceOf($mock->bar, InjectMocksTest_FooClass::class);
         $mock->bar->foo();
+
         $this->assert->isInstanceOf($mock->multi, InjectMocksTest_FooClass::class);
         $this->assert->isInstanceOf($mock->nullable, InjectMocksTest_FooClass::class);
         $this->assert->isNull($mock->invalid);
@@ -57,6 +58,11 @@ class InjectMocksTest extends StaticTestSuite {
 
         Mockster::stub($injectable->bar->foo())->will()->return_('foo');
         $this->assert($mock->bar->foo(), 'foo');
+    }
+
+    function testFailWhenAccessingANonInjectableProperty() {
+        /** @var Mockster|InjectMocksTest_InjectableClass $injectable */
+        $injectable = new Mockster(InjectMocksTest_InjectableClass::class);
 
         try {
             $injectable->invalid;
