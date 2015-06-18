@@ -1,6 +1,7 @@
 <?php
 namespace spec\rtens\mockster;
 
+use rtens\mockster\MockProvider;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use watoki\factory\Factory;
@@ -138,7 +139,23 @@ class InjectMocksTest extends StaticTestSuite {
         /** @var InjectMocksTest_InjectableClass $mock */
         $mock = (new Mockster(InjectMocksTest_InjectableClass::class, $factory))->uut();
 
-        $this->assert($mock->bar, new \DateTime());
+        $this->assert->isInstanceOf($mock->bar, \DateTime::class);
+    }
+
+    function testChangeInjectionFilters() {
+        $factory = new Factory();
+        $provider = new MockProvider($factory);
+        $factory->setProvider('StdClass', $provider);
+
+        $provider->setPropertyFilter(function (\ReflectionProperty $property) {
+            return strpos($property->getDocComment(), '@inject');
+        });
+
+        /** @var InjectMocksTest_AnnotatedInjectableClass $mock */
+        $mock = (new Mockster(InjectMocksTest_AnnotatedInjectableClass::class, $factory))->uut();
+
+        $this->assert->isInstanceOf($mock->foo, InjectMocksTest_FooClass::class);
+        $this->assert->isNull($mock->bar);
     }
 }
 
@@ -171,6 +188,21 @@ class InjectMocksTest_InjectableClass {
     public function getProtected() {
         return $this->protected;
     }
+}
+
+class InjectMocksTest_AnnotatedInjectableClass {
+
+    /**
+     * @inject
+     * @var InjectMocksTest_FooClass
+     */
+    public $foo;
+
+    /**
+     * @var InjectMocksTest_FooClass
+     */
+    public $bar;
+
 }
 
 class InjectMocksTest_FooClass {

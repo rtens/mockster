@@ -36,9 +36,12 @@ class Mockster {
      * @param null|Factory $factory
      */
     function __construct($class, Factory $factory = null) {
+        if (!$factory) {
+            $factory = new Factory();
+            $factory->setProvider('StdClass', new MockProvider($factory));
+        }
         $this->class = $class;
-        $this->factory = $factory ?: new Factory();
-        $this->factory->setProvider('StdClass', new MockProvider($this->factory));
+        $this->factory = $factory;
         $this->stubs = new Stubs($class, $this->factory);
         $this->properties = (new PropertyReader($this->class))->readState();
     }

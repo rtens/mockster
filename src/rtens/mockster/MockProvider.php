@@ -9,9 +9,6 @@ class MockProvider extends DefaultProvider {
 
     const NO_CONSTRUCTOR = ['__NO_CONSTRUCTOR__'];
 
-    /** @var Injector */
-    protected $injector;
-
     public function __construct(Factory $factory) {
         parent::__construct($factory);
 
