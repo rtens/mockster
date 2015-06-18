@@ -18,10 +18,8 @@ class IntroductionTest extends StaticTestSuite {
         eval('
             class FooClass {
 
-                /**
-                 * @var MyDatabase <-
-                 */
-                public $database;
+                /** @var MyDatabase <- */
+                protected $database;
 
                 public function setUserName($id, $name) {
                     $user = $this->database->readUser($id);
@@ -36,7 +34,6 @@ class IntroductionTest extends StaticTestSuite {
                     // [...]
                 }
 
-                /** @return void */
                 public function update($object) {
                     // [...]
                 }
@@ -44,7 +41,6 @@ class IntroductionTest extends StaticTestSuite {
 
             class MyUser {
 
-                /** @return void */
                 public function setName($name) {
                     // [...]
                 }
@@ -72,8 +68,7 @@ class IntroductionTest extends StaticTestSuite {
          * The `uut()` method will create an instance of the `FooClass` with
          * all it's dependencies replaced by mocks and none of it's methods stubbed.
          */
-        $uut = $foo->uut();
-        $uut->setUserName(1, 'Bart');
+        $foo->uut()->setUserName(1, 'Bart');
 
         /*
          * Last, assert the expected behaviour.

@@ -28,6 +28,9 @@ class Mockster {
     /** @var Mockster[] */
     private $propertyMocksters = [];
 
+    /** @var array|object[] */
+    private $uuts = [];
+
     /**
      * @param string $class The FQN of the class to mock
      * @param null|Factory $factory
@@ -74,7 +77,12 @@ class Mockster {
             }
 
             $class = $this->getTypeHint($name);
-            $this->propertyMocksters[$name] = new Mockster($class, $this->factory);
+            $mockster = new Mockster($class, $this->factory);
+            $this->propertyMocksters[$name] = $mockster;
+
+            foreach ($this->uuts as $uut) {
+                $this->properties[$name]->set($uut, $mockster->mock());
+            }
         }
         return $this->propertyMocksters[$name];
     }
@@ -95,22 +103,18 @@ class Mockster {
     public function uut($constructorArguments = []) {
         $this->stubs->stubbedByDefault(false);
         $instance = $this->injectStubs($this->factory->getInstance($this->class, $constructorArguments));
-        $this->injectProperties($instance);
+
+        $this->uuts[] = $instance;
+        foreach ($this->propertyMocksters as $property => $mockster) {
+            $this->properties[$property]->set($instance, $mockster->mock());
+        }
+
         return $instance;
     }
 
     private function injectStubs($instance) {
         $instance->__stubs = $this->stubs;
         return $instance;
-    }
-
-    private function injectProperties($instance) {
-        foreach ($this->properties as $property) {
-            try {
-                $property->set($instance, $this->__get($property->name())->mock());
-            } catch (\ReflectionException $ignored) {
-            }
-        }
     }
 
     private function getTypeHint($propertyName) {

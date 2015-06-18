@@ -3,30 +3,21 @@ namespace rtens\mockster;
 
 use watoki\factory\Factory;
 use watoki\factory\Injector;
-use watoki\factory\Provider;
+use watoki\factory\providers\DefaultProvider;
 
-class MockProvider implements Provider {
+class MockProvider extends DefaultProvider {
 
-    const NO_CONSTRUCTOR = ['NO_CONSTRUCTOR'];
+    const NO_CONSTRUCTOR = ['__NO_CONSTRUCTOR__'];
 
     /** @var Injector */
     protected $injector;
 
-    /** @var \watoki\factory\Factory */
-    private $factory;
-
-    /** @var callable */
-    private $parameterFilter;
-
     public function __construct(Factory $factory) {
-        $this->factory = $factory;
-        $this->injector = new Injector($factory, function ($class) {
-            return (new Mockster($class))->mock();
-        });
+        parent::__construct($factory);
 
-        $this->parameterFilter = function () {
-            return true;
-        };
+        $this->injector = new Injector($factory, function ($class) use ($factory) {
+            return (new Mockster($class, $factory))->mock();
+        });
     }
 
     public function provide($className, array $constructorArgs = []) {
@@ -40,9 +31,12 @@ class MockProvider implements Provider {
         }
 
         if (!$callConstructor) {
-            $constructorArgs = [];
+            return $this->injector->injectConstructor($mockClassName, $constructorArgs, function () {
+                return false;
+            });
         }
-        return $this->injector->injectConstructor($mockClassName, $constructorArgs, $this->parameterFilter);
+
+        return parent::provide($mockClassName, $constructorArgs);
     }
 
     private function makeMockClassName($classname, $callConstructor) {
@@ -51,12 +45,5 @@ class MockProvider implements Provider {
             $mockClassName .= '_NoConstructor';
         }
         return $mockClassName;
-    }
-
-    /**
-     * @param callable $filter
-     */
-    public function setParameterFilter($filter) {
-        $this->parameterFilter = $filter;
     }
 }

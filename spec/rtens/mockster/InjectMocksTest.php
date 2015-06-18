@@ -20,12 +20,13 @@ class InjectMocksTest extends StaticTestSuite {
         /** @var InjectMocksTest_InjectableClass $mock */
         $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->uut();
 
-        $this->assert->isInstanceOf($mock->bar, InjectMocksTest_FooClass::class);
-        $mock->bar->foo();
+        $this->assert->isNull($mock->not);
 
-        $this->assert->isInstanceOf($mock->multi, InjectMocksTest_FooClass::class);
-        $this->assert->isInstanceOf($mock->nullable, InjectMocksTest_FooClass::class);
-        $this->assert->isNull($mock->invalid);
+        $this->assert->isInstanceOf($mock->getProtected(), InjectMocksTest_FooClass::class);
+
+        $this->assert->isInstanceOf($mock->bar, InjectMocksTest_FooClass::class);
+        $this->assert->not($mock->bar->constructorCalled);
+        $mock->bar->foo();
     }
 
     function testNotExistingProperty() {
@@ -36,7 +37,8 @@ class InjectMocksTest extends StaticTestSuite {
             $injectable->notExisting;
             $this->fail("Should have thrown an Exception");
         } catch (\ReflectionException $e) {
-            $this->assert->contains($e->getMessage(), "InjectableClass::notExisting");
+            $this->assert($e->getMessage(), "The property " .
+                "[" . InjectMocksTest_InjectableClass::class . "::notExisting] does not exist");
         }
     }
 
@@ -53,24 +55,16 @@ class InjectMocksTest extends StaticTestSuite {
     function testStubMethodsOfPropertyInjectedMocks() {
         /** @var Mockster|InjectMocksTest_InjectableClass $injectable */
         $injectable = new Mockster(InjectMocksTest_InjectableClass::class);
+
+        Mockster::stub($injectable->bar->foo())->will()->return_('foo');
+
         /** @var InjectMocksTest_InjectableClass $mock */
         $mock = $injectable->uut();
 
-        Mockster::stub($injectable->bar->foo())->will()->return_('foo');
+        Mockster::stub($injectable->bas->foo())->will()->return_('fos');
+
         $this->assert($mock->bar->foo(), 'foo');
-    }
-
-    function testFailWhenAccessingANonInjectableProperty() {
-        /** @var Mockster|InjectMocksTest_InjectableClass $injectable */
-        $injectable = new Mockster(InjectMocksTest_InjectableClass::class);
-
-        try {
-            $injectable->invalid;
-            $this->fail('Should have thrown an exception');
-        } catch (\ReflectionException $e) {
-            $this->assert($e->getMessage(), "Property [" . InjectMocksTest_InjectableClass::class . "::invalid] " .
-                "cannot be mocked since it's type hint is not a class.");
-        }
+        $this->assert($mock->bas->foo(), 'fos');
     }
 
     function testStubMethodsOfConstructorInjectedMocks() {
@@ -81,6 +75,47 @@ class InjectMocksTest extends StaticTestSuite {
 
         Mockster::stub($injectable->bas->foo())->will()->return_('foo');
         $this->assert($mock->bas->foo(), 'foo');
+    }
+
+    function testPassThroughConstructorArguments() {
+        /** @var InjectMocksTest_InjectableClass $mock */
+        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->uut([
+            'bas' => new \DateTime()
+        ]);
+
+        $this->assert->isInstanceOf($mock->bas, \DateTime::class);
+        $this->assert($mock->bas->format('c'), date('c'));
+    }
+
+    function testPassMockThroughConstructorArguments() {
+        /** @var Mockster|InjectMocksTest_FooClass $injected */
+        $injected = new Mockster(InjectMocksTest_FooClass::class);
+
+        Mockster::stub($injected->foo())->will()->return_('bar');
+
+        /** @var InjectMocksTest_InjectableClass $mock */
+        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->uut([
+            'bas' => $injected->mock()
+        ]);
+
+        $this->assert($mock->bas->foo(), 'bar');
+    }
+
+    function testPropertyStubbingOverwritesArgumentsStubbing() {
+        /** @var Mockster|InjectMocksTest_InjectableClass $injectable */
+        $injectable = new Mockster(InjectMocksTest_InjectableClass::class);
+        /** @var Mockster|InjectMocksTest_FooClass $injected */
+        $injected = new Mockster(InjectMocksTest_FooClass::class);
+
+        Mockster::stub($injected->foo())->will()->return_('argument');
+        Mockster::stub($injectable->bas->foo())->will()->return_('property');
+
+        /** @var InjectMocksTest_InjectableClass $mock */
+        $mock = $injectable->uut([
+            'bas' => $injected->mock()
+        ]);
+
+        $this->assert($mock->bas->foo(), 'property');
     }
 
     function testInjectFactory() {
@@ -96,19 +131,16 @@ class InjectMocksTest extends StaticTestSuite {
 
 class InjectMocksTest_InjectableClass {
 
-    /** @var InjectMocksTest_FooClass */
+    /** @var InjectMocksTest_FooClass <- */
     public $bar;
 
-    /** @var string|InjectMocksTest_FooClass|mixed */
-    public $multi;
-
-    /** @var null|InjectMocksTest_FooClass */
-    public $nullable;
-
-    /** @var null|string */
-    public $invalid;
+    /** @var InjectMocksTest_FooClass <- */
+    protected $protected;
 
     /** @var InjectMocksTest_FooClass */
+    public $not;
+
+    /** @var InjectMocksTest_FooClass|\DateTime */
     public $bas;
 
     /**
@@ -119,6 +151,13 @@ class InjectMocksTest_InjectableClass {
         $this->foo = $foo;
         $this->bas = $bas;
     }
+
+    /**
+     * @return InjectMocksTest_FooClass
+     */
+    public function getProtected() {
+        return $this->protected;
+    }
 }
 
 class InjectMocksTest_FooClass {
@@ -127,7 +166,7 @@ class InjectMocksTest_FooClass {
     function __construct() {
         $this->constructorCalled = true;
     }
-    
+
     function foo() {
         return null;
     }
