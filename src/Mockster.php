@@ -43,11 +43,19 @@ class Mockster {
     /**
      * Creates a Factory with MockProvider set as default Provider
      *
+     * @param callable $configureMockProvider Receives the MockProvider to be configured
      * @return Factory
      */
-    public static function createFactory() {
+    public static function createFactory(callable $configureMockProvider = null) {
         $factory = new Factory();
-        $factory->setProvider('StdClass', new MockProvider($factory));
+
+        $provider = new MockProvider($factory);
+
+        if ($configureMockProvider) {
+            $configureMockProvider($provider);
+        }
+
+        $factory->setProvider('StdClass', $provider);
         return $factory;
     }
 

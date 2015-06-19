@@ -4,7 +4,6 @@ namespace spec\rtens\mockster;
 use rtens\mockster\MockProvider;
 use rtens\mockster\Mockster;
 use rtens\scrut\tests\statics\StaticTestSuite;
-use watoki\factory\Factory;
 
 class InjectMocksTest extends StaticTestSuite {
 
@@ -144,12 +143,10 @@ class InjectMocksTest extends StaticTestSuite {
     }
 
     function testChangeInjectionFilters() {
-        $factory = new Factory();
-        $provider = new MockProvider($factory);
-        $factory->setProvider('StdClass', $provider);
-
-        $provider->setPropertyFilter(function (\ReflectionProperty $property) {
-            return strpos($property->getDocComment(), '@inject');
+        $factory = Mockster::createFactory(function (MockProvider $provider) {
+            $provider->setPropertyFilter(function (\ReflectionProperty $property) {
+                return strpos($property->getDocComment(), '@inject');
+            });
         });
 
         /** @var InjectMocksTest_AnnotatedInjectableClass $mock */
