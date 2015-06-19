@@ -11,8 +11,6 @@ use watoki\reflect\type\NullableType;
 
 class Mockster {
 
-    public static $enableReturnTypeChecking = true;
-
     /** @var string */
     private $class;
 
@@ -44,6 +42,16 @@ class Mockster {
         $this->factory = $factory;
         $this->stubs = new Stubs($class, $this->factory);
         $this->properties = (new PropertyReader($this->class))->readState();
+    }
+
+    /**
+     * Enables or disabled for all stubbed methods checking that the returned value matches the return type hint or
+     * that a thrown Exception is declared in the doc comment.
+     *
+     * @param bool $enabled
+     */
+    public function enableReturnTypeChecking($enabled = true) {
+        $this->stubs->enableReturnTypeChecking($enabled);
     }
 
     /**

@@ -18,6 +18,9 @@ class Stubs {
     /** @var \watoki\factory\Factory */
     private $factory;
 
+    /** @var bool */
+    private $checkReturnType = true;
+
     /**
      * @param string $class
      * @param \watoki\factory\Factory $factory
@@ -75,12 +78,22 @@ class Stubs {
     private function addStub($name, $arguments, $collected = []) {
         $stub = new Stub($this->factory, $this->class, $name, $arguments, $collected);
         $stub->setStubbed($this->defaultStubbing);
+        $stub->enableReturnTypeChecking($this->checkReturnType);
         $this->stubs[$name][] = $stub;
         return $stub;
     }
 
     public function stubbedByDefault($stubbed = true) {
         $this->defaultStubbing = $stubbed;
+    }
+
+    public function enableReturnTypeChecking($enabled = true) {
+        $this->checkReturnType = $enabled;
+        foreach ($this->stubs as $stubs) {
+            foreach ($stubs as $stub) {
+                $stub->enableReturnTypeChecking($enabled);
+            }
+        }
     }
 
     /**

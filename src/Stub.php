@@ -49,8 +49,6 @@ class Stub {
         $this->name = $name;
         $this->arguments = $arguments;
 
-        $this->checkReturnType = Mockster::$enableReturnTypeChecking;
-
         $this->reflection = new \ReflectionMethod($class, $name);
         $this->typeHint = new ReturnTypeInferer($this->reflection, $factory);
         $this->history = new History($collected);
@@ -98,24 +96,82 @@ class Stub {
         }
     }
 
+    /**
+     * Enables or disabled checking that the returned value matches the return type hint or
+     * that a thrown Exception is declared in the doc comment.
+     *
+     * @param bool $enabled
+     */
+    public function enableReturnTypeChecking($enabled = true) {
+        $this->checkReturnType = $enabled;
+    }
+
+    /**
+     * Will make the method ignore stubbed behaviour and invoke the original method instead.
+     */
     public function dontStub() {
         $this->setStubbed(false);
     }
 
+    /**
+     * Enable or disable stubbed behaviour.
+     *
+     * @param bool $stubbed
+     */
     public function setStubbed($stubbed = true) {
         $this->stubbed = $stubbed;
     }
 
+    /**
+     * A not-stubbed method invokes the original method and ignores configured behaviour.
+     *
+     * @return bool
+     */
     public function isStubbed() {
         return $this->stubbed;
     }
 
+    /**
+     * The arguments that this Stub is active for.
+     *
+     * @return array|arguments\Argument[]
+     */
+    public function arguments() {
+        return $this->arguments;
+    }
+
+    /**
+     * @return string
+     */
+    public function className() {
+        return $this->class;
+    }
+
+    /**
+     * @return string
+     */
+    public function methodName() {
+        return $this->name;
+    }
+
+    /**
+     * Records the invocation of the method.
+     *
+     * @param array $arguments
+     * @param mixed $returnValue
+     * @param \Exception $thrown
+     * @throws \ReflectionException
+     */
     public function record($arguments, $returnValue, \Exception $thrown = null) {
         $this->history->add(new Call($this->named($arguments), $returnValue, $thrown));
 
-        if ($this->checkReturnType && $thrown) {
+        if (!$this->checkReturnType) {
+            return;
+        }
+
+        if ($thrown) {
             $this->checkException($thrown);
-        } else if ($this->checkReturnType) {
+        } else {
             $this->checkReturnValue($returnValue);
         }
     }
@@ -149,10 +205,6 @@ class Stub {
         }
     }
 
-    public function enableReturnTypeChecking($enabled = true) {
-        $this->checkReturnType = $enabled;
-    }
-
     private function named($arguments) {
         foreach ($this->reflection->getParameters() as $param) {
             if (array_key_exists($param->getPosition(), $arguments)) {
@@ -163,20 +215,5 @@ class Stub {
             }
         }
         return $arguments;
-    }
-
-    /**
-     * @return array|arguments\Argument[]
-     */
-    public function arguments() {
-        return $this->arguments;
-    }
-
-    public function className() {
-        return $this->class;
-    }
-
-    public function methodName() {
-        return $this->name;
     }
 }

@@ -70,13 +70,16 @@ class CheckReturnTypeTest extends StaticTestSuite {
         $this->pass();
     }
 
-    function testDisableCheckingGlobally() {
-        Mockster::$enableReturnTypeChecking = false;
-        Mockster::stub($this->foo->returnsString())->will()->return_(null);
-        $this->mock->returnsString();
-        $this->pass();
+    function testDisableCheckingForEntireMock() {
+        Mockster::stub($this->foo->returnsDateTime())->will()->return_(null);
 
-        Mockster::$enableReturnTypeChecking = true;
+        $this->foo->enableReturnTypeChecking(false);
+
+        Mockster::stub($this->foo->returnsString())->will()->return_(null);
+
+        $this->mock->returnsString();
+        $this->mock->returnsDateTime();
+        $this->pass();
     }
 
     function testAnnotatedException() {
