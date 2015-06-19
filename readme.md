@@ -14,18 +14,17 @@
 
 ## Installation ##
 
-You will need [Composer], [PHP] and [git] to download the project
+You will need [Composer], [PHP] and [git].
 
-    php composer.phar create-project rtens/mockster
-
-or add it as a requirement to your projects `composer.json`
+To use *mockster*, add it as a requirement to your projects `composer.json`
 
     "rtens/mockster": "*"
 
-To run the test suite just execute `phpunit` in the base folder of mockster.
+You can also download the project directly with
 
-    cd mockster
-    phpunit
+    php composer.phar create-project rtens/mockster
+
+and the run the test suite by executing `vendor/bin/phpunit` in the project's root folder.
 
 [Composer]: http://getcomposer.org/download/
 [PHP]: http://php.net/downloads.php
@@ -33,9 +32,9 @@ To run the test suite just execute `phpunit` in the base folder of mockster.
 
 ## Documentation ##
 
-You can find all documentation in form of [executable specification on dox][dox].
+You can find all documentation in form of executable specification in the [`spec`] folder.
 
-[dox]: http://dox.rtens.org/projects/rtens-mockster/specs/Introduction
+[`spec`]: http://github.com/rtens/mockster/tree/v2/spec/rtens/mockster
 
 ## Contribution ##
 

@@ -23,9 +23,7 @@
     "autoload": {
         "psr-0": {
             "rtens\\mockster": "src/",
-            "spec\\rtens\\mockster": "",
-            "rtens\\mockster3": "src/",
-            "spec\\rtens\\mockster3": ""
+            "spec\\rtens\\mockster": ""
         }
     }
 }
