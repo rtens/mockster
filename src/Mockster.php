@@ -34,14 +34,21 @@ class Mockster {
      * @param null|Factory $factory
      */
     function __construct($class, Factory $factory = null) {
-        if (!$factory) {
-            $factory = new Factory();
-            $factory->setProvider('StdClass', new MockProvider($factory));
-        }
         $this->class = $class;
-        $this->factory = $factory;
+        $this->factory = $factory ?: self::createFactory();
         $this->stubs = new Stubs($class, $this->factory);
         $this->properties = (new PropertyReader($this->class))->readState();
+    }
+
+    /**
+     * Creates a Factory with MockProvider set as default Provider
+     *
+     * @return Factory
+     */
+    public static function createFactory() {
+        $factory = new Factory();
+        $factory->setProvider('StdClass', new MockProvider($factory));
+        return $factory;
     }
 
     /**

@@ -21,13 +21,12 @@ class InjectMocksTest extends StaticTestSuite {
         /** @var InjectMocksTest_InjectableClass $mock */
         $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->uut();
 
-        $this->assert->isNull($mock->not);
-
-        $this->assert->isInstanceOf($mock->getProtected(), InjectMocksTest_FooClass::class);
-
         $this->assert->isInstanceOf($mock->bar, InjectMocksTest_FooClass::class);
         $this->assert->not($mock->bar->constructorCalled);
         $mock->bar->foo();
+
+        $this->assert->isInstanceOf($mock->getProtected(), InjectMocksTest_FooClass::class);
+        $this->assert->isInstanceOf($mock->annotated, InjectMocksTest_FooClass::class);
     }
 
     function testNotExistingProperty() {
@@ -79,13 +78,15 @@ class InjectMocksTest extends StaticTestSuite {
     }
 
     function testPassThroughConstructorArguments() {
+        $dateTime = new \DateTime();
+
         /** @var InjectMocksTest_InjectableClass $mock */
         $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->uut([
-            'bas' => new \DateTime()
+            'bas' => $dateTime
         ]);
 
         $this->assert->isInstanceOf($mock->bas, \DateTime::class);
-        $this->assert($mock->bas->format('c'), date('c'));
+        $this->assert($mock->bas, $dateTime);
     }
 
     function testPassMockThroughConstructorArguments() {
@@ -133,7 +134,7 @@ class InjectMocksTest extends StaticTestSuite {
     }
 
     function testInjectFactory() {
-        $factory = new Factory();
+        $factory = Mockster::createFactory();
         $factory->setSingleton(new \DateTime(), InjectMocksTest_FooClass::class);
 
         /** @var InjectMocksTest_InjectableClass $mock */
@@ -159,23 +160,23 @@ class InjectMocksTest extends StaticTestSuite {
     }
 }
 
+/**
+ * @property InjectMocksTest_FooClass annotated
+ */
 class InjectMocksTest_InjectableClass {
 
-    /** @var InjectMocksTest_FooClass <- */
+    /** @var InjectMocksTest_FooClass */
     public $bar;
 
-    /** @var InjectMocksTest_FooClass <- */
-    protected $protected;
-
     /** @var InjectMocksTest_FooClass */
-    public $not;
+    protected $protected;
 
     /** @var InjectMocksTest_FooClass|\DateTime */
     public $bas;
 
     /**
-     * @param InjectMocksTest_FooClass $foo <-
-     * @param InjectMocksTest_FooClass $bas <-
+     * @param InjectMocksTest_FooClass $foo
+     * @param InjectMocksTest_FooClass $bas
      */
     function __construct($foo, $bas) {
         $this->foo = $foo;

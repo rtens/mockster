@@ -15,6 +15,14 @@ class MockProvider extends DefaultProvider {
         $this->injector = new Injector($factory, function ($class) use ($factory) {
             return (new Mockster($class, $factory))->mock();
         });
+        $this->injector->setThrowWhenCantInjectProperty(false);
+
+        $returnTrue = function () {
+            return true;
+        };
+        $this->setParameterFilter($returnTrue);
+        $this->setPropertyFilter($returnTrue);
+        $this->setAnnotationFilter($returnTrue);
     }
 
     public function provide($className, array $constructorArgs = []) {
