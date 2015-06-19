@@ -21,11 +21,13 @@
         "rtens/scrut": "1.0"
     },
     "autoload": {
-        "psr-0": {
-            "rtens\\mockster": "src/",
-            "spec\\rtens\\mockster": "",
-            "rtens\\mockster3": "src/",
-            "spec\\rtens\\mockster3": ""
+        "psr-4": {
+            "rtens\\mockster\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "spec\\rtens\\mockster\\": "spec/"
         }
     }
 }
