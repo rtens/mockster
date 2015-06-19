@@ -6,6 +6,8 @@ use watoki\factory\Provider;
 
 class MockProvider implements Provider {
 
+    const NO_CONSTRUCTOR = ['__NO_CONSTRUCTOR__'];
+
     private static $mockCodes = array();
 
     /** @var Injector */
@@ -27,12 +29,12 @@ class MockProvider implements Provider {
 
     /**
      * @param string $classname Fully qualified name of the class or interface to mock.
-     * @param null|array $constructorArgs Arguments for the constructor (as list or map). If null, the constructor is not invoked.
+     * @param array $constructorArgs Arguments for the constructor (as list or map). If NO_CONSTRUCTOR, the constructor is not invoked.
      * @throws \InvalidArgumentException
      * @return \rtens\mockster\Mock
      */
-    public function provide($classname, array $constructorArgs = null) {
-        $callConstructor = $constructorArgs !== null;
+    public function provide($classname, array $constructorArgs = array()) {
+        $callConstructor = $constructorArgs !== self::NO_CONSTRUCTOR;
         $mockClassName = $this->makeMockClassName($classname, $callConstructor);
 
         $code = $this->getMockCode($classname, $mockClassName, $callConstructor);

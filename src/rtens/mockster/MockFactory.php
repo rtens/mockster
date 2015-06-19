@@ -16,6 +16,9 @@ class MockFactory extends Factory {
      * @return Mock
      */
     public function getInstance($class, $args = null) {
+        if ($args === null) {
+            $args = MockProvider::NO_CONSTRUCTOR;
+        }
         return parent::getInstance($class, $args);
     }
 

@@ -9,6 +9,9 @@ class MockFactoryFixture extends Fixture {
 
     public static $calledWith;
 
+    /** @var MockFactory */
+    private $factory;
+
     /** @var null|\Exception */
     private $caught;
 
@@ -18,6 +21,10 @@ class MockFactoryFixture extends Fixture {
     private $returnValue;
 
     private static $counter = 0;
+
+    public function setUp() {
+        $this->factory = new MockFactory();
+    }
 
     public function givenTheClassDefinition($string) {
         $file = __DIR__ . '/tmp/class' . self::$counter++ . '.php';
@@ -30,19 +37,20 @@ class MockFactoryFixture extends Fixture {
         };
     }
 
+    public function givenISet_AsASingleton($instance) {
+        $this->factory->setSingleton($instance);
+    }
+
     public function whenICreateTheMockOf($class) {
-        $factory = new MockFactory();
-        $this->mock = $factory->getInstance($class);
+        $this->mock = $this->factory->getInstance($class);
     }
 
     public function whenICreateTheMockOf_WithTheConstructorArguments($class, $args) {
-        $factory = new MockFactory();
-        $this->mock = $factory->getInstance($class, $args);
+        $this->mock = $this->factory->getInstance($class, $args);
     }
 
     public function whenICreateATestUnitOf($class) {
-        $factory = new MockFactory();
-        $this->mock = $factory->getInstance($class)->__mock()->makeTestUnit();
+        $this->mock = $this->factory->getInstance($class)->__mock()->makeTestUnit();
     }
 
     public function whenITryToInvoke($method) {

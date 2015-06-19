@@ -1,7 +1,6 @@
 <?php
 namespace spec\rtens\mockster;
 
-use spec\rtens\mockster\fixtures\MockFactoryFixture;
 use watoki\scrut\Specification;
 
 /**
@@ -137,6 +136,12 @@ class CreateMockTest extends Specification {
         $this->fixture->thenItsProperty_ShouldBe('foo', 'foo');
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'StdClass');
         $this->fixture->thenItsProperty_ShouldBeAnInstanceOf('bar', 'rtens\mockster\Mock');
+    }
+
+    public function testReplaceMockWithSingleton() {
+        $this->fixture->givenISet_AsASingleton(new \DateTime());
+        $this->fixture->whenITryToCreateTheMockOf(\DateTime::class);
+        $this->fixture->thenNoExceptionShouldBeThrown();
     }
 
 }
