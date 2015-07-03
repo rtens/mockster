@@ -1,0 +1,19 @@
+{
+    "methodCalls" : [
+        {
+            "class" : "\\rtens\\mockster\\Mockster",
+            "method" : "of",
+            "position" : 0
+        },
+        {
+            "class" : "\\rtens\\mockster\\Mockster",
+            "method" : "mock",
+            "position" : 0
+        },
+        {
+            "class" : "\\rtens\\mockster\\Mockster",
+            "method" : "uut",
+            "position" : 0
+        }
+    ]
+}

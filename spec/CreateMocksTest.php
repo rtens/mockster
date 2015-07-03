@@ -17,41 +17,41 @@ class CreateMocksTest extends StaticTestSuite {
     }
 
     function testPlainMock() {
-        $this->mock = $this->foo->mock();
+        $this->mock = $this->foo->__mock();
         $this->assert->not($this->mock->constructorCalled);
         $this->assert(Mockster::stub($this->foo->foo())->isStubbed());
     }
 
     function testMockAbstractClass() {
         $foo = new Mockster(CreateMocksTest_AbstractClass::class);
-        $this->assert->isInstanceOf($foo->mock(), CreateMocksTest_AbstractClass::class);
+        $this->assert->isInstanceOf($foo->__mock(), CreateMocksTest_AbstractClass::class);
     }
 
     function testMockInterface() {
         $foo = new Mockster(CreateMocksTest_Interface::class);
-        $this->assert->isInstanceOf($foo->mock(), CreateMocksTest_Interface::class);
+        $this->assert->isInstanceOf($foo->__mock(), CreateMocksTest_Interface::class);
     }
 
     function testUnitUnderTest() {
-        $this->mock = $this->foo->uut();
+        $this->mock = $this->foo->__uut();
         $this->assert($this->mock->constructorCalled);
         $this->assert->not(Mockster::stub($this->foo->foo())->isStubbed());
     }
 
     function testPassConstructorArgumentsToUut() {
-        $this->mock = $this->foo->uut(['uno', 'dos']);
+        $this->mock = $this->foo->__uut(['uno', 'dos']);
         $this->assert($this->mock->constructorArguments, ['uno', 'dos']);
     }
 
     function testPassConstructorArgumentsByName() {
-        $this->mock = $this->foo->uut(['one' => 'uno', 'two' => 'dos']);
+        $this->mock = $this->foo->__uut(['one' => 'uno', 'two' => 'dos']);
         $this->assert($this->mock->constructorArguments, ['uno', 'dos']);
     }
 
     function testForceParameterCount() {
         /** @var Mockster|CreateMocksTest_Methods $methods */
         $methods = new Mockster(CreateMocksTest_Methods::class);
-        $mock = $methods->mock();
+        $mock = $methods->__mock();
 
         try {
             $mock->twoParameters('one');
@@ -65,7 +65,7 @@ class CreateMocksTest extends StaticTestSuite {
         /** @var Mockster|CreateMocksTest_Methods $methods */
         $methods = new Mockster(CreateMocksTest_Methods::class);
         /** @var CreateMocksTest_Methods $mock */
-        $mock = $methods->mock();
+        $mock = $methods->__mock();
 
         try {
             $mock->arrayHint('one');
@@ -79,7 +79,7 @@ class CreateMocksTest extends StaticTestSuite {
         /** @var Mockster|CreateMocksTest_Methods $methods */
         $methods = new Mockster(CreateMocksTest_Methods::class);
         /** @var CreateMocksTest_Methods $mock */
-        $mock = $methods->mock();
+        $mock = $methods->__mock();
 
         try {
             $mock->callableHint('one');
@@ -93,7 +93,7 @@ class CreateMocksTest extends StaticTestSuite {
         /** @var Mockster|CreateMocksTest_Methods $methods */
         $methods = new Mockster(CreateMocksTest_Methods::class);
         /** @var CreateMocksTest_Methods $mock */
-        $mock = $methods->mock();
+        $mock = $methods->__mock();
 
         try {
             /** @noinspection PhpParamsInspection */
@@ -108,7 +108,7 @@ class CreateMocksTest extends StaticTestSuite {
         /** @var Mockster|CreateMocksTest_Methods $methods */
         $methods = new Mockster(CreateMocksTest_Methods::class);
         /** @var CreateMocksTest_Methods $mock */
-        $mock = $methods->mock();
+        $mock = $methods->__mock();
 
         Mockster::stub($methods->variadic('one', 'two'))->will()->call(function ($args) {
             return json_encode($args);

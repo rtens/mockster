@@ -60,13 +60,12 @@ class Mockster {
     }
 
     /**
-     * Enables or disabled for all stubbed methods checking that the returned value matches the return type hint or
-     * that a thrown Exception is declared in the doc comment.
-     *
-     * @param bool $enabled
+     * @param string $class
+     * @param Factory $factory
+     * @return Mockster
      */
-    public function enableReturnTypeChecking($enabled = true) {
-        $this->stubs->enableReturnTypeChecking($enabled);
+    public static function of($class, Factory $factory = null) {
+        return new Mockster($class, $factory);
     }
 
     /**
@@ -76,6 +75,33 @@ class Mockster {
      */
     public static function stub(Stub $stub) {
         return $stub;
+    }
+
+    /**
+     * @param Mockster|object $mockster
+     * @return object
+     */
+    public static function mock(Mockster $mockster) {
+        return $mockster->__mock();
+    }
+
+    /**
+     * @param Mockster|object $mockster
+     * @param array $constructorArguments
+     * @return object
+     */
+    public static function uut(Mockster $mockster, array $constructorArguments = []) {
+        return $mockster->__uut($constructorArguments);
+    }
+
+    /**
+     * Enables or disabled for all stubbed methods checking that the returned value matches the return type hint or
+     * that a thrown Exception is declared in the doc comment.
+     *
+     * @param bool $enabled
+     */
+    public function enableReturnTypeChecking($enabled = true) {
+        $this->stubs->enableReturnTypeChecking($enabled);
     }
 
     /**
@@ -117,7 +143,7 @@ class Mockster {
      * @return object A mocked instance of the class, with all methods stubbed and created without invoking
      * the parent constructor
      */
-    public function mock() {
+    public function __mock() {
         return $this->prepMock($this->factory->getInstance($this->class, MockProvider::NO_CONSTRUCTOR));
     }
 
@@ -126,13 +152,13 @@ class Mockster {
      * @return object The Unit Under Test - an instance of the class, methods are not stubbed and the parent
      * constructor is called, mocks of dependencies are injected
      */
-    public function uut($constructorArguments = []) {
+    public function __uut($constructorArguments = []) {
         $this->stubs->stubbedByDefault(false);
         $instance = $this->prepMock($this->factory->getInstance($this->class, $constructorArguments));
 
         $this->uuts[] = $instance;
         foreach ($this->propertyMocksters as $property => $mockster) {
-            $this->properties[$property]->set($instance, $mockster->mock());
+            $this->properties[$property]->set($instance, $mockster->__mock());
         }
 
         return $instance;

@@ -16,7 +16,7 @@ class StubMethodsTest extends StaticTestSuite {
 
     public function before() {
         $this->foo = new Mockster(StubMethodsTest_FooClass::class);
-        $this->mock = $this->foo->mock();
+        $this->mock = $this->foo->__mock();
     }
 
     function testNoStubDefined() {
@@ -132,7 +132,7 @@ class StubMethodsTest extends StaticTestSuite {
         Mockster::stub($child->bar())->will()->return_("foo");
 
         /** @var StubMethodsTest_FooChild $mock */
-        $mock = $child->mock();
+        $mock = $child->__mock();
         $this->assert($mock->bar(), "foo");
     }
 
@@ -154,7 +154,7 @@ class StubMethodsTest extends StaticTestSuite {
         Mockster::stub($foo->proxyMethod())->dontStub();
 
         /** @var StubMethodsTest_FooClass $mock */
-        $mock = $foo->mock();
+        $mock = $foo->__mock();
         $this->assert($mock->proxyMethod(), "bar");
     }
 

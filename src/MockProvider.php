@@ -13,7 +13,7 @@ class MockProvider extends DefaultProvider {
         parent::__construct($factory);
 
         $this->injector = new Injector($factory, function ($class) use ($factory) {
-            return (new Mockster($class, $factory))->mock();
+            return (new Mockster($class, $factory))->__mock();
         });
         $this->injector->setThrowWhenCantInjectProperty(false);
 

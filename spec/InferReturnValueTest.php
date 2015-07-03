@@ -13,7 +13,7 @@ class InferReturnValueTest extends StaticTestSuite {
 
     public function before() {
         $this->foo = new Mockster(InferReturnValue_FooClass::class);
-        $this->mock = $this->foo->mock();
+        $this->mock = $this->foo->__mock();
     }
 
     function testInferPrimitive() {

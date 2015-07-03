@@ -17,8 +17,8 @@ class CheckReturnTypeTest extends StaticTestSuite {
 
     public function before() {
         $this->foo = new Mockster(CheckReturnTypeTest_FooClass::class);
-        $this->mock = $this->foo->mock();
-        $this->uut = $this->foo->uut();
+        $this->mock = $this->foo->__mock();
+        $this->uut = $this->foo->__uut();
     }
 
     function testAcceptAllIfNoTypeHintGiven() {

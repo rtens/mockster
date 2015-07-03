@@ -9,7 +9,7 @@ class InjectMocksTest extends StaticTestSuite {
 
     function testMockInjectableConstructorArguments() {
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->uut();
+        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->__uut();
 
         $this->assert->isInstanceOf($mock->foo, InjectMocksTest_FooClass::class);
         $this->assert->not($mock->foo->constructorCalled);
@@ -18,7 +18,7 @@ class InjectMocksTest extends StaticTestSuite {
 
     function testMockInjectableProperties() {
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->uut();
+        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->__uut();
 
         $this->assert->isInstanceOf($mock->bar, InjectMocksTest_FooClass::class);
         $this->assert->not($mock->bar->constructorCalled);
@@ -45,7 +45,7 @@ class InjectMocksTest extends StaticTestSuite {
         /** @var Mockster|InjectMocksTest_InjectableClass $injectable */
         $injectable = new Mockster(InjectMocksTest_InjectableClass::class);
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = $injectable->mock();
+        $mock = $injectable->__mock();
 
         $this->assert($mock->bar === null);
         $this->assert->isInstanceOf($injectable->bar, Mockster::class);
@@ -58,7 +58,7 @@ class InjectMocksTest extends StaticTestSuite {
         Mockster::stub($injectable->bar->foo())->will()->return_('foo');
 
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
+        $mock = $injectable->__uut();
 
         Mockster::stub($injectable->bas->foo())->will()->return_('fos');
 
@@ -70,7 +70,7 @@ class InjectMocksTest extends StaticTestSuite {
         /** @var Mockster|InjectMocksTest_InjectableClass $injectable */
         $injectable = new Mockster(InjectMocksTest_InjectableClass::class);
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
+        $mock = $injectable->__uut();
 
         Mockster::stub($injectable->bas->foo())->will()->return_('foo');
         $this->assert($mock->bas->foo(), 'foo');
@@ -80,7 +80,7 @@ class InjectMocksTest extends StaticTestSuite {
         $dateTime = new \DateTime();
 
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->uut([
+        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->__uut([
             'bas' => $dateTime
         ]);
 
@@ -95,8 +95,8 @@ class InjectMocksTest extends StaticTestSuite {
         Mockster::stub($injected->foo())->will()->return_('bar');
 
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->uut([
-            'bas' => $injected->mock()
+        $mock = (new Mockster(InjectMocksTest_InjectableClass::class))->__uut([
+            'bas' => $injected->__mock()
         ]);
 
         $this->assert($mock->bas->foo(), 'bar');
@@ -107,7 +107,7 @@ class InjectMocksTest extends StaticTestSuite {
         $injectable = new Mockster(InjectMocksTest_InjectableClass::class);
 
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut();
+        $mock = $injectable->__uut();
         $mock->bar->foo();
         $mock->bas->foo();
 
@@ -125,8 +125,8 @@ class InjectMocksTest extends StaticTestSuite {
         Mockster::stub($injectable->bas->foo())->will()->return_('property');
 
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = $injectable->uut([
-            'bas' => $injected->mock()
+        $mock = $injectable->__uut([
+            'bas' => $injected->__mock()
         ]);
 
         $this->assert($mock->bas->foo(), 'property');
@@ -137,7 +137,7 @@ class InjectMocksTest extends StaticTestSuite {
         $factory->setSingleton(new \DateTime(), InjectMocksTest_FooClass::class);
 
         /** @var InjectMocksTest_InjectableClass $mock */
-        $mock = (new Mockster(InjectMocksTest_InjectableClass::class, $factory))->uut();
+        $mock = (new Mockster(InjectMocksTest_InjectableClass::class, $factory))->__uut();
 
         $this->assert->isInstanceOf($mock->bar, \DateTime::class);
     }
@@ -150,7 +150,7 @@ class InjectMocksTest extends StaticTestSuite {
         });
 
         /** @var InjectMocksTest_AnnotatedInjectableClass $mock */
-        $mock = (new Mockster(InjectMocksTest_AnnotatedInjectableClass::class, $factory))->uut();
+        $mock = (new Mockster(InjectMocksTest_AnnotatedInjectableClass::class, $factory))->__uut();
 
         $this->assert->isInstanceOf($mock->foo, InjectMocksTest_FooClass::class);
         $this->assert->isNull($mock->bar);
