@@ -82,6 +82,9 @@ class Mockster {
      * @return object
      */
     public static function mock(Mockster $mockster) {
+        if (!($mockster instanceof Mockster)) {
+            $mockster = Mockster::of($mockster);
+        }
         return $mockster->__mock();
     }
 
@@ -91,6 +94,9 @@ class Mockster {
      * @return object
      */
     public static function uut(Mockster $mockster, array $constructorArguments = []) {
+        if (!($mockster instanceof Mockster)) {
+            $mockster = Mockster::of($mockster);
+        }
         return $mockster->__uut($constructorArguments);
     }
 
