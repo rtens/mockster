@@ -78,10 +78,10 @@ class Mockster {
     }
 
     /**
-     * @param Mockster|object $mockster
+     * @param Mockster|string|object $mockster
      * @return object
      */
-    public static function mock(Mockster $mockster) {
+    public static function mock($mockster) {
         if (!($mockster instanceof Mockster)) {
             $mockster = Mockster::of($mockster);
         }
@@ -89,11 +89,11 @@ class Mockster {
     }
 
     /**
-     * @param Mockster|object $mockster
+     * @param Mockster|string|object $mockster
      * @param array $constructorArguments
      * @return object
      */
-    public static function uut(Mockster $mockster, array $constructorArguments = []) {
+    public static function uut($mockster, array $constructorArguments = []) {
         if (!($mockster instanceof Mockster)) {
             $mockster = Mockster::of($mockster);
         }
