@@ -52,8 +52,7 @@ class MockGenerator {
             $method->getDocComment(),
             $method->getName(),
             implode(', ', $this->generateMethodParameters($method)),
-            implode(', ', $this->generateMethodArguments($method)),
-            $method->isAbstract() ? 'true' : 'false');
+            implode(', ', $this->generateMethodArguments($method)));
     }
 
     private function generateMethodArguments(\ReflectionMethod $method) {

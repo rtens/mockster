@@ -8,6 +8,7 @@ use watoki\reflect\PropertyReader;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\MultiType;
 use watoki\reflect\type\NullableType;
+use watoki\reflect\TypeFactory;
 
 class Mockster {
 
@@ -37,7 +38,7 @@ class Mockster {
         $this->class = $class;
         $this->factory = $factory ?: self::createFactory();
         $this->stubs = new Stubs($class, $this->factory);
-        $this->properties = (new PropertyReader($this->class))->readState();
+        $this->properties = (new PropertyReader(new TypeFactory(), $this->class))->readState();
     }
 
     /**

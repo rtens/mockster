@@ -52,8 +52,8 @@ class ReturnTypeInferer {
             return new UnknownType();
         }
 
-        $type = new TypeFactory($this->reflection->getDeclaringClass());
-        return $type->fromTypeHints(explode("|", $matches[1]));
+        $types = new TypeFactory();
+        return $types->fromTypeHints(explode("|", $matches[1]), $this->reflection->getDeclaringClass());
     }
 
     /**

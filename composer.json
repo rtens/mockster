@@ -13,12 +13,12 @@
         }
     ],
     "require": {
-        "watoki/factory": "0.5",
-        "watoki/reflect": "0.3",
+        "watoki/factory": "dev-master",
+        "watoki/reflect": "dev-master",
         "php": ">=5.6"
     },
     "require-dev": {
-        "rtens/scrut": "1.0"
+        "rtens/scrut": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -29,5 +29,6 @@
         "psr-4": {
             "spec\\rtens\\mockster\\": "spec/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
