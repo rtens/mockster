@@ -181,7 +181,7 @@ class Stub {
         if (!$type->is($returnValue)) {
             $returned = $this->toString($returnValue);
             throw new \ReflectionException("[{$this->class}::{$this->name}()] returned [$returned] " .
-                "which does not match its return type");
+                "which does not match its return type [$type]");
         }
     }
 

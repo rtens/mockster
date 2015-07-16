@@ -36,7 +36,7 @@ class CheckReturnTypeTest extends StaticTestSuite {
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
             $this->assert($e->getMessage(), '[' . CheckReturnTypeTest_FooClass::class . '::returnsString()] ' .
-                'returned [DateTime] which does not match its return type');
+                'returned [DateTime] which does not match its return type [string]');
         }
         $this->assert(Mockster::stub($this->foo->returnsString())->has()->beenCalled());
     }
