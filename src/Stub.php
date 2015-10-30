@@ -6,6 +6,7 @@ use rtens\mockster\behaviour\Behaviour;
 use rtens\mockster\behaviour\BehaviourFactory;
 use watoki\factory\Factory;
 use watoki\reflect\type\UnknownType;
+use watoki\reflect\ValuePrinter;
 
 class Stub {
 
@@ -188,7 +189,7 @@ class Stub {
     private function checkReturnValue($returnValue) {
         $type = $this->typeHint->getType();
         if (!$type->is($returnValue)) {
-            $returned = $this->toString($returnValue);
+            $returned = ValuePrinter::serialize($returnValue);
             throw new \ReflectionException("[{$this->class}::{$this->name}()] returned [$returned] " .
                 "which does not match its return type [$type]");
         }
@@ -201,16 +202,6 @@ class Stub {
             throw new \ReflectionException("[{$this->class}::{$this->name}()] threw "
                 . get_class($exception) . '(' . $exception->getMessage() . ') '
                 . "without proper annotation");
-        }
-    }
-
-    private function toString($value) {
-        if (is_object($value)) {
-            return get_class($value);
-        } else if (is_array($value)) {
-            return 'array';
-        } else {
-            return print_r($value, true);
         }
     }
 

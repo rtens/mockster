@@ -29,14 +29,14 @@ class CheckReturnTypeTest extends StaticTestSuite {
     }
 
     function testFailIfPrimitiveValueDoesNotMatch() {
-        Mockster::stub($this->foo->returnsString())->will()->return_(new \DateTime());
+        Mockster::stub($this->foo->returnsString())->will()->return_(new \DateTime('2011-12-13 14:15:16 UTC'));
 
         try {
             $this->mock->returnsString();
             $this->fail("Should have thrown an exception");
         } catch (\ReflectionException $e) {
             $this->assert($e->getMessage(), '[' . CheckReturnTypeTest_FooClass::class . '::returnsString()] ' .
-                'returned [DateTime] which does not match its return type [string]');
+                'returned [<DateTime>(2011-12-13T14:15:16+00:00)] which does not match its return type [string]');
         }
         $this->assert(Mockster::stub($this->foo->returnsString())->has()->beenCalled());
     }
