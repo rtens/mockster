@@ -37,7 +37,7 @@ class Mockster {
     function __construct($class, Factory $factory = null) {
         $this->class = $class;
         $this->factory = $factory ?: self::createFactory();
-        $this->stubs = new Stubs($class, $this->factory);
+        $this->stubs = new Stubs($this, $class, $this->factory);
         $this->properties = (new PropertyReader(new TypeFactory(), $this->class))->readState();
     }
 

@@ -21,13 +21,18 @@ class Stubs {
     /** @var bool */
     private $checkReturnType = true;
 
+    /** @var Mockster */
+    private $mockster;
+
     /**
+     * @param Mockster $mockster
      * @param string $class
      * @param \watoki\factory\Factory $factory
      */
-    function __construct($class, Factory $factory) {
+    function __construct(Mockster $mockster, $class, Factory $factory) {
         $this->class = $class;
         $this->factory = $factory;
+        $this->mockster = $mockster;
     }
 
     /**
@@ -76,7 +81,7 @@ class Stubs {
     }
 
     private function addStub($name, $arguments, $collected = []) {
-        $stub = new Stub($this->factory, $this->class, $name, $arguments, $collected);
+        $stub = new Stub($this->factory, $this->mockster, $this->class, $name, $arguments, $collected);
         $stub->setStubbed($this->defaultStubbing);
         $stub->enableReturnTypeChecking($this->checkReturnType);
         $this->stubs[$name][] = $stub;

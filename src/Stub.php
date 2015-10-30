@@ -36,15 +36,20 @@ class Stub {
     /** @var History */
     private $history;
 
+    /** @var Mockster */
+    private $mockster;
+
     /**
      * @param Factory $factory
+     * @param Mockster $mockster
      * @param string $class
      * @param string $name
      * @param array|Argument[] $arguments
      * @param array|History[] $collected
      * @throws \ReflectionException If the method cannot be stubbed
      */
-    function __construct(Factory $factory, $class, $name, array $arguments = [], array $collected = []) {
+    function __construct(Factory $factory, Mockster $mockster, $class, $name, array $arguments = [], array $collected = []) {
+        $this->mockster = $mockster;
         $this->class = $class;
         $this->name = $name;
         $this->arguments = $arguments;
@@ -82,6 +87,10 @@ class Stub {
      */
     public function has() {
         return $this->history;
+    }
+
+    public function shouldHave() {
+        return new Assertion($this, $this->mockster, $this->history);
     }
 
     /**
