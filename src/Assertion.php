@@ -44,6 +44,7 @@ class Assertion {
     /**
      * @param int $index
      * @return CallAssertion
+     * @throws AssertionFailedException
      */
     public function inCall($index) {
         try {
