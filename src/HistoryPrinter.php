@@ -23,7 +23,9 @@ class HistoryPrinter {
     }
 
     public function printAll(Mockster $mockster) {
-        $class = (new \ReflectionClass($mockster->__mock()))->getParentClass();
+        $classProperty = (new \ReflectionClass($mockster))->getProperty('class');
+        $classProperty->setAccessible(true);
+        $class = new \ReflectionClass($classProperty->getValue($mockster));
 
         $all = [];
         foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {

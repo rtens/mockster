@@ -161,6 +161,7 @@ class RecordCallsTest extends StaticTestSuite {
 
     function testPrintHistoryOfAllStubs() {
         $this->mock->foo('one');
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
         $this->mock->danger('meh');
         $this->mock->foo('two', 2);
 
@@ -168,6 +169,12 @@ class RecordCallsTest extends StaticTestSuite {
             "  foo('one', NULL) -> NULL\n" .
             "  foo('two', 2) -> NULL\n" .
             "  danger('meh') -> NULL");
+    }
+
+    function testPrintHistoryOfMockedInterface() {
+        /** @var Mockster $mockster */
+        $mockster = Mockster::of(RecordStubUsageTest_Interface::class);
+        $this->assert->contains((new HistoryPrinter())->printAll($mockster), 'History of [' . RecordStubUsageTest_Interface::class . ']');
     }
 }
 
@@ -193,6 +200,9 @@ class RecordStubUsageTest_FooClass {
 
     public function notCalled() {
     }
+}
+
+interface RecordStubUsageTest_Interface {
 }
 
 class RecordStubUsageTest_ToString {
