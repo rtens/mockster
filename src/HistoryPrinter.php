@@ -60,14 +60,9 @@ class HistoryPrinter {
     }
 
     private function printArguments(Call $call) {
-        $arguments = [];
-        foreach ($call->arguments() as $i => $argument) {
-            if (!is_numeric($i)) {
-                continue;
-            }
-            $arguments[] = $this->toString($argument);
-        }
-        return $arguments;
+        return array_map(function ($argument) {
+            return $this->toString($argument);
+        }, $call->arguments());
     }
 
     private function printResult(Call $call) {

@@ -23,10 +23,7 @@ class SpecificHistory extends History {
     public function calls() {
         return array_filter($this->stub->has()->calls(), function (Call $call) {
             foreach ($this->arguments as $i => $argument) {
-                $callArguments = $call->arguments();
-                if (!array_key_exists($i, $callArguments)
-                    || !$argument->accepts(new ExactArgument($call->argument($i)))
-                ) {
+                if (!$argument->accepts(new ExactArgument($call->argument($i)))) {
                     return false;
                 }
             }

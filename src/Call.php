@@ -22,10 +22,29 @@ class Call {
     }
 
     /**
-     * @return array The arguments the call was made with indexed by position *and* name
+     * @return array The arguments the call was made with indexed by position
      */
     public function arguments() {
-        return $this->arguments;
+        $arguments = [];
+        foreach ($this->arguments as $i => $argument) {
+            if (is_numeric($i)) {
+                $arguments[] = $argument;
+            }
+        }
+        return $arguments;
+    }
+
+    /**
+     * @return array The arguments the call was made with indexed by name
+     */
+    public function argumentsByName() {
+        $arguments = [];
+        foreach ($this->arguments as $i => $argument) {
+            if (!is_numeric($i)) {
+                $arguments[] = $argument;
+            }
+        }
+        return $arguments;
     }
 
     /**
@@ -46,12 +65,6 @@ class Call {
      * @param callable $callback Is invoked with the arguments of the call
      */
     public function recorded(callable $callback) {
-        $arguments = [];
-        foreach ($this->arguments as $i => $argument) {
-            if (is_numeric($i)) {
-                $arguments[] = $argument;
-            }
-        }
-        call_user_func_array($callback, $arguments);
+        call_user_func_array($callback, $this->arguments());
     }
 }
