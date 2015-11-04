@@ -10,7 +10,7 @@ class ExactArgument extends Argument {
     }
 
     public function accepts(Argument $argument) {
-        return $argument instanceof ExactArgument && $this->value === $argument->value;
+        return $argument instanceof ExactArgument && $this->value == $argument->value;
     }
 
     /**

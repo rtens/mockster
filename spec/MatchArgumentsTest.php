@@ -12,6 +12,13 @@ use rtens\scrut\tests\statics\StaticTestSuite;
 
 class MatchArgumentsTest extends StaticTestSuite {
 
+    function testExactValue() {
+        $this->assert(Argument::exact('foo')->accepts(new ExactArgument('foo')));
+        $this->assert(Argument::exact(new \DateTime('2011-12-13'))->accepts(new ExactArgument(new \DateTime('2011-12-13'))));
+        $this->assert->not(Argument::exact('foo')->accepts(new ExactArgument('bar')));
+        $this->assert->not(Argument::exact('foo')->accepts(new IntegerArgument()));
+    }
+
     function testInteger() {
         $this->assert(Argument::integer()->accepts(new IntegerArgument()));
         $this->assert(Argument::integer()->accepts(new ExactArgument(1)));
