@@ -105,9 +105,20 @@ class CreateMocksTest extends StaticTestSuite {
     }
 
     function testKeepVariadicMethod() {
-        /** @var Mockster|CreateMocksTest_Methods $methods */
-        $methods = new Mockster(CreateMocksTest_Methods::class);
-        /** @var CreateMocksTest_Methods $mock */
+        if (!method_exists(\ReflectionMethod::class, 'isVariadic')) {
+            $this->markIncomplete('Variadic methods requires PHP 5.6');
+        }
+
+        eval('
+                class CreateMocksTest_VariadicMethod {
+                    public function variadic(...$a) {
+                        return $a;
+                    }
+                }');
+
+        /** @var Mockster|object $methods */
+        $methods = new Mockster('CreateMocksTest_VariadicMethod');
+        /** @var object $mock */
         $mock = $methods->__mock();
 
         Mockster::stub($methods->variadic('one', 'two'))->will()->call(function ($args) {
@@ -152,9 +163,5 @@ class CreateMocksTest_Methods {
     }
 
     public function classHint(\DateTime $date) {
-    }
-
-    public function variadic(...$a) {
-        return $a;
     }
 }

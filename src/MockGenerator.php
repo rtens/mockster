@@ -71,7 +71,7 @@ class MockGenerator {
             $typeHint = $this->generateTypeHint($param);
             $defaultValue = $this->generateDefaultValue($param);
 
-            if ($i + 1 == count($parameters) && $method->isVariadic()) {
+            if ($i + 1 == count($parameters) && method_exists($method, 'isVariadic') && $method->isVariadic()) {
                 $typeHint .= ' ...';
                 $defaultValue = '';
             }

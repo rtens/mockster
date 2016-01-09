@@ -7,7 +7,7 @@ use watoki\factory\providers\DefaultProvider;
 
 class MockProvider extends DefaultProvider {
 
-    const NO_CONSTRUCTOR = ['__NO_CONSTRUCTOR__'];
+    public static $NO_CONSTRUCTOR = ['__NO_CONSTRUCTOR__'];
 
     public function __construct(Factory $factory) {
         parent::__construct($factory);
@@ -26,7 +26,7 @@ class MockProvider extends DefaultProvider {
     }
 
     public function provide($className, array $constructorArgs = []) {
-        $callConstructor = $constructorArgs != self::NO_CONSTRUCTOR;
+        $callConstructor = $constructorArgs != self::$NO_CONSTRUCTOR;
         $mockClassName = $this->makeMockClassName($className, $callConstructor);
 
         if (!class_exists($mockClassName)) {

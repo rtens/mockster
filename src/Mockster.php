@@ -151,7 +151,7 @@ class Mockster {
      * the parent constructor
      */
     public function __mock() {
-        return $this->prepMock($this->factory->getInstance($this->class, MockProvider::NO_CONSTRUCTOR));
+        return $this->prepMock($this->factory->getInstance($this->class, MockProvider::$NO_CONSTRUCTOR));
     }
 
     /**
