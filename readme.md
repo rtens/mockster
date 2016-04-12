@@ -31,9 +31,9 @@ If you would like to develop on *mockster*, clone it with [git], download its de
 
 ## Documentation ##
 
-You can find all documentation in form of [executable specification on dox][dox].
+You can find all documentation in form of [executable specification][spec].
 
-[dox]: http://dox.rtens.org/projects/rtens-mockster/specs/Introduction
+[spec]: https://github.com/rtens/mockster/tree/master/spec
 
 ## Contribution ##
 
